@@ -1,48 +1,24 @@
 pipeline {
-    agent {
-        docker { image 'node:16-alpine' }
-    }
+    agent { dockerfile true }
     environment {
         FRONTEND_ENV_FILE = credentials('frontend-env-file')
         BACKEND_ENV_FILE = credentials('backend-env-file')
+        NPM_CONFIG_CACHE = "${WORKSPACE}/.npm"
     }
     stages {
         stage('Build Frontend') {
             steps {
-                sh 'npm install -g serve pm2'
-                script {
-                    def frontendEnv = readFile(FRONTEND_ENV_FILE)
-                    def envVars = frontendEnv.readLines().collectEntries {
-                        def (key, value) = it.split('=')
-                        [(key.trim()): value.trim()]
-                    }
-
-                    withEnv(envVars) {
-                        sh '''
-                            cd client
-                            npm install
-                            npm run build
-                        '''
-                    }
+                dir('client') {
+                    sh 'npm install --force'
+                    sh 'npm run build'
                 }
             }
         }
         stage('Build Backend') {
             steps {
-                script {
-                    def backendEnv = readFile(BACKEND_ENV_FILE)
-                    def envVars = backendEnv.readLines().collectEntries {
-                        def (key, value) = it.split('=')
-                        [(key.trim()): value.trim()]
-                    }
-
-                    withEnv(envVars) {
-                        sh '''
-                            cd server-nest
-                            npm install
-                            npm run build
-                        '''
-                    }
+                dir('server-nest') {
+                    sh 'npm install'
+                    sh 'npm run build'
                 }
             }
         }
@@ -53,12 +29,14 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh '''
-                    cd server-nest
-                    pm2 start dist/main.js --name server
-                    cd ../client
-                    pm2 serve build 3000 --spa --name client
-                '''
+                sh 'pm2 stop all'
+                dir('server-nest') {
+                    sh 'pm2 start dist/main.js --name server'
+                }
+
+                dir('client') {
+                    sh 'pm2 serve build 3000 --spa --name client'
+                }
             }
         }
     }
