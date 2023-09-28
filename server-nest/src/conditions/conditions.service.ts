@@ -25,12 +25,12 @@ export class ConditionsService {
                 .getRepository(Coverage_Values)
                 .createQueryBuilder('coverage_values')
                 .select([
-                    'coverage_values.id',
+                    'coverage_values.id AS id',
                     'type', 'value', 'std',
                     'start_time_utc', 'compute_time',
                     'task_id',
                     'ST_AsGeoJSON(coverage.section_geom) AS section_geom',
-                    'ways.IsHighway'
+                    'ways.IsHighway AS IsHighway'
                 ])
                 .innerJoin(Coverage, 'coverage','coverage_values.fk_coverage_id = coverage.id')
                 .innerJoin(Trips, 'trips', 'coverage.fk_trip_id = trips.id')
@@ -61,10 +61,8 @@ export class ConditionsService {
                 conditions.andWhere('compute_time > :computed_after', { computed_after })
             }
 
-            console.log(conditions.getQuery());
-            res = await conditions.getMany();
+            res = await conditions.getRawMany();
         } catch (e) {
-            console.log(e)
             return {
                 type: "FeatureCollection",
                 features: []
@@ -73,8 +71,7 @@ export class ConditionsService {
 
         return {
             type: "FeatureCollection",
-            features: res.map( (r) => {
-                console.log(r);
+            features: res.map( r => {
                 return {
                     type: "Feature",
                     geometry: JSON.parse(r.section_geom),
