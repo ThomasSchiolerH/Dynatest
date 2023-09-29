@@ -23,19 +23,19 @@ export class ConditionsService {
         try {
             let conditions = this.dataSource
                 .getRepository(Coverage_Values)
-                .createQueryBuilder('coverage_values')
+                .createQueryBuilder('coverage_value')
                 .select([
-                    'coverage_values.id AS id',
+                    'coverage_value.id AS id',
                     'type', 'value', 'std',
                     'start_time_utc', 'compute_time',
                     'task_id',
                     'ST_AsGeoJSON(coverage.section_geom) AS section_geom',
-                    'ways.IsHighway AS IsHighway'
+                    'way."IsHighway" AS IsHighway'
                 ])
-                .innerJoin(Coverage, 'coverage','coverage_values.fk_coverage_id = coverage.id')
-                .innerJoin(Trips, 'trips', 'coverage.fk_trip_id = trips.id')
-                .innerJoin(Ways, 'ways','coverage.fk_way_id = ways.id')
-                .where('coverage_values.ignore IS NULL');
+                .innerJoin(Coverage, 'coverage','coverage_value.fk_coverage_id = coverage.id')
+                .innerJoin(Trips, 'trip', 'coverage.fk_trip_id = trip.id')
+                .innerJoin(Ways, 'way','coverage.fk_way_id = way.id')
+                .where('coverage_value.ignore IS NULL');
             if (type !== undefined) {
                 conditions.andWhere('type = :type', { type });
             }
