@@ -9,7 +9,8 @@ import { MAP_OPTIONS } from '../map/mapConstants'
 import { getConditions } from '../queries/fetchConditions'
 
 import "../css/slider.css";
-import "../css/map.css"
+import "../css/map.css";
+import "../css/SlidingWindow.css";
 
 
 const ALL = "ALL"
@@ -135,30 +136,53 @@ const getConditionColor = ( properties: GeoJSON.GeoJsonProperties) : string => {
     }
     return "grey"
 }
-const ConditionMap = (props : any ) => {
-    const { children } = props
 
-    const { center, zoom, minZoom, maxZoom, scaleWidth } = MAP_OPTIONS
+const SlidingWindow = () => {
+    const [isWindowOpen, setIsWindowOpen] = useState(false);
 
-    const geoJsonRef = useRef<any>()
+    const toggleWindow = () => {
+        setIsWindowOpen(!isWindowOpen);
+    };
 
-    const [ dataAll, setDataAll ] = useState<FeatureCollection>()
+    return (
+        <div>
+            <button className="toggle-button" onClick={toggleWindow}>
+                Toggle Sliding Window
+            </button>
+            <div className={`sliding-window ${isWindowOpen ? 'open' : ''}`}>
+                <div className="sliding-window-content">
+                    <p>Sliding Window Content</p>
+                </div>
+            </div>
+        </div>
+    );
+};
 
-    const  [ rangeAll, setRangeAll ] = useState<DateRange>({})
+const ConditionMap = (props: any) => {
+    const { children } = props;
 
-    const [ rangeSelected, setRangeSelected ] = useState<DateRange>({});
+    const { center, zoom, minZoom, maxZoom, scaleWidth } = MAP_OPTIONS;
 
-    const [ mode, setMode ] = useState<string>("ALL")
+    const geoJsonRef = useRef<any>();
 
+    const [dataAll, setDataAll] = useState<FeatureCollection>();
+    const [rangeAll, setRangeAll] = useState<DateRange>({});
+    const [rangeSelected, setRangeSelected] = useState<DateRange>({});
+    const [mode, setMode] = useState<string>("ALL");
 
-    const inputChange = ({target}: any) => { setMode(target.value) }
+    const inputChange = ({ target }: any) => {
+        setMode(target.value);
+    };
 
     const rangeChange = (values: number[]) => {
         if (values.length === 2) {
-            const newSelectedRange: DateRange = { start: noToYearMonth(values[0],rangeAll), end: noToYearMonth(values[1],rangeAll) }
-            setRangeSelected(newSelectedRange)
+            const newSelectedRange: DateRange = {
+                start: noToYearMonth(values[0], rangeAll),
+                end: noToYearMonth(values[1], rangeAll),
+            };
+            setRangeSelected(newSelectedRange);
         }
-    }
+    };
 
 
     useEffect( () => {
@@ -299,7 +323,8 @@ const ConditionMap = (props : any ) => {
     }
 
     return (
-        <div style={{height: "100%"}}>
+        <div style={{ height: "100%" }}>
+            <SlidingWindow />
             <div>
                 <MapContainer
                     preferCanvas={true}
@@ -317,17 +342,20 @@ const ConditionMap = (props : any ) => {
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                     <Zoom />
-                    <ScaleControl imperial={false} position='bottomleft' maxWidth={scaleWidth}/>
-                    { children }
+                    <ScaleControl imperial={false} position="bottomleft" maxWidth={scaleWidth} />
+                    {children}
                 </MapContainer>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "200px auto" }}>
-                <select className="sweetalert-input" defaultValue={mode} onChange={inputChange} style={{ width: "200px"}}>
-                    {conditionTypes.map(
-                        value => <option value={value} key={value}>{value}</option>)}
+                <select className="sweetalert-input" defaultValue={mode} onChange={inputChange} style={{ width: "200px" }}>
+                    {conditionTypes.map((value) => (
+                        <option value={value} key={value}>
+                            {value}
+                        </option>
+                    ))}
                 </select>
 
-                { rangeAll !== undefined && rangeAll.start !== undefined && rangeAll.end !== undefined &&
+                {rangeAll !== undefined && rangeAll.start !== undefined && rangeAll.end !== undefined && (
                     <ReactSlider
                         className="horizontal-slider"
                         thumbClassName="example-thumb"
@@ -335,47 +363,41 @@ const ConditionMap = (props : any ) => {
                         markClassName="example-mark"
                         min={0}
                         max={noMonth(rangeAll)}
-                        marks = {true}
-                        renderMark={(props: any) => <div {...props}>{yearMonthtoText(noToYearMonth(props.key,rangeAll))}</div>}
+                        marks={true}
+                        renderMark={(props: any) => <div {...props}>{yearMonthtoText(noToYearMonth(props.key, rangeAll))}</div>}
                         defaultValue={[0, noMonth(rangeAll)]}
                         ariaLabel={["Lower thumb", "Upper thumb"]}
-                        ariaValuetext={(state) => `Thumb value ${yearMonthtoText(noToYearMonth(state.valueNow,rangeAll))}`}
-                        renderThumb={(props, state) => <div {...props}>{yearMonthtoText(noToYearMonth(state.valueNow,rangeAll))}</div>}
+                        ariaValuetext={(state) => `Thumb value ${yearMonthtoText(noToYearMonth(state.valueNow, rangeAll))}`}
+                        renderThumb={(props, state) => <div {...props}>{yearMonthtoText(noToYearMonth(state.valueNow, rangeAll))}</div>}
                         pearling
                         minDistance={0}
                         onChange={(value) => rangeChange(value)}
                     />
-                }
-
+                )}
+                {/* Include the SlidingWindow component here if needed */}
             </div>
-            { mode === "ALL" &&
-                <div style={{  display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    color: "white"}}>
-                    Colors indicate condition types (not their values):  &nbsp;
-                    <div style={{ color: getTypeColor(KPI)}}>KPI</div> &nbsp; &nbsp;
-                    <div style={{ color: getTypeColor(DI)}}>DI</div> &nbsp; &nbsp;
-                    <div style={{ color: getTypeColor(IRI)}}>IRI</div>  &nbsp; &nbsp;
-                    <div style={{ color: getTypeColor(Mu)}}>&mu;</div>  &nbsp; &nbsp;
-                    <div style={{ color: getTypeColor(Enrg)}}>E</div>  &nbsp; &nbsp;
+            {mode === "ALL" && (
+                <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", color: "white" }}>
+                    Colors indicate condition types (not their values): &nbsp;
+                    <div style={{ color: getTypeColor(KPI) }}>KPI</div> &nbsp; &nbsp;
+                    <div style={{ color: getTypeColor(DI) }}>DI</div> &nbsp; &nbsp;
+                    <div style={{ color: getTypeColor(IRI) }}>IRI</div> &nbsp; &nbsp;
+                    <div style={{ color: getTypeColor(Mu) }}>&mu;</div> &nbsp; &nbsp;
+                    <div style={{ color: getTypeColor(Enrg) }}>E</div> &nbsp; &nbsp;
                 </div>
-            }
-            { mode !== "ALL" &&
-                <div style={{  display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    color: "white"}}>
+            )}
+            {mode !== "ALL" && (
+                <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", color: "white" }}>
                     Colors indicate condition values from &nbsp;
-                    <span style={{color: green}}>green (good)</span>&nbsp;
-                    <span style={{color: greenyellow}}>over</span>&nbsp;
-                    <span style={{color: yellow}}>yellow (medium)</span>&nbsp;
-                    <span style={{color: orange}}>to</span>&nbsp;
-                    <span style={{color: red}}>red (bad)</span>!
+                    <span style={{ color: green }}>green (good)</span>&nbsp;
+                    <span style={{ color: greenyellow }}>over</span>&nbsp;
+                    <span style={{ color: yellow }}>yellow (medium)</span>&nbsp;
+                    <span style={{ color: orange }}>to</span>&nbsp;
+                    <span style={{ color: red }}>red (bad)</span>!
                 </div>
-            }
+            )}
         </div>
-    )
-}
+    );
+};
 
 export default ConditionMap

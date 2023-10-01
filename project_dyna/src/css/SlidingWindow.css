@@ -1,0 +1,44 @@
+.sliding-window {
+    resize: horizontal;
+    overflow: auto;
+    width: 0; /* Initially off-screen on the left */
+    height: calc(100% - var(--navbar-height)); /* Subtract navbar height from total height */
+    position: fixed;
+    top: var(--navbar-height); /* Position below the navbar */
+    left: 0; /* Set left to 0 initially */
+    background-color: var(--background-2);
+    transition: left 0.3s ease-in-out, width 0.3s ease-in-out; /* Update the transition property to use "left" and "width" */
+    z-index: 9; /* Set a lower z-index value than the navigation bar */
+}
+
+.sliding-window.open {
+     left: 0; /* Slide in from the left to 0 */
+     width: 50%; /* Set width to 50% when open */
+ }
+
+.sliding-window.closed {
+    left: -300px; /* Off-screen on the left when closed */
+    width: 0; /* Set width to 0 when closed */
+}
+
+.sliding-window-content {
+    margin-top: 20px;
+    padding: 20px;
+    color: white;
+}
+
+.toggle-button {
+    position: absolute; /* Position the button at the top left */
+    top: calc(var(--navbar-height) + 20px) ; /* Position it below the navbar */
+    left: 10px;
+    z-index: 10; /* Set a lower z-index than the sliding window and navbar */
+    background-color: var(--background-2);
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.toggle-button:hover {
+    background-color: var(--background-2);
+}
