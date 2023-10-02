@@ -8,6 +8,8 @@ import Zoom from '../map/zoom'
 import { MAP_OPTIONS } from '../map/mapConstants'
 import { getConditions } from '../queries/fetchConditions'
 
+import ConditionToggleButtons from './ConditionToggleButtons';
+
 import "../css/slider.css";
 import "../css/map.css";
 import "../css/SlidingWindow.css";
@@ -321,10 +323,25 @@ const ConditionMap = (props: any) => {
                 "Condition id: " + feature.properties.id)
         }
     }
+    // const handleConditionToggle = (condition, isSelected) => {
+    //     // Handle condition toggle logic here
+    //     // You can update the map display or perform other actions based on the condition selection
+    // };
+    const handleConditionToggle = (condition: string, isSelected: boolean) => {
+        // Handle condition toggle logic here
+        // You can update the map display or perform other actions based on the condition selection
+    };
+
 
     return (
         <div style={{ height: "100%" }}>
             <SlidingWindow />
+            <div className="condition-toggle-buttons-container">
+                <ConditionToggleButtons
+                    conditionTypes={conditionTypes}
+                    onConditionToggle={handleConditionToggle}
+                />
+            </div>
             <div>
                 <MapContainer
                     preferCanvas={true}

@@ -24,6 +24,7 @@
 .sliding-window-content {
     margin-top: 20px;
     padding: 20px;
+    margin-left: 150px;
     color: white;
 }
 
@@ -31,7 +32,7 @@
     position: absolute; /* Position the button at the top left */
     top: calc(var(--navbar-height) + 20px) ; /* Position it below the navbar */
     left: 10px;
-    z-index: 10; /* Set a lower z-index than the sliding window and navbar */
+    z-index: 12; /* Set a lower z-index than the sliding window and navbar */
     background-color: var(--background-2);
     color: white;
     padding: 5px 10px;
@@ -42,3 +43,41 @@
 .toggle-button:hover {
     background-color: var(--background-2);
 }
+
+
+.condition-toggle-buttons-container {
+    position: fixed;
+    top: var(--navbar-height); /* Position below the navbar */
+    left: 0;
+    bottom: 0; /* Stretch to the bottom of the window */
+    background-color: var(--background-2); /* Set the background color */
+    z-index: 11; /* Set a z-index to appear above other content */
+    overflow-y: auto; /* Add vertical scroll if needed */
+}
+
+.condition-toggle-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    width: 70%; /* Make buttons full width */
+}
+
+/* Additional styles for active (selected) condition toggle buttons */
+.condition-toggle-button.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.condition-toggle-button:hover {
+    background-color: var(--background-3);
+}
+.toggle-icon {
+    font-size: 20px;
+    margin-left: 10px;
+}
+
