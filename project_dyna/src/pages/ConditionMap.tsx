@@ -12,7 +12,7 @@ import ConditionToggleButtons from './ConditionToggleButtons';
 
 import "../css/slider.css";
 import "../css/map.css";
-import "../css/SlidingWindow.css";
+import "../css/DataWindow.css";
 
 
 const ALL = "ALL"
@@ -151,8 +151,8 @@ const SlidingWindow = () => {
             <button className="toggle-button" onClick={toggleWindow}>
                 Toggle Sliding Window
             </button>
-            <div className={`sliding-window ${isWindowOpen ? 'open' : ''}`}>
-                <div className="sliding-window-content">
+            <div className={`data-window ${isWindowOpen ? 'open' : ''}`}>
+                <div className="data-window-content">
                     <p>Sliding Window Content</p>
                 </div>
             </div>

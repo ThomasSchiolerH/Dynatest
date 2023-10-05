@@ -1,4 +1,4 @@
-.sliding-window {
+.data-window {
     resize: horizontal;
     overflow: auto;
     width: 0; /* Initially off-screen on the left */
@@ -11,17 +11,17 @@
     z-index: 9; /* Set a lower z-index value than the navigation bar */
 }
 
-.sliding-window.open {
+.data-window.open {
      left: 0; /* Slide in from the left to 0 */
      width: 50%; /* Set width to 50% when open */
  }
 
-.sliding-window.closed {
+.data-window.closed {
     left: -300px; /* Off-screen on the left when closed */
     width: 0; /* Set width to 0 when closed */
 }
 
-.sliding-window-content {
+.data-window-content {
     margin-top: 20px;
     padding: 20px;
     margin-left: 150px;
