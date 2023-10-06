@@ -48,6 +48,7 @@
 .condition-toggle-buttons-container {
     position: fixed;
     top: var(--navbar-height); /* Position below the navbar */
+    padding-top: 50px;
     left: 0;
     bottom: 0; /* Stretch to the bottom of the window */
     background-color: var(--background-2); /* Set the background color */

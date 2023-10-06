@@ -153,7 +153,7 @@ const SlidingWindow = () => {
             </button>
             <div className={`data-window ${isWindowOpen ? 'open' : ''}`}>
                 <div className="data-window-content">
-                    <p>Sliding Window Content</p>
+                    <p>Data Window Content</p>
                 </div>
             </div>
         </div>
@@ -323,10 +323,7 @@ const ConditionMap = (props: any) => {
                 "Condition id: " + feature.properties.id)
         }
     }
-    // const handleConditionToggle = (condition, isSelected) => {
-    //     // Handle condition toggle logic here
-    //     // You can update the map display or perform other actions based on the condition selection
-    // };
+
     const handleConditionToggle = (condition: string, isSelected: boolean) => {
         // Handle condition toggle logic here
         // You can update the map display or perform other actions based on the condition selection
