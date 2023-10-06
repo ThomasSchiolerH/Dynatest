@@ -5,7 +5,7 @@
 }
 
 .leaflet-container {
-    height: 75vh;
+    height: 90vh;
     z-index: 0;
 }
 .map-zoom {
