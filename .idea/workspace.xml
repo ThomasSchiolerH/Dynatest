@@ -6,7 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="c7ceaf26-0a71-4457-bce7-ffa3d71ce935" name="Changes" comment="graph text fix again">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project_dyna/src/css/DataWindow.css" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/css/DataWindow.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project_dyna/src/pages/ConditionMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/pages/ConditionMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project_dyna/src/pages/ConditionToggleButtons.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/pages/ConditionToggleButtons.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,13 +18,17 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="stage" />
+        <entry key="$PROJECT_DIR$" value="4519cb97f44ec77aafe991815416d43e1530a498" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="PackageJsonUpdateNotifier">
+    <dismissed value="$PROJECT_DIR$/project_dyna/package.json" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -46,7 +52,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "/Users/thomasschioler/WebstormProjects/02162-software-engineering-2-group-e/project_dyna/node_modules/typescript/lib",
+    "ts.external.directory.path": "C:\\Users\\alexa\\Desktop\\DTU\\02162-software-engineering-2-group-e\\project_dyna\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>

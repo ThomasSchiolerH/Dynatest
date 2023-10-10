@@ -194,9 +194,6 @@ const SlidingWindow = () => {
 
     return (
         <div>
-            <button className="toggle-button" onClick={toggleWindow}>
-                Toggle Sliding Window
-            </button>
             <div className={`data-window ${isWindowOpen ? 'open' : ''}`}>
                 <div className="data-window-content">
                     <p>Data Window Content</p>
