@@ -3,6 +3,8 @@ import  ReactSlider  from "react-slider"
 import { MapContainer, TileLayer, ScaleControl, GeoJSON } from 'react-leaflet'
 import { Layer, PathOptions } from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import React, { PureComponent } from 'react';
 
 import Zoom from '../map/zoom'
 import { MAP_OPTIONS } from '../map/mapConstants'
@@ -13,7 +15,6 @@ import ConditionToggleButtons from './ConditionToggleButtons';
 import "../css/slider.css";
 import "../css/map.css";
 import "../css/DataWindow.css";
-
 
 const ALL = "ALL"
 const KPI = "KPI"
@@ -139,6 +140,16 @@ const getConditionColor = ( properties: GeoJSON.GeoJsonProperties) : string => {
     return "grey"
 }
 
+const data = [
+    { name: 'Page A', uv: 4000 },
+    { name: 'Page B', uv: 3000 },
+    { name: 'Page C', uv: 2000 },
+    { name: 'Page D' },
+    { name: 'Page E', uv: 1890 },
+    { name: 'Page F', uv: 2390 },
+    { name: 'Page G', uv: 3490 },
+];
+
 const SlidingWindow = () => {
     const [isWindowOpen, setIsWindowOpen] = useState(false);
 
@@ -154,6 +165,47 @@ const SlidingWindow = () => {
             <div className={`data-window ${isWindowOpen ? 'open' : ''}`}>
                 <div className="data-window-content">
                     <p>Data Window Content</p>
+                    <div className={"chart-container"}>
+                        <ResponsiveContainer width="100%" height={200}>
+                            <LineChart
+                                width={500}
+                                height={200}
+                                data={data}
+                                margin={{
+                                    top: 10,
+                                    right: 30,
+                                    left: 0,
+                                    bottom: 0,
+                                }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Line type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" />
+                            </LineChart>
+                        </ResponsiveContainer>
+
+                        <ResponsiveContainer width="100%" height={200}>
+                            <LineChart
+                                width={500}
+                                height={200}
+                                data={data}
+                                margin={{
+                                    top: 10,
+                                    right: 30,
+                                    left: 0,
+                                    bottom: 0,
+                                }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Line connectNulls type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
             </div>
         </div>

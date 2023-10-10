@@ -30,12 +30,12 @@
 
 .toggle-button {
     position: absolute; /* Position the button at the top left */
-    top: calc(var(--navbar-height) + 20px) ; /* Position it below the navbar */
-    left: 10px;
+    top: calc(var(--navbar-height) + 10px) ; /* Position it below the navbar */
+    /*left: 5px;*/
     z-index: 12; /* Set a lower z-index than the sliding window and navbar */
     background-color: var(--background-2);
     color: white;
-    padding: 5px 10px;
+    padding: 5px 5px;
     border: none;
     cursor: pointer;
 }
@@ -43,7 +43,6 @@
 .toggle-button:hover {
     background-color: var(--background-2);
 }
-
 
 .condition-toggle-buttons-container {
     position: fixed;
@@ -80,5 +79,10 @@
 .toggle-icon {
     font-size: 20px;
     margin-left: 10px;
+}
+
+.chart-container {
+    background-color: #ffffff; /* Set your desired background color here */
+    padding: 10px; /* Optional: Add padding for spacing */
 }
 
