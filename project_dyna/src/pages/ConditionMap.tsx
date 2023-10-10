@@ -139,27 +139,6 @@ const getConditionColor = ( properties: GeoJSON.GeoJsonProperties) : string => {
     return "grey"
 }
 
-const SlidingWindow = () => {
-    const [isWindowOpen, setIsWindowOpen] = useState(false);
-
-    const toggleWindow = () => {
-        setIsWindowOpen(!isWindowOpen);
-    };
-
-    return (
-        <div>
-            <button className="toggle-button" onClick={toggleWindow}>
-                Toggle Sliding Window
-            </button>
-            <div className={`data-window ${isWindowOpen ? 'open' : ''}`}>
-                <div className="data-window-content">
-                    <p>Data Window Content</p>
-                </div>
-            </div>
-        </div>
-    );
-};
-
 const ConditionMap = (props: any) => {
     const { children } = props;
 
@@ -333,10 +312,8 @@ const ConditionMap = (props: any) => {
         }
     };
 
-
     return (
         <div style={{ height: "100%" }}>
-            <SlidingWindow />
             <div className="condition-toggle-buttons-container">
                 <ConditionToggleButtons
                     conditionTypes={conditionTypes}

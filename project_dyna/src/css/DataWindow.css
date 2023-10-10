@@ -1,59 +1,12 @@
-.data-window {
-    resize: horizontal;
-    overflow: auto;
-    width: 0; /* Initially off-screen on the left */
-    height: calc(100% - var(--navbar-height)); /* Subtract navbar height from total height */
-    position: fixed;
-    top: var(--navbar-height); /* Position below the navbar */
-    left: 0; /* Set left to 0 initially */
-    background-color: var(--background-2);
-    transition: left 0.3s ease-in-out, width 0.3s ease-in-out; /* Update the transition property to use "left" and "width" */
-    z-index: 9; /* Set a lower z-index value than the navigation bar */
-}
-
-.data-window.open {
-     left: 0; /* Slide in from the left to 0 */
-     width: 50%; /* Set width to 50% when open */
- }
-
-.data-window.closed {
-    left: -300px; /* Off-screen on the left when closed */
-    width: 0; /* Set width to 0 when closed */
-}
-
-.data-window-content {
-    margin-top: 20px;
-    padding: 20px;
-    margin-left: 150px;
-    color: white;
-}
-
-.toggle-button {
-    position: absolute; /* Position the button at the top left */
-    top: calc(var(--navbar-height) + 20px) ; /* Position it below the navbar */
-    left: 10px;
-    z-index: 12; /* Set a lower z-index than the sliding window and navbar */
-    background-color: var(--background-2);
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    cursor: pointer;
-}
-
-.toggle-button:hover {
-    background-color: var(--background-2);
-}
-
-
 .condition-toggle-buttons-container {
     position: fixed;
-    top: var(--navbar-height); /* Position below the navbar */
-    padding-top: 50px;
+    top: var(--navbar-height);
     left: 0;
-    bottom: 0; /* Stretch to the bottom of the window */
-    background-color: var(--background-2); /* Set the background color */
-    z-index: 11; /* Set a z-index to appear above other content */
-    overflow-y: auto; /* Add vertical scroll if needed */
+    bottom: 0;
+    background-color: var(--background-2);
+    z-index: 11;
+    overflow-y: auto;
+    width: 120px;  /* Define a width for the buttons container */
 }
 
 .condition-toggle-button {
@@ -62,10 +15,43 @@
     justify-content: space-between;
     background-color: #eee;
     border: 1px solid #ccc;
-    padding: 8px 16px;
+    padding: 5px 5px;
     margin-bottom: 8px;
     cursor: pointer;
     width: 70%; /* Make buttons full width */
+}
+.condition-toggle-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 5px;
+    /* ... other styles */
+}
+
+.condition-toggle-button,
+.data-window-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #eee;
+    width: 100px; /* Adjust this to your preferred width */
+    margin-bottom: 8px; /* Add space between buttons */
+    /* ... other styles */
+}
+
+/* Individual styles for buttons could go here if needed */
+
+.condition-toggle-button.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.condition-toggle-button:hover,
+.data-window-button:hover {
+    background-color: var(--background-3);
 }
 
 /* Additional styles for active (selected) condition toggle buttons */
@@ -80,5 +66,17 @@
 .toggle-icon {
     font-size: 20px;
     margin-left: 10px;
+}
+
+.data-window {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 120px;  /* Set left to the width of the buttons container to have it adjacent */
+    width: 0;
+    height: 100%;
+    background-color: var(--background-2);
+    overflow-x: hidden;
+    transition: 0.5s;
+    z-index: 10;  /* Ensure it's below the toggle buttons */
 }
 
