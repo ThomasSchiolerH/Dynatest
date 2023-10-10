@@ -201,6 +201,7 @@ const SlidingWindow = () => {
                 <div className="data-window-content">
                     <p>Data Window Content</p>
                     <div className={"chart-container"}>
+                        <h4>Graph 1</h4>
                         <ResponsiveContainer width="100%" height={200}>
                             <LineChart
                                 width={500}
@@ -221,7 +222,7 @@ const SlidingWindow = () => {
                                 <Line type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" />
                             </LineChart>
                         </ResponsiveContainer>
-                        <p>Maybe some other content</p>
+                        <h4>Zoom graph below:</h4>
 
                         <ResponsiveContainer width="100%" height={200}>
                             <LineChart
@@ -244,6 +245,7 @@ const SlidingWindow = () => {
                                 <Brush />
                             </LineChart>
                         </ResponsiveContainer>
+                        <h4>Filled graph:</h4>
 
                         <ResponsiveContainer width="100%" height={200}>
                             <AreaChart
