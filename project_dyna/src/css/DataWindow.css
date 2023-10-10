@@ -85,4 +85,7 @@
     background-color: #ffffff; /* Set your desired background color here */
     padding: 10px; /* Optional: Add padding for spacing */
 }
+.chart-container p {
+    color: #000000; /* Define your desired text color here */
+}
 
