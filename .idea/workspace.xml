@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c7ceaf26-0a71-4457-bce7-ffa3d71ce935" name="Changes" comment="unversioned files">
+    <list default="true" id="c7ceaf26-0a71-4457-bce7-ffa3d71ce935" name="Changes" comment="mock graphs working">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_dyna/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_dyna/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project_dyna/src/css/DataWindow.css" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/css/DataWindow.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_dyna/src/pages/ConditionMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/pages/ConditionMap.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +66,7 @@
       <workItem from="1696254829270" duration="5203000" />
       <workItem from="1696320405560" duration="1238000" />
       <workItem from="1696525831907" duration="764000" />
-      <workItem from="1696583647823" duration="9679000" />
+      <workItem from="1696583647823" duration="10360000" />
     </task>
     <task id="LOCAL-00001" summary="Sliding window created">
       <option name="closed" value="true" />
@@ -119,7 +116,15 @@
       <option name="project" value="LOCAL" />
       <updated>1696923967744</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="mock graphs working">
+      <option name="closed" value="true" />
+      <created>1696927336094</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1696927336094</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -155,6 +160,7 @@
     <MESSAGE value="toggle buttons connected. Clean up a bit on bottom bar" />
     <MESSAGE value="map container fixed" />
     <MESSAGE value="unversioned files" />
-    <option name="LAST_COMMIT_MESSAGE" value="unversioned files" />
+    <MESSAGE value="mock graphs working" />
+    <option name="LAST_COMMIT_MESSAGE" value="mock graphs working" />
   </component>
 </project>
