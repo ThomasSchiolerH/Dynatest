@@ -3,8 +3,8 @@ import  ReactSlider  from "react-slider"
 import { MapContainer, TileLayer, ScaleControl, GeoJSON } from 'react-leaflet'
 import { Layer, PathOptions } from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import React, { PureComponent } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer } from 'recharts'
 
 import Zoom from '../map/zoom'
 import { MAP_OPTIONS } from '../map/mapConstants'
@@ -141,13 +141,48 @@ const getConditionColor = ( properties: GeoJSON.GeoJsonProperties) : string => {
 }
 
 const data = [
-    { name: 'Page A', uv: 4000 },
-    { name: 'Page B', uv: 3000 },
-    { name: 'Page C', uv: 2000 },
-    { name: 'Page D' },
-    { name: 'Page E', uv: 1890 },
-    { name: 'Page F', uv: 2390 },
-    { name: 'Page G', uv: 3490 },
+    {
+        name: 'Page A',
+        uv: 4000,
+        pv: 2400,
+        amt: 2400,
+    },
+    {
+        name: 'Page B',
+        uv: 3000,
+        pv: 1398,
+        amt: 2210,
+    },
+    {
+        name: 'Page C',
+        uv: 2000,
+        pv: 9800,
+        amt: 2290,
+    },
+    {
+        name: 'Page D',
+        uv: 2780,
+        pv: 3908,
+        amt: 2000,
+    },
+    {
+        name: 'Page E',
+        uv: 1890,
+        pv: 4800,
+        amt: 2181,
+    },
+    {
+        name: 'Page F',
+        uv: 2390,
+        pv: 3800,
+        amt: 2500,
+    },
+    {
+        name: 'Page G',
+        uv: 3490,
+        pv: 4300,
+        amt: 2100,
+    },
 ];
 
 const SlidingWindow = () => {
@@ -166,11 +201,12 @@ const SlidingWindow = () => {
                 <div className="data-window-content">
                     <p>Data Window Content</p>
                     <div className={"chart-container"}>
-                        <ResponsiveContainer width="100%" height={200} >
+                        <ResponsiveContainer width="100%" height={200}>
                             <LineChart
                                 width={500}
                                 height={200}
                                 data={data}
+                                syncId="anyId"
                                 margin={{
                                     top: 10,
                                     right: 30,
@@ -185,12 +221,14 @@ const SlidingWindow = () => {
                                 <Line type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" />
                             </LineChart>
                         </ResponsiveContainer>
+                        <p>Maybe some other content</p>
 
                         <ResponsiveContainer width="100%" height={200}>
                             <LineChart
                                 width={500}
                                 height={200}
                                 data={data}
+                                syncId="anyId"
                                 margin={{
                                     top: 10,
                                     right: 30,
@@ -202,8 +240,30 @@ const SlidingWindow = () => {
                                 <XAxis dataKey="name" />
                                 <YAxis />
                                 <Tooltip />
-                                <Line connectNulls type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" />
+                                <Line type="monotone" dataKey="pv" stroke="#82ca9d" fill="#82ca9d" />
+                                <Brush />
                             </LineChart>
+                        </ResponsiveContainer>
+
+                        <ResponsiveContainer width="100%" height={200}>
+                            <AreaChart
+                                width={500}
+                                height={200}
+                                data={data}
+                                syncId="anyId"
+                                margin={{
+                                    top: 10,
+                                    right: 30,
+                                    left: 0,
+                                    bottom: 0,
+                                }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Area type="monotone" dataKey="pv" stroke="#82ca9d" fill="#82ca9d" />
+                            </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
