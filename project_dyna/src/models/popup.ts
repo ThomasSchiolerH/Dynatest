@@ -10,5 +10,4 @@ export interface PopupOptions {
     palette: Palette;
 }
 
-
-export type PopupFunc = (options: SweetAlertOptions<any, any>) => Promise<SweetAlertResult<any>>
+export type PopupFunc = (options: SweetAlertOptions) => Promise<SweetAlertResult<any>>;
