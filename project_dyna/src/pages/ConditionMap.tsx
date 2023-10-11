@@ -3,8 +3,6 @@ import  ReactSlider  from "react-slider"
 import { MapContainer, TileLayer, ScaleControl, GeoJSON } from 'react-leaflet'
 import { Layer, PathOptions } from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
-import React, { PureComponent } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer } from 'recharts'
 
 import Zoom from '../map/zoom'
 import { MAP_OPTIONS } from '../map/mapConstants'
@@ -139,137 +137,6 @@ const getConditionColor = ( properties: GeoJSON.GeoJsonProperties) : string => {
     }
     return "grey"
 }
-
-const data = [
-    {
-        name: 'Page A',
-        KPI: 4000,
-        DI: 2400,
-        IRI: 2400,
-    },
-    {
-        name: 'Page B',
-        KPI: 3000,
-        DI: 1398,
-        IRI: 2210,
-    },
-    {
-        name: 'Page C',
-        KPI: 2000,
-        DI: 9800,
-        IRI: 2290,
-    },
-    {
-        name: 'Page D',
-        KPI: 2780,
-        DI: 3908,
-        IRI: 2000,
-    },
-    {
-        name: 'Page E',
-        KPI: 1890,
-        DI: 4800,
-        IRI: 2181,
-    },
-    {
-        name: 'Page F',
-        KPI: 2390,
-        DI: 3800,
-        IRI: 2500,
-    },
-    {
-        name: 'Page G',
-        KPI: 3490,
-        DI: 4300,
-        IRI: 2100,
-    },
-];
-
-const SlidingWindow = () => {
-    const [isWindowOpen, setIsWindowOpen] = useState(false);
-
-    const toggleWindow = () => {
-        setIsWindowOpen(!isWindowOpen);
-    };
-
-    return (
-        <div>
-            <div className={`data-window ${isWindowOpen ? 'open' : ''}`}>
-                <div className="data-window-content">
-                    <p>Data Window Content</p>
-                    <div className={"chart-container"}>
-                        <h4>Graph 1 with data type 1:</h4>
-                        <ResponsiveContainer width="100%" height={200}>
-                            <LineChart
-                                width={500}
-                                height={200}
-                                data={data}
-                                syncId="anyId"
-                                margin={{
-                                    top: 10,
-                                    right: 30,
-                                    left: 0,
-                                    bottom: 0,
-                                }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Line type="monotone" dataKey="KPI" stroke="#8884d8" fill="#8884d8" />
-                            </LineChart>
-                        </ResponsiveContainer>
-                        <h4>Zoom graph with data type 2:</h4>
-
-                        <ResponsiveContainer width="100%" height={200}>
-                            <LineChart
-                                width={500}
-                                height={200}
-                                data={data}
-                                syncId="anyId"
-                                margin={{
-                                    top: 10,
-                                    right: 30,
-                                    left: 0,
-                                    bottom: 0,
-                                }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Line type="monotone" dataKey="DI" stroke="#82ca9d" fill="#82ca9d" />
-                                <Brush />
-                            </LineChart>
-                        </ResponsiveContainer>
-                        <h4>Graph with data type 3:</h4>
-
-                        <ResponsiveContainer width="100%" height={200}>
-                            <AreaChart
-                                width={500}
-                                height={200}
-                                data={data}
-                                syncId="anyId"
-                                margin={{
-                                    top: 10,
-                                    right: 30,
-                                    left: 0,
-                                    bottom: 0,
-                                }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Area type="monotone" dataKey="IRI" stroke="#82ca9d" fill="#82ca9d" />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
 
 const ConditionMap = (props: any) => {
     const { children } = props;
@@ -447,7 +314,6 @@ const ConditionMap = (props: any) => {
 
     return (
         <div style={{ height: "100%" }}>
-            <SlidingWindow />
             <div className="condition-toggle-buttons-container">
                 <ConditionToggleButtons
                     conditionTypes={conditionTypes}
