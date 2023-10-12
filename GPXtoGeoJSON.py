@@ -49,16 +49,16 @@ GPX.close() #dont forget to close
 for i in range(len(places)) : #makes a list of the distances
     if i < len(places)-1 :
         places = places
-        distance.append(haversine(places[i][0],places[i][1],places[i+1][0],places[i+1][1]))
+        distance.append(round(haversine(places[i][0],places[i][1],places[i+1][0],places[i+1][1])))
 
 
 for i in range(len(distance)) : #makes a list of koordinates. 
     segNr = round(distance[i]/segLength)
     dLat = (places[i+1][0] - places[i][0])/segNr
     dLon = (places[i+1][1] - places[i][1])/segNr
-    for i in range(segNr):
-        imagePos.append([places[i][0]+i*dLat, places[i][1]+i*dLon])
-imagePos.append([places[-1][0],places[-1][1]])
+    for j in range(segNr):
+        imagePos.append([places[i][1]+j*dLon, places[i][0]+j*dLat])
+imagePos.append([places[-1][1],places[-1][0]])
 
 
 #make GeoJson
