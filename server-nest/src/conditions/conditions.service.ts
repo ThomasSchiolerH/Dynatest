@@ -5,6 +5,9 @@ import { Coverage_Values } from '../entity/Coverage_Values';
 import { Coverage } from '../entity/Coverage';
 import { Ways } from '../entity/Ways';
 import { Trips } from '../entity/Trips';
+import {Condition_Pictures} from "../entity/Condition_Pictures";
+
+
 
 @Injectable()
 export class ConditionsService {
@@ -204,5 +207,24 @@ export class ConditionsService {
       console.log(e);
       return { success: false };
     }
+  }
+
+  async getPicturesFromLatLon(lat: number, lon: number){
+    try{
+      const conditions = this.dataSource
+          .getRepository(Condition_Pictures)
+          .createQueryBuilder('condition_pictures')
+          .select('DISTINCT ON(c.id) c.id, c.lat_mapped, c.lon_mapped, c.name')
+          .from('condition_pictures','c')
+          .where('ST_DISTANCE(ST_Point(c.lon_mapped, c.lat_mapped),geo2, 3)')
+          .orderBy('c.id, ST_Distance(ST_Point(c.lon_mapped, c.lat_mapped),ST_Point(lat,lon), 3)')
+
+      return{
+        //needs to return pictures.
+      }
+    } catch (e){
+
+    }
+
   }
 }
