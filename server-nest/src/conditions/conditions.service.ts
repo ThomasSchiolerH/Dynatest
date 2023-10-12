@@ -111,73 +111,47 @@ export class ConditionsService {
     };
   }
 
-  async getTripId(coverage_value_id: string): Promise<string> {
-    try {
-      const conditions = this.dataSource
+  async getClicked(coverage_value_id: string): Promise<string> {
+    const conditions = this.dataSource
         .getRepository(Coverage_Values)
         .createQueryBuilder('coverage_value')
-        .select('fk_trip_id')
-        .innerJoin(
-          Coverage,
-          'coverage',
-          'coverage_value.fk_coverage_id = coverage.id',
-        )
+        .select([
+          'way_name',
+          'trip."id" as trip_id',
+          'coverage."id" as coverage_id',
+          'lenght AS length',
+          'ST_AsGeoJSON(coverage.section_geom, 5, 0) AS section_geom',
+          'way."IsHighway" AS is_highway',
+        ])
+        .innerJoin(Coverage,'coverage','coverage_value.fk_coverage_id = coverage.id')
         .innerJoin(Ways, 'way', 'coverage.fk_way_id = way.id')
         .innerJoin(Trips, 'trip', 'coverage.fk_trip_id = trip.id')
-        .where('coverage_value.id = :cov_value_id', {
-          cov_value_id: coverage_value_id,
-        });
-      const res: any = await conditions.getRawOne();
-      return res.fk_trip_id;
-    } catch (e) {
-      return 'null';
-    }
-  }
-
-  async getWayName(coverage_value_id: string): Promise<string> {
-    try {
-      const conditions = this.dataSource
-        .getRepository(Coverage_Values)
-        .createQueryBuilder('coverage_value')
-        .select('way_name')
-        .innerJoin(
-          Coverage,
-          'coverage',
-          'coverage_value.fk_coverage_id = coverage.id',
-        )
-        .innerJoin(Ways, 'way', 'coverage.fk_way_id = way.id')
-        .where('coverage_value.id = :cov_value_id', {
-          cov_value_id: coverage_value_id,
-        });
-      const res: any = await conditions.getRawOne();
-      return res.way_name;
-    } catch (e) {
-      return 'null';
-    }
+        .where('coverage_value.ignore IS NULL')
+        .andWhere('coverage_value.id = :coverage_value_id', { coverage_value_id })
+    const raw : any = await conditions.getRawOne();
+    return raw;
   }
 
   async getNearConditionsFromCoverageValueId(coverage_value_id: string) {
-    const way_name: string = await this.getWayName(coverage_value_id);
-    const trip_id = await this.getTripId(coverage_value_id);
     let raw: any[];
     const grouped: any[] = [];
-    const res: any[] = [];
-    const n: number = 5;
-    let first: boolean = true;
+    const n: number = 3;
+    let coverage: any = {};
+    let types : any = new Set();
 
     try {
+      const clicked: any = await this.getClicked(coverage_value_id);
+      const way_name = clicked.way_name;
+      const trip_id = clicked.trip_id;
+      console.log(clicked);
+
       const conditions = this.dataSource
         .getRepository(Coverage_Values)
         .createQueryBuilder('coverage_value')
         .select([
-          'coverage_value."id" as coverage_value_id',
           'coverage."id" as coverage_id',
           'type',
           'value',
-          'lenght AS length',
-          'ST_AsGeoJSON(coverage.section_geom, 5, 0) AS section_geom',
-          'way."IsHighway" AS is_highway',
-          'compute_time',
         ])
         .innerJoin(
           Coverage,
@@ -192,50 +166,50 @@ export class ConditionsService {
         .addOrderBy('coverage.compute_time', 'ASC', 'NULLS FIRST');
 
       raw = await conditions.getRawMany();
-      const index_coverage_value_id: number = raw.findIndex(
-        (r): boolean => r.coverage_value_id == coverage_value_id,
-      );
-      const coverage_id: string = raw[index_coverage_value_id].coverage_id;
 
+      var fs = require('fs');
+      fs.writeFile ("output.json", JSON.stringify(raw), function(err) {
+            if (err) throw err;
+            console.log('complete');
+          }
+      );
+
+      // grouping by coverage_id
       raw.forEach((r) => {
-        if (!first && r.coverage_id == grouped.at(-1).coverage_id) {
-          grouped.at(-1).coverage.push({ type: r.type, value: r.value });
+        types.add(r.type);
+
+        if (grouped.length > 0 && r.coverage_id == grouped.at(-1).coverage_id) {
+          grouped.at(-1).coverage[r.type] = r.value;
         } else {
-          first = false;
           grouped.push({
-            coverage_value_id: r.coverage_value_id,
             coverage_id: r.coverage_id,
-            length: r.length,
-            section_geom: r.section_geom,
-            is_highway: r.is_highway,
-            coverage: [{ type: r.type, value: r.value }],
+            coverage: {[r.type]: r.value}
           });
         }
       });
 
-      const index_coverage_id: number = grouped.findIndex(
-        (r): boolean => r.coverage_id == coverage_id,
-      );
+      let coverage_id_index: number = grouped.findIndex((r) : boolean => r.coverage_id == clicked.coverage_id);
 
-      for (
-        let i: number = Math.max(0, index_coverage_id - n);
-        i < Math.min(index_coverage_id + n + 1, raw.length);
-        i++
-      ) {
-        res.push({
-          length: grouped[i].length,
-          is_highway: grouped[i].is_highway,
-          section_geom: grouped[i].section_geom,
-          coverage: grouped[i].coverage,
-        });
+      types.forEach((type:string) => coverage[type] = []);
+      for(let i : number = coverage_id_index - n; i < coverage_id_index + n + 1; i++){
+        if(i < 0 || i > grouped.length){
+          types.forEach((type: string) => coverage[type].push(null));
+        }else{
+          types.forEach((type: string): void => {
+            coverage[type].push(grouped[i].coverage[type])
+          });
+        }
       }
+
       return {
         success: true,
-        way_name: way_name,
-        current_way: index_coverage_id,
-        coverage: res,
+        way_name: clicked.way_name,
+        is_highway: clicked.is_highway,
+        section_geom: clicked.section_geom,
+        coverage: coverage,
       };
     } catch (e) {
+      console.log(e);
       return { success: false };
     }
   }
