@@ -143,7 +143,6 @@ export class ConditionsService {
       const clicked: any = await this.getClicked(coverage_value_id);
       const way_name = clicked.way_name;
       const trip_id = clicked.trip_id;
-      console.log(clicked);
 
       const conditions = this.dataSource
         .getRepository(Coverage_Values)
@@ -166,13 +165,6 @@ export class ConditionsService {
         .addOrderBy('coverage.compute_time', 'ASC', 'NULLS FIRST');
 
       raw = await conditions.getRawMany();
-
-      var fs = require('fs');
-      fs.writeFile ("output.json", JSON.stringify(raw), function(err) {
-            if (err) throw err;
-            console.log('complete');
-          }
-      );
 
       // grouping by coverage_id
       raw.forEach((r) => {
