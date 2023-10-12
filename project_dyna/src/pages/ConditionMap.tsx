@@ -6,7 +6,7 @@ import { Feature, FeatureCollection } from 'geojson'
 
 import Zoom from '../map/zoom'
 import { MAP_OPTIONS } from '../map/mapConstants'
-import { getConditions } from '../queries/fetchConditions'
+import { get } from '../queries/fetch'
 
 import ConditionToggleButtons from './ConditionToggleButtons';
 
@@ -166,7 +166,7 @@ const ConditionMap = (props: any) => {
 
 
     useEffect( () => {
-        getConditions( (data) => {
+        get('/conditions', (data: FeatureCollection) => {
             const range: DateRange = {}
             data.features.forEach((f) => {
                 if (f.properties !== null && f.properties.valid_time !== undefined) {
@@ -190,7 +190,7 @@ const ConditionMap = (props: any) => {
             })
             setRangeAll(range)
             setDataAll(data)
-        } )
+        })
     }, [] )
 
     useEffect ( () => {
