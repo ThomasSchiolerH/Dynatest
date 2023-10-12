@@ -91,8 +91,11 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
             </div>
             {isDataWindowVisible && (
                 <div className="data-window" style={{width: '50%'}}>
-                    <div className="data-window-content">
-                        <p>Data Window Content</p>
+                    <div className="data-window-content"
+                         style={{ paddingTop: '0px',
+                        paddingBottom: '70px',
+                        paddingLeft: '0px',
+                        paddingRight: '30px' }}>
                         <div className={"chart-container"}>
                             <h4>Graph 1 with data type 1:</h4>
                             <ResponsiveContainer width="100%" height={200}>
