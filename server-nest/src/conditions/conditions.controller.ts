@@ -47,6 +47,10 @@ export class ConditionsController {
     );
   }
 
+  @Get('road-pictures-path')
+    getRoadPicturesPath() {
+      return this.conditionsService.getRoadPicturesPath();
+  }
 
 /*  //attempt at getting the querey into this file
   @Get('conditionis/picture/:lat/:lon')

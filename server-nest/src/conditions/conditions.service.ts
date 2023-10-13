@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { Coverage_Values } from '../entity/Coverage_Values';
-import { Coverage } from '../entity/Coverage';
-import { Ways } from '../entity/Ways';
-import { Trips } from '../entity/Trips';
+import {HttpException, Injectable} from '@nestjs/common';
+import {InjectDataSource} from '@nestjs/typeorm';
+import {DataSource, MultiLineString} from 'typeorm';
+import {Coverage_Values} from '../entity/Coverage_Values';
+import {Coverage} from '../entity/Coverage';
+import {Ways} from '../entity/Ways';
+import {Trips} from '../entity/Trips';
 import {Condition_Pictures} from "../entity/Condition_Pictures";
-
+import {Picture_ways} from "../entity/Picture_ways";
 
 
 @Injectable()
@@ -209,6 +209,22 @@ export class ConditionsService {
     }
   }
 
+  async getRoadPicturesPath() {
+    try {
+      const path: Promise<{section_geom: MultiLineString}> = this.dataSource
+          .getRepository(Picture_ways)
+          .createQueryBuilder('picture_ways')
+          .select('ST_AsGeoJSON(picture_way.section_geom) AS section_geom')
+          .from('picture_ways', 'picture_way')
+          .where("picture_way.name = 'Motorvej syd 70kph'")
+          .getRawOne();
+      return await path.then(res => res.section_geom);
+    } catch (e) {
+      console.log(e);
+      throw new HttpException("Internal server error", 500);
+    }
+  }
+
   async getPicturesFromLatLon(lat: number, lon: number){
     try{
       const conditions = this.dataSource
@@ -223,7 +239,8 @@ export class ConditionsService {
         //needs to return pictures.
       }
     } catch (e){
-
+      console.log(e);
+      throw new HttpException("Internal server error", 500);
     }
 
   }
