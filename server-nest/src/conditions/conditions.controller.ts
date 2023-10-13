@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {Controller, Get, Header, Param, Query} from '@nestjs/common';
 import { ConditionsService } from './conditions.service';
 
 @Controller('conditions')
@@ -52,10 +52,9 @@ export class ConditionsController {
       return this.conditionsService.getRoadPicturesPath();
   }
 
-/*  //attempt at getting the querey into this file
-  @Get('conditionis/picture/:lat/:lon')
-  getPicturesFromLatLon(@Param() params: any) {
+  @Get('picture/:lat/:lon')
+  //@Header('Content-type', 'image/jpg')
+  getPicturesFromLatLon(@Param() lan: number, lon: number) {
       return this.conditionsService.getPicturesFromLatLon(lan, lon);
   }
-*/
 }

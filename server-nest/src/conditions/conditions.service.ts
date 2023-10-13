@@ -225,15 +225,22 @@ export class ConditionsService {
     }
   }
 
+  // TODO Fix invalid geometry in query and return an image from local folder
   async getPicturesFromLatLon(lat: number, lon: number){
     try{
-      const conditions = this.dataSource
+      const pictureName = this.dataSource
           .getRepository(Condition_Pictures)
           .createQueryBuilder('condition_pictures')
-          .select('DISTINCT ON(c.id) c.id, c.lat_mapped, c.lon_mapped, c.name')
-          .from('condition_pictures','c')
-          .where('ST_DISTANCE(ST_Point(c.lon_mapped, c.lat_mapped),geo2, 3)')
-          .orderBy('c.id, ST_Distance(ST_Point(c.lon_mapped, c.lat_mapped),ST_Point(lat,lon), 3)')
+          .select("ST_DISTANCE(" +
+              "ST_Transform('ST_POINT(condition_picture.lat_mapped condition_picture.lon_mapped)'::geometry, 3857)," +
+              "ST_Transform('ST_Point(lat lon)'::geometry, 3857)) AS distance")
+          .from('condition_pictures','condition_picture')
+          .where('distance < 3')
+          .andWhere('lat = :lat', {lat})
+          .andWhere('lon = :lon', {lon})
+          .orderBy('distance')
+          .getRawOne();
+      console.log(await pictureName)
 
       return{
         //needs to return pictures.
