@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import  ReactSlider  from "react-slider"
 import { MapContainer, TileLayer, ScaleControl, GeoJSON } from 'react-leaflet'
-import { Layer, PathOptions } from "leaflet"
+import {Layer, LeafletMouseEvent, PathOptions} from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
 
 import Zoom from '../map/zoom'
@@ -311,6 +311,21 @@ const ConditionMap = (props: any) => {
         }
     }
 
+    const handlePictureRoadClick = (e: LeafletMouseEvent) => {
+        get(`/conditions/picture/${e.latlng.lat}/${e.latlng.lng}`, (img: File) => {
+            setImg(img);
+        })
+        setIsImagePageHidden(false);
+    }
+
+    const onPictureRoadClick = (feature: Feature,  layer: Layer) => {
+        if (layer !== undefined) {
+            layer.on({
+                click: event => handlePictureRoadClick(event)
+            }
+        );}
+    }
+
     const handleConditionToggle = (condition: string, isSelected: boolean) => {
         // Update the mode state based on the selected condition
         if (isSelected) {
@@ -328,6 +343,10 @@ const ConditionMap = (props: any) => {
                     conditionTypes={conditionTypes}
                     onConditionToggle={handleConditionToggle}
                 />
+            </div>
+            <div className="image-container" hidden={isImagePageHidden}>
+                {/*TODO fix it
+                <img src={img} />*/}
             </div>
             <div>
                 <MapContainer
