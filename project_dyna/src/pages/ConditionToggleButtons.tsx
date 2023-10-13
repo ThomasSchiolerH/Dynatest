@@ -1,16 +1,15 @@
 import {MapContainer, ScaleControl, TileLayer} from "react-leaflet";
 import Zoom from "../map/zoom";
-import React, {useState, useImperativeHandle, forwardRef, useRef} from 'react';
+import React, { useState,PureComponent } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer } from 'recharts'
 
 
 interface ConditionToggleButtonsProps {
     conditionTypes: string[]; // Define the type of conditionTypes prop
     onConditionToggle: (condition: string, isSelected: boolean) => void;
-    ref: React.MutableRefObject<any>
 }
 
-const ConditionToggleButtons = forwardRef<any, ConditionToggleButtonsProps>(({ conditionTypes, onConditionToggle }, ref ) => {
+const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditionTypes, onConditionToggle }) => {
     const [selectedConditions, setSelectedConditions] = useState<{ [key: string]: boolean }>({});
     const [isDataWindowVisible, setIsDataWindowVisible] = useState<boolean>(false);
 
@@ -23,17 +22,6 @@ const ConditionToggleButtons = forwardRef<any, ConditionToggleButtonsProps>(({ c
     const toggleDataWindow = () => {
         setIsDataWindowVisible((prev) => !prev);
     };
-
-    const inputRef = useRef<any>(null);
-
-    useImperativeHandle(ref, () => {
-        const handleConditionClick = (conditionsData: JSON) => {
-            inputRef.current?.handleConditionClick();
-            // TODO add data
-            setIsDataWindowVisible(true);
-        }
-    })
-
 
     const data = [
         {
@@ -181,5 +169,5 @@ const ConditionToggleButtons = forwardRef<any, ConditionToggleButtonsProps>(({ c
             )}
         </div>
     );
-});
+};
 export default ConditionToggleButtons;

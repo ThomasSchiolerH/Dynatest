@@ -144,7 +144,6 @@ const ConditionMap = (props: any) => {
     const { center, zoom, minZoom, maxZoom, scaleWidth } = MAP_OPTIONS;
 
     const geoJsonRef = useRef<any>();
-    const conditionToggleButtonsRef = useRef<any>();
 
     const [dataAll, setDataAll] = useState<FeatureCollection>();
     const [rangeAll, setRangeAll] = useState<DateRange>({});
@@ -284,11 +283,31 @@ const ConditionMap = (props: any) => {
     }, [dataAll, mode, rangeAll, rangeSelected])
 
     const onEachFeature = (feature: Feature,  layer: Layer) => {
-        // TODO make .current work
-        if (feature !== undefined && feature.properties !== null) {
-            get('/conditions/near_coverage_value/${feature.properties.id}', (data: JSON) => {
-                conditionToggleButtonsRef.current?.handleConditionClick(data);
+        if (layer.on !== undefined) {
+            layer.on({
+                // mouseover: ... ,
+                // mouseout: ... ,
+                click: (e) => {
+                    console.log(e.target)
+                    console.log(feature)
+                }
             })
+        }
+        if (feature !== undefined && feature.properties !== null &&
+            feature.properties.type !== undefined &&
+            feature.properties.value !== undefined &&
+            feature.properties.value !== null) {
+            layer.bindPopup(
+                "Condition type: " + feature.properties.type + "<br>" +
+                "Value: " + feature.properties.value.toPrecision(3) + "<br>" +
+                ( feature.properties.std !== undefined && feature.properties.std !== null ?
+                    "&sigma;: " + feature.properties.std.toPrecision(3) + "<br>" : "" ) +
+                "Valid for " + feature.properties.valid_time + "<br>" +
+                "Computed on " + feature.properties.compute_time + "<br>" +
+                ((feature.properties.motorway !== undefined && feature.properties.motorway) ?
+                    "Motorway: yes <br>" : "" ) +
+                "Trip (task id): " + feature.properties.task_id + "<br>" +
+                "Condition id: " + feature.properties.id)
         }
     }
 
@@ -316,13 +335,13 @@ const ConditionMap = (props: any) => {
         }
     };
 
+
     return (
         <div style={{ height: "100%" }}>
             <div className="condition-toggle-buttons-container">
                 <ConditionToggleButtons
                     conditionTypes={conditionTypes}
                     onConditionToggle={handleConditionToggle}
-                    ref={conditionToggleButtonsRef}
                 />
             </div>
             <div className="image-container" hidden={isImagePageHidden}>
