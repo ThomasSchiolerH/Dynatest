@@ -149,6 +149,9 @@ const ConditionMap = (props: any) => {
     const [rangeAll, setRangeAll] = useState<DateRange>({});
     const [rangeSelected, setRangeSelected] = useState<DateRange>({});
     const [mode, setMode] = useState<string>("ALL");
+    const [pictureRoadPath, setPictureRoadPath] = useState<GeoJSON.MultiLineString>()
+    const [isImagePageHidden, setIsImagePageHidden] = useState<boolean>(true);
+    const [img, setImg] = useState<Blob>();
 
     const inputChange = ({ target }: any) => {
         setMode(target.value);
@@ -192,6 +195,12 @@ const ConditionMap = (props: any) => {
             setDataAll(data)
         })
     }, [] )
+
+    useEffect(() => {
+        get('/conditions/road-pictures-path', (sectionGeom: GeoJSON.MultiLineString) => {
+            setPictureRoadPath(sectionGeom);
+        })
+    }, []);
 
     useEffect ( () => {
 
@@ -336,6 +345,9 @@ const ConditionMap = (props: any) => {
                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
+
+                    { pictureRoadPath !== undefined &&
+                        <GeoJSON ref={geoJsonRef} data={pictureRoadPath} onEachFeature={onPictureRoadClick} />}
 
                     { dataAll !== undefined &&
                         <GeoJSON ref={geoJsonRef} data={dataAll} onEachFeature={onEachFeature} /> }
