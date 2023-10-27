@@ -26,7 +26,6 @@ const NavigationBar: FC = () => {
             <div className="nav-container">
                 <div className="nav-block">
                     <NavBtn  to='/home' name='Home' />
-                    <NavBtn  to='/about' name='About' />
                     <NavBtn  to='/conditionmap' name='Condition Map' />
                 </div>
             </div>
