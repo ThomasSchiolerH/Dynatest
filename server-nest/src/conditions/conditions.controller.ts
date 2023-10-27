@@ -47,11 +47,19 @@ export class ConditionsController {
     );
   }
 
+    @Get('road_data/:id') // from the condition id clicked
+    getRoadConditions(@Param() params: any) {
+        return this.conditionsService.getRoadConditions(
+            params.id,
+        );
+    }
 
-/*  //attempt at getting the querey into this file
-  @Get('conditionis/picture/:lat/:lon')
-  getPicturesFromLatLon(@Param() params: any) {
-      return this.conditionsService.getPicturesFromLatLon(lan, lon);
-  }
-*/
+
+
+    /*  //attempt at getting the querey into this file
+      @Get('conditionis/picture/:lat/:lon')
+      getPicturesFromLatLon(@Param() params: any) {
+          return this.conditionsService.getPicturesFromLatLon(lan, lon);
+      }
+    */
 }
