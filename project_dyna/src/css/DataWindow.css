@@ -47,6 +47,7 @@
     color: #fff;
 }
 
+.data-window-button:hover,
 .condition-toggle-button:hover {
     background-color: var(--background-3);
 }
