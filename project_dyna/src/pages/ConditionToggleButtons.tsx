@@ -6,19 +6,29 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, A
 
 interface ConditionToggleButtonsProps {
     conditionTypes: string[]; // Define the type of conditionTypes prop
-    onConditionToggle: (condition: string, isSelected: boolean) => void;
+    onConditionToggle: (condition: string | null, isSelected: boolean) => void;
 }
 
 const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditionTypes, onConditionToggle }) => {
-    const [selectedConditions, setSelectedConditions] = useState<{ [key: string]: boolean }>({});
+    const [selectedCondition, setSelectedCondition] = useState<string | null>(null);
     const [isDataWindowVisible, setIsDataWindowVisible] = useState<boolean>(false);
 
     const toggleCondition = (condition: string) => {
-        const updatedConditions = {...selectedConditions};
-        updatedConditions[condition] = !updatedConditions[condition];
-        setSelectedConditions(updatedConditions);
-        onConditionToggle(condition, updatedConditions[condition]);
+        let updatedCondition = selectedCondition;
+
+        if (selectedCondition === condition) {
+            // If the currently selected condition is toggled off
+            updatedCondition = null;
+        } else if (!selectedCondition || conditionTypes.indexOf(condition) < conditionTypes.indexOf(selectedCondition)) {
+            // If no condition is selected yet, or if a higher-priority condition is toggled on
+            updatedCondition = condition;
+        }
+
+        setSelectedCondition(updatedCondition);
+        onConditionToggle(updatedCondition, updatedCondition !== null);
     };
+
+
     const toggleDataWindow = () => {
         setIsDataWindowVisible((prev) => !prev);
     };
@@ -81,13 +91,14 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                 {conditionTypes.map((condition) => (
                     <div
                         key={condition}
-                        className={`condition-toggle-button ${selectedConditions[condition] ? 'active' : ''}`}
+                        className={`condition-toggle-button ${selectedCondition === condition ? 'active' : ''}`}
                         onClick={() => toggleCondition(condition)}
                     >
                         {condition}
-                        <span className="toggle-icon">{selectedConditions[condition] ? '✓' : '✖'}</span>
+                        <span className="toggle-icon">{selectedCondition === condition ? '✓' : '✖'}</span>
                     </div>
                 ))}
+
             </div>
             {isDataWindowVisible && (
                 <div className="data-window" style={{width: '50%'}}>

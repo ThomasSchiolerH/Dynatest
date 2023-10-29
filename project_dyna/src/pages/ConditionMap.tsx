@@ -326,14 +326,18 @@ const ConditionMap = (props: any) => {
         );}
     }
 
-    const handleConditionToggle = (condition: string, isSelected: boolean) => {
-        // Update the mode state based on the selected condition
+    const handleConditionToggle = (condition: string | null, isSelected: boolean) => {
+        if (condition === null) {
+            // Handle the null case appropriately.
+            return;
+        }
         if (isSelected) {
             setMode(condition); // Select the condition "X"
         } else {
             setMode(ALL); // Deselected - return to ALL
         }
     };
+
 
 
     return (
