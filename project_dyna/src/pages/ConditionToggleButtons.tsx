@@ -126,7 +126,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                     <XAxis dataKey="name" stroke={"white"}/>
                                     <YAxis stroke={"white"}/>
                                     <Tooltip />
-                                    <Line type="monotone" dataKey="KPI" stroke="#8884d8" fill="#8884d8" />
+                                    <Line type="linear" dataKey="KPI" stroke="#8884d8" fill="#8884d8" />
                                 </LineChart>
                             </ResponsiveContainer>
                             <h4>Zoom graph with data type 2:</h4>
@@ -148,7 +148,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                     <XAxis dataKey="name" stroke={"white"}/>
                                     <YAxis stroke={"white"}/>
                                     <Tooltip />
-                                    <Line type="monotone" dataKey="DI" stroke="#82ca9d" fill="#82ca9d" />
+                                    <Line type="linear" dataKey="DI" stroke="#82ca9d" fill="#82ca9d" />
                                     <Brush />
                                 </LineChart>
                             </ResponsiveContainer>
@@ -171,7 +171,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                     <XAxis dataKey="name" stroke={"white"}/>
                                     <YAxis stroke={"white"}/>
                                     <Tooltip />
-                                    <Area type="monotone" dataKey="IRI" stroke="#82ca9d" fill="#82ca9d" />
+                                    <Area type="linear" dataKey="IRI" stroke="#82ca9d" fill="#82ca9d" />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>
