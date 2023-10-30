@@ -1,7 +1,7 @@
 import {MapContainer, ScaleControl, TileLayer} from "react-leaflet";
 import Zoom from "../map/zoom";
 import React, { useState,PureComponent } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer, ReferenceLine } from 'recharts'
 
 
 interface ConditionToggleButtonsProps {
@@ -109,7 +109,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                         paddingRight: '30px' }}>
                         <div className={"chart-container"}>
                             <h4>Graph 1 with data type 1:</h4>
-                            <ResponsiveContainer width="100%" height={200}>
+                            <ResponsiveContainer width="100%" height={230}>
                                 <LineChart
                                     width={500}
                                     height={200}
@@ -119,42 +119,44 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                         top: 10,
                                         right: 30,
                                         left: 0,
-                                        bottom: 0,
+                                        bottom: 30,
                                     }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" stroke={"white"}/>
-                                    <YAxis stroke={"white"}/>
+                                    <XAxis dataKey="name" stroke={"white"} label={{ value: 'Distance', angle: 0, position: 'bottom' }}/>
+                                    <YAxis stroke={"white"} label={{ value: 'Value', angle: -90, position: 'insideLeft' }}/>
                                     <Tooltip />
                                     <Line type="linear" dataKey="KPI" stroke="#8884d8" fill="#8884d8" />
                                 </LineChart>
                             </ResponsiveContainer>
                             <h4>Zoom graph with data type 2:</h4>
 
-                            <ResponsiveContainer width="100%" height={200}>
+                            <ResponsiveContainer width="100%" height={260}>
                                 <LineChart
                                     width={500}
                                     height={200}
                                     data={data}
                                     syncId="anyId"
                                     margin={{
-                                        top: 10,
+                                        top: 40,
                                         right: 30,
                                         left: 0,
-                                        bottom: 0,
+                                        bottom: 30,
                                     }}
                                 >
+
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" stroke={"white"}/>
-                                    <YAxis stroke={"white"}/>
+                                    <XAxis dataKey="name" stroke={"white"} label={{ value: 'Distance', angle: 0, position: 'bottom' }}/>
+                                    <YAxis stroke={"white"} label={{ value: 'Value', angle: -90, position: 'insideLeft' }}/>
                                     <Tooltip />
+                                    <Brush y={5} height={20} />
                                     <Line type="linear" dataKey="DI" stroke="#82ca9d" fill="#82ca9d" />
-                                    <Brush />
+
                                 </LineChart>
                             </ResponsiveContainer>
                             <h4>Graph with data type 3:</h4>
 
-                            <ResponsiveContainer width="100%" height={200}>
+                            <ResponsiveContainer width="100%" height={230}>
                                 <AreaChart
                                     width={500}
                                     height={200}
@@ -164,12 +166,12 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                         top: 10,
                                         right: 30,
                                         left: 0,
-                                        bottom: 0,
+                                        bottom: 30,
                                     }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" stroke={"white"}/>
-                                    <YAxis stroke={"white"}/>
+                                    <XAxis dataKey="name" stroke={"white"} label={{ value: 'Distance', angle: 0, position: 'bottom' }}/>
+                                    <YAxis stroke={"white"} label={{ value: 'Value', angle: -90, position: 'insideLeft' }}/>
                                     <Tooltip />
                                     <Area type="linear" dataKey="IRI" stroke="#82ca9d" fill="#82ca9d" />
                                 </AreaChart>
