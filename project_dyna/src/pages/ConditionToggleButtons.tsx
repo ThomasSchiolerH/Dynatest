@@ -123,8 +123,8 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                     }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
+                                    <XAxis dataKey="name" stroke={"white"}/>
+                                    <YAxis stroke={"white"}/>
                                     <Tooltip />
                                     <Line type="monotone" dataKey="KPI" stroke="#8884d8" fill="#8884d8" />
                                 </LineChart>
@@ -145,8 +145,8 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                     }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
+                                    <XAxis dataKey="name" stroke={"white"}/>
+                                    <YAxis stroke={"white"}/>
                                     <Tooltip />
                                     <Line type="monotone" dataKey="DI" stroke="#82ca9d" fill="#82ca9d" />
                                     <Brush />
@@ -168,8 +168,8 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                     }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
+                                    <XAxis dataKey="name" stroke={"white"}/>
+                                    <YAxis stroke={"white"}/>
                                     <Tooltip />
                                     <Area type="monotone" dataKey="IRI" stroke="#82ca9d" fill="#82ca9d" />
                                 </AreaChart>
