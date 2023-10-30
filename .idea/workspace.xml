@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c7ceaf26-0a71-4457-bce7-ffa3d71ce935" name="Changes" comment="graph zoom - small changes">
+    <list default="true" id="c7ceaf26-0a71-4457-bce7-ffa3d71ce935" name="Changes" comment="toggle buttons - priority created">
       <change afterPath="$PROJECT_DIR$/project_dyna/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/project_dyna/src/pages/ToggleSwitch.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_dyna/src/pages/ConditionMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/pages/ConditionMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project_dyna/src/css/DataWindow.css" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/css/DataWindow.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project_dyna/src/pages/ConditionToggleButtons.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/pages/ConditionToggleButtons.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -217,7 +218,15 @@
       <option name="project" value="LOCAL" />
       <updated>1698669887362</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="toggle buttons - priority created">
+      <option name="closed" value="true" />
+      <created>1698672839204</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1698672839204</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -265,6 +274,7 @@
     <MESSAGE value="graphs background colour removed and axis made more visible" />
     <MESSAGE value="graph lines made linear instead of smooth" />
     <MESSAGE value="graph zoom - small changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="graph zoom - small changes" />
+    <MESSAGE value="toggle buttons - priority created" />
+    <option name="LAST_COMMIT_MESSAGE" value="toggle buttons - priority created" />
   </component>
 </project>

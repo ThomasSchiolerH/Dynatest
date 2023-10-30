@@ -2,6 +2,7 @@ import {MapContainer, ScaleControl, TileLayer} from "react-leaflet";
 import Zoom from "../map/zoom";
 import React, { useState,PureComponent } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer, ReferenceLine } from 'recharts'
+import ToggleSwitch from './ToggleSwitch'; // Update the path to the ToggleSwitch component
 
 
 interface ConditionToggleButtonsProps {
@@ -105,25 +106,17 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     return (
         <div className="condition-toggle-buttons-container">
             <div className="condition-toggle-buttons">
-                <div
-                    className={`data-window-button ${isDataWindowVisible ? 'active' : ''}`}
-                    onClick={toggleDataWindow}
-                >
-                    Data Window
-                    <span className="toggle-icon">{isDataWindowVisible ? '✓' : '✖'}</span>
+                <div className="DataWindowSwitch">
+                    <ToggleSwitch isDataWindowVisible={isDataWindowVisible} toggleDataWindow={toggleDataWindow} label={"Data"} />
                 </div>
                 {conditionTypes.map((condition) => (
-                    <div
+                    <ToggleSwitch
                         key={condition}
-                        className={`condition-toggle-button ${selectedConditions.includes(condition) ? 'active' : ''}`}
-                        onClick={() => toggleCondition(condition)}
-                    >
-                        {condition}
-                        <span className="toggle-icon">{selectedConditions.includes(condition) ? '✓' : '✖'}</span>
-                    </div>
+                        isDataWindowVisible={selectedConditions.includes(condition)}
+                        toggleDataWindow={() => toggleCondition(condition)}
+                        label={condition}
+                    />
                 ))}
-
-
             </div>
             {isDataWindowVisible && (
                 <div className="data-window" style={{width: '50%'}}>
