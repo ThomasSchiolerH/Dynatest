@@ -21,8 +21,10 @@ const IRI = "IRI"
 const IRInew = "IRI_new"
 const Mu = "Mu"
 const Enrg = "E_norm"
+const NONE = "NONE";
 
 const conditionTypes = [
+    //NONE,
     ALL,
     KPI,
     DI,
@@ -243,6 +245,13 @@ const ConditionMap = (props: any) => {
             }
 
             return mapStyle
+        }
+
+        if (mode === NONE) {
+            if (geoJsonRef !== undefined && geoJsonRef.current !== undefined) {
+                geoJsonRef.current.clearLayers(); // This will clear any existing layers
+            }
+            return; // Exit the useEffect
         }
 
         if (mode === "ALL") {

@@ -10,22 +10,46 @@ interface ConditionToggleButtonsProps {
 }
 
 const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditionTypes, onConditionToggle }) => {
-    const [selectedCondition, setSelectedCondition] = useState<string | null>(null);
+    const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
     const [isDataWindowVisible, setIsDataWindowVisible] = useState<boolean>(false);
 
     const toggleCondition = (condition: string) => {
-        let updatedCondition = selectedCondition;
+        setSelectedConditions(prevConditions => {
+            let updatedConditions: string[];
+            if (prevConditions.includes(condition)) {
+                updatedConditions = prevConditions.filter(cond => cond !== condition);
+            } else {
+                updatedConditions = [...prevConditions, condition];
+            }
 
-        if (selectedCondition === condition) {
-            // If the currently selected condition is toggled off
-            updatedCondition = null;
-        } else if (!selectedCondition || conditionTypes.indexOf(condition) < conditionTypes.indexOf(selectedCondition)) {
-            // If no condition is selected yet, or if a higher-priority condition is toggled on
-            updatedCondition = condition;
+            // Notify the parent component of the highest priority condition
+            const highestPriorityCondition = getHighestPriorityConditionFromList(updatedConditions);
+            onConditionToggle(highestPriorityCondition, highestPriorityCondition !== null && updatedConditions.includes(highestPriorityCondition));
+
+
+            return updatedConditions;
+        });
+    };
+
+
+    const getHighestPriorityCondition = () => {
+        for (let condition of conditionTypes) {
+            if (selectedConditions.includes(condition)) {
+                return condition;  // Return the first match which has the highest priority
+            }
         }
+        return null;
+    };
 
-        setSelectedCondition(updatedCondition);
-        onConditionToggle(updatedCondition, updatedCondition !== null);
+    const highestPriorityCondition = getHighestPriorityCondition();
+
+    const getHighestPriorityConditionFromList = (conditionsList: string[]) => {
+        for (let condition of conditionTypes) {
+            if (conditionsList.includes(condition)) {
+                return condition;
+            }
+        }
+        return null;
     };
 
 
@@ -91,13 +115,14 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                 {conditionTypes.map((condition) => (
                     <div
                         key={condition}
-                        className={`condition-toggle-button ${selectedCondition === condition ? 'active' : ''}`}
+                        className={`condition-toggle-button ${selectedConditions.includes(condition) ? 'active' : ''}`}
                         onClick={() => toggleCondition(condition)}
                     >
                         {condition}
-                        <span className="toggle-icon">{selectedCondition === condition ? '✓' : '✖'}</span>
+                        <span className="toggle-icon">{selectedConditions.includes(condition) ? '✓' : '✖'}</span>
                     </div>
                 ))}
+
 
             </div>
             {isDataWindowVisible && (

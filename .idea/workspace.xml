@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c7ceaf26-0a71-4457-bce7-ffa3d71ce935" name="Changes" comment="small fix data window toggle">
+    <list default="true" id="c7ceaf26-0a71-4457-bce7-ffa3d71ce935" name="Changes" comment="graph zoom - small changes">
       <change afterPath="$PROJECT_DIR$/project_dyna/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_dyna/src/css/DataWindow.css" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/css/DataWindow.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project_dyna/src/pages/ConditionMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/pages/ConditionMap.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project_dyna/src/pages/ConditionToggleButtons.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/pages/ConditionToggleButtons.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -185,7 +185,39 @@
       <option name="project" value="LOCAL" />
       <updated>1698410251142</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="toggle buttons - only able to select one condition at a time now">
+      <option name="closed" value="true" />
+      <created>1698597855916</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1698597855916</updated>
+    </task>
+    <task id="LOCAL-00015" summary="graphs background colour removed and axis made more visible">
+      <option name="closed" value="true" />
+      <created>1698667235934</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1698667235934</updated>
+    </task>
+    <task id="LOCAL-00016" summary="graph lines made linear instead of smooth">
+      <option name="closed" value="true" />
+      <created>1698667431682</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1698667431682</updated>
+    </task>
+    <task id="LOCAL-00017" summary="graph zoom - small changes">
+      <option name="closed" value="true" />
+      <created>1698669887362</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1698669887362</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -229,6 +261,10 @@
     <MESSAGE value="graph small name fix" />
     <MESSAGE value="about window removed" />
     <MESSAGE value="small fix data window toggle" />
-    <option name="LAST_COMMIT_MESSAGE" value="small fix data window toggle" />
+    <MESSAGE value="toggle buttons - only able to select one condition at a time now" />
+    <MESSAGE value="graphs background colour removed and axis made more visible" />
+    <MESSAGE value="graph lines made linear instead of smooth" />
+    <MESSAGE value="graph zoom - small changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="graph zoom - small changes" />
   </component>
 </project>
