@@ -1,0 +1,35 @@
+.homeContainer {
+    background-color: #121212;
+    color: #FFFFFF;
+    padding: 20px;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tutorialHeader {
+    font-size: 2em;
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+.contentRow {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 5px 0;  /* Further reduced this margin */
+}
+
+.leftText, .rightText {
+    flex: 0.5;
+    padding: 0 10px; /* Adjusted the padding */
+}
+
+.image {
+    width: 600px; /* adjust as needed */
+    height: 400px; /* adjust as needed */
+    background-color: #888; /* placeholder color */
+}
+
