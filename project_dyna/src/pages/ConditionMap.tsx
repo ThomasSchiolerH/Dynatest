@@ -318,6 +318,15 @@ const ConditionMap = (props: any) => {
                 "Trip (task id): " + feature.properties.task_id + "<br>" +
                 "Condition id: " + feature.properties.id)
         }
+
+        // TODO This query should be used instead of the popup implemented here before
+        /*
+        if (feature !== undefined && feature.properties !== null) {
+            get('/conditions/road_data/${feature.properties.id}', (data: JSON) => {
+                // TODO Pass the data to ConditionToggleButtons
+            })
+        }
+         */
     }
 
     const handlePictureRoadClick = (e: LeafletMouseEvent) => {
