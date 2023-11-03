@@ -60,46 +60,40 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
     const data = [
         {
-            name: 'Page A',
-            KPI: 4000,
-            DI: 2400,
-            IRI: 2400,
+            name: '15173',
+            KPI: 4.75,
+            DI: 1.19,
+            IRI: 1.42,
         },
         {
-            name: 'Page B',
-            KPI: 3000,
-            DI: 1398,
-            IRI: 2210,
+            name: '16090',
+            KPI: 6.30,
+            DI: 2.18,
+            IRI: 1.90,
         },
         {
-            name: 'Page C',
-            KPI: 2000,
-            DI: 9800,
-            IRI: 2290,
+            name: '16025',
+            KPI: 4.73,
+            DI: 1.19,
+            IRI: 1.36,
         },
         {
-            name: 'Page D',
-            KPI: 2780,
-            DI: 3908,
-            IRI: 2000,
+            name: '15935',
+            KPI: 4.78,
+            DI: 1.59,
+            IRI: 1.36,
         },
         {
-            name: 'Page E',
-            KPI: 1890,
-            DI: 4800,
-            IRI: 2181,
+            name: '16025',
+            KPI: 6.05,
+            DI: 2.01,
+            IRI: 1.05,
         },
         {
-            name: 'Page F',
-            KPI: 2390,
-            DI: 3800,
-            IRI: 2500,
-        },
-        {
-            name: 'Page G',
-            KPI: 3490,
-            DI: 4300,
-            IRI: 2100,
+            name: '15935',
+            KPI: 4.66,
+            DI: 1.44,
+            IRI: 1.05,
         },
     ];
 
@@ -126,7 +120,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                         paddingLeft: '0px',
                         paddingRight: '30px' }}>
                         <div className={"chart-container"}>
-                            <h4>Graph 1 with data type 1:</h4>
+                            <h4>Graph 1 with data type KPI:</h4>
                             <ResponsiveContainer width="100%" height={230}>
                                 <LineChart
                                     width={500}
@@ -141,13 +135,13 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                     }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" stroke={"white"} label={{ value: 'Distance', angle: 0, position: 'bottom' }}/>
+                                    <XAxis dataKey="name" stroke={"white"} label={{ value: 'Trip-id', angle: 0, position: 'bottom' }}/>
                                     <YAxis stroke={"white"} label={{ value: 'Value', angle: -90, position: 'insideLeft' }}/>
                                     <Tooltip />
                                     <Line type="linear" dataKey="KPI" stroke="#8884d8" fill="#8884d8" />
                                 </LineChart>
                             </ResponsiveContainer>
-                            <h4>Zoom graph with data type 2:</h4>
+                            <h4>Zoom graph with data type DI:</h4>
 
                             <ResponsiveContainer width="100%" height={260}>
                                 <LineChart
@@ -164,7 +158,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                 >
 
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" stroke={"white"} label={{ value: 'Distance', angle: 0, position: 'bottom' }}/>
+                                    <XAxis dataKey="name" stroke={"white"} label={{ value: 'Trip-id', angle: 0, position: 'bottom' }}/>
                                     <YAxis stroke={"white"} label={{ value: 'Value', angle: -90, position: 'insideLeft' }}/>
                                     <Tooltip />
                                     <Brush y={5} height={20} />
@@ -172,7 +166,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
                                 </LineChart>
                             </ResponsiveContainer>
-                            <h4>Graph with data type 3:</h4>
+                            <h4>Graph with data type IRI:</h4>
 
                             <ResponsiveContainer width="100%" height={230}>
                                 <AreaChart
@@ -188,7 +182,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                     }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" stroke={"white"} label={{ value: 'Distance', angle: 0, position: 'bottom' }}/>
+                                    <XAxis dataKey="name" stroke={"white"} label={{ value: 'Trip-id', angle: 0, position: 'bottom' }}/>
                                     <YAxis stroke={"white"} label={{ value: 'Value', angle: -90, position: 'insideLeft' }}/>
                                     <Tooltip />
                                     <Area type="linear" dataKey="IRI" stroke="#82ca9d" fill="#82ca9d" />
