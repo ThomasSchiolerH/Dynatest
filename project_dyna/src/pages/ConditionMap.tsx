@@ -292,7 +292,7 @@ const ConditionMap = (props: any) => {
     }, [dataAll, mode, rangeAll, rangeSelected])
 
     const onEachFeature = (feature: Feature,  layer: Layer) => {
-        if (layer.on !== undefined) {
+        /*if (layer.on !== undefined) {
             layer.on({
                 // mouseover: ... ,
                 // mouseout: ... ,
@@ -317,16 +317,20 @@ const ConditionMap = (props: any) => {
                     "Motorway: yes <br>" : "" ) +
                 "Trip (task id): " + feature.properties.task_id + "<br>" +
                 "Condition id: " + feature.properties.id)
-        }
+        }*/
 
         // TODO This query should be used instead of the popup implemented here before
-        /*
-        if (feature !== undefined && feature.properties !== null) {
-            get('/conditions/road_data/${feature.properties.id}', (data: JSON) => {
-                // TODO Pass the data to ConditionToggleButtons
-            })
+
+        if (feature !== undefined && feature.properties !== null && feature.properties.id !== undefined) {
+            layer.on('click', () => {
+                if(feature.properties) {
+                    get(`/conditions/road_data/${feature.properties.id}`, (data: JSON) => {
+                        // TODO Pass the data to ConditionToggleButtons
+                    })
+                }
+            });
         }
-         */
+
     }
 
     const handlePictureRoadClick = (e: LeafletMouseEvent) => {
