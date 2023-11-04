@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import "../css/ImportData.css";
 
 const UploadIcon = () => (
@@ -23,7 +23,8 @@ const FileIcon = () => (
 );
 
 const DeleteIcon = () => (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '48px', height: '48' }}>
+        {/* SVG paths */}
         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
         <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
         <g id="SVGRepo_iconCarrier">
@@ -34,8 +35,42 @@ const DeleteIcon = () => (
     </svg>
 );
 
+// Define the type for the file state
+type FileOrNull = File | null;
+
 const ImportData = (props: any) => {
     // Additional logic or state can be added here
+    const [selectedFile, setSelectedFile] = useState<FileOrNull>(null);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        console.log('File selected:', file); // Debugging: check the console to see if this logs correctly
+        setSelectedFile(file ?? null);
+    };
+
+    const clearSelectedFile = () => {
+        setSelectedFile(null);
+        const fileInput = document.getElementById('file') as HTMLInputElement; // Cast to specific element type
+        if (fileInput) fileInput.value = '';
+    };
+
+    const handleSubmit = () => {
+        if (selectedFile) {
+            // Process the file submission here
+            console.log('Submitting file:', selectedFile.name);
+            // TODO: Send the file to the backend here
+            // You could send the file to a backend server using fetch or axios, for example.
+
+            // After submission, clear the selected file
+            setSelectedFile(null);
+
+            // Reset the input field
+            const fileInput = document.getElementById('file') as HTMLInputElement;
+            if (fileInput) {
+                fileInput.value = '';
+            }
+        }
+    };
 
     return (
         <div className="importDataContainer"> {/* Use the container class here */}
@@ -72,15 +107,23 @@ const ImportData = (props: any) => {
             {/* The import UI */}
             <div className="importUIcontainer" style={{ backgroundColor: 'white' }}>
                 <div className="importUIheader">
-                    <UploadIcon />
-                    <p>Browse File to upload!</p>
+                    <label htmlFor="file" className="importUIheaderLabel">
+                        <UploadIcon />
+                        <p>Browse File to upload!</p>
+                    </label>
                 </div>
                 <label htmlFor="file" className="importUIfooter">
                     <FileIcon />
-                    <p>No selected file</p>
-                    <DeleteIcon />
+                    <p>{selectedFile ? selectedFile.name : "No selected file"}</p>
+                    <button onClick={clearSelectedFile} style={{ border: 'none', background: 'none' }}>
+                        <DeleteIcon />
+                    </button>
                 </label>
-                <input id="file" type="file" style={{ display: 'none' }} />
+                <input id="file" type="file" style={{ display: 'none' }} onChange={handleFileChange} />
+                {/* Submit Button */}
+                <button onClick={handleSubmit} className="submitButton">
+                    Submit File
+                </button>
             </div>
         </div>
     );

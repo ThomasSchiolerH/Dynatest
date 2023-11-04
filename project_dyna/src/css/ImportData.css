@@ -32,6 +32,17 @@
     margin-top: 50px;
 }
 
+.importUIheaderLabel {
+    flex: 1;
+    width: 100%;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+
 .importUIheader {
     flex: 1;
     width: 100%;
@@ -136,4 +147,25 @@
 
 .radioGroup label:last-child span {
     border-radius: 0 .375em .375em 0;
+}
+
+/* Add this to your existing CSS file */
+.submitButton {
+    padding: 0.375em 0.75em;
+    font-family: 'Roboto', sans-serif;
+    background-color: #fff;
+    border: none;
+    border-radius: 10px;
+    margin-top: 1em;
+    cursor: pointer;
+    box-shadow: 0 0 0 0.0625em #b5bfd9;
+    transition: background-color 0.5s ease;
+    letter-spacing: .05em;
+    color: #3e4963;
+    text-align: center;
+}
+
+.submitButton:hover {
+    background-color: #dee7ff;
+    box-shadow: 0 0 0 0.0625em #0043ed;
 }
