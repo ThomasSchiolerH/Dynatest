@@ -9,67 +9,6 @@
     width: 120px;  /* Define a width for the buttons container */
 }
 
-/*.condition-toggle-button {*/
-/*    display: flex;*/
-/*    align-items: center;*/
-/*    justify-content: space-between;*/
-/*    background-color: #eee;*/
-/*    border: 1px solid #ccc;*/
-/*    padding: 5px 5px;*/
-/*    margin-bottom: 8px;*/
-/*    cursor: pointer;*/
-/*    width: 70%; !* Make buttons full width *!*/
-/*}*/
-
-/*.condition-toggle-buttons {*/
-/*    display: flex;*/
-/*    flex-direction: column;*/
-/*    align-items: flex-start;*/
-/*    padding: 5px;*/
-/*    !* ... other styles *!*/
-/*}*/
-
-/*.condition-toggle-button {*/
-/*    display: flex;*/
-/*    align-items: center;*/
-/*    justify-content: space-between;*/
-/*    padding: 5px 5px;*/
-/*    cursor: pointer;*/
-/*    border: 1px solid #ccc;*/
-/*    background-color: #eee;*/
-/*    width: 100px; !* Adjust this to your preferred width *!*/
-/*    margin-bottom: 8px; !* Add space between buttons *!*/
-/*}*/
-
-/*.data-window-button {*/
-/*    display: flex;*/
-/*    align-items: center;*/
-/*    justify-content: space-between;*/
-/*    padding: 5px 5px;*/
-/*    cursor: pointer;*/
-/*    border: 1px solid #ccc;*/
-/*    background-color: #eee;*/
-/*    width: 100px; !* Adjust this to your preferred width *!*/
-/*    margin-bottom: 50px; !* Add space between buttons *!*/
-/*}*/
-
-/*.condition-toggle-button.active {*/
-/*    background-color: var(--background-3);*/
-/*    color: white;*/
-/*}*/
-
-/*.data-window-button:hover,*/
-/*.condition-toggle-button:hover {*/
-/*    background-color: var(--background-3);*/
-/*    color: white;*/
-/*    font-weight: bold;*/
-/*}*/
-
-/*.toggle-icon {*/
-/*    font-size: 20px;*/
-/*    margin-left: 10px;*/
-/*}*/
-
 .data-window {
     position: fixed;
     top: var(--navbar-height);
