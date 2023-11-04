@@ -23,10 +23,12 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                 updatedConditions = [...prevConditions, condition];
             }
 
-            // Notify the parent component of the highest priority condition
-            const highestPriorityCondition = getHighestPriorityConditionFromList(updatedConditions);
-            onConditionToggle(highestPriorityCondition, highestPriorityCondition !== null && updatedConditions.includes(highestPriorityCondition));
-
+            // Determine the state to send to the parent component
+            let stateToSend = updatedConditions.length > 0
+                ? getHighestPriorityConditionFromList(updatedConditions)
+                : "NONE"; // If no conditions are selected, we use "NONE"
+            // Notify the parent component
+            onConditionToggle(stateToSend, stateToSend !== "NONE");
 
             return updatedConditions;
         });

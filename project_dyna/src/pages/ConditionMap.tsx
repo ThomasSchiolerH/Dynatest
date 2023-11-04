@@ -14,7 +14,7 @@ import "../css/slider.css";
 import "../css/map.css";
 import "../css/DataWindow.css";
 
-const ALL = "ALL"
+//const ALL = "ALL"
 const KPI = "KPI"
 const DI = "DI"
 const IRI = "IRI"
@@ -25,7 +25,7 @@ const NONE = "NONE";
 
 const conditionTypes = [
     //NONE,
-    ALL,
+    //ALL,
     KPI,
     DI,
     IRI, // IRInew,
@@ -150,7 +150,7 @@ const ConditionMap = (props: any) => {
     const [dataAll, setDataAll] = useState<FeatureCollection>();
     const [rangeAll, setRangeAll] = useState<DateRange>({});
     const [rangeSelected, setRangeSelected] = useState<DateRange>({});
-    const [mode, setMode] = useState<string>("ALL");
+    const [mode, setMode] = useState<string>("NONE");
     const [pictureRoadPath, setPictureRoadPath] = useState<GeoJSON.MultiLineString>()
     const [isImagePageHidden, setIsImagePageHidden] = useState<boolean>(true);
     const [img, setImg] = useState<Blob>();
@@ -356,7 +356,7 @@ const ConditionMap = (props: any) => {
         if (isSelected) {
             setMode(condition); // Select the condition "X"
         } else {
-            setMode(ALL); // Deselected - return to ALL
+            setMode(NONE); // Deselected - return to ALL
         }
     };
 
