@@ -1,5 +1,5 @@
 .homeContainer {
-    background-color: #121212;
+    background-color: var(--background-2);
     color: #FFFFFF;
     padding: 20px;
     font-family: 'Roboto', sans-serif;
@@ -10,16 +10,16 @@
 
 .tutorialHeader {
     font-size: 2em;
-    margin-bottom: 20px;
+    margin-bottom: 60px;
     width: 100%;
     text-align: center;
 }
 
 .contentRow {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     width: 100%;
-    margin: 5px 0;  /* Further reduced this margin */
+    margin-bottom: 60px;
 }
 
 .leftText, .rightText {
@@ -28,8 +28,10 @@
 }
 
 .image {
-    width: 600px; /* adjust as needed */
-    height: 400px; /* adjust as needed */
+    width: 504px; /* adjust as needed */
+    height: 327px; /* adjust as needed */
     background-color: #888; /* placeholder color */
+    border: 2px solid black;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
 }
 
