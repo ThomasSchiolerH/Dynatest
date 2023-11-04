@@ -5,6 +5,7 @@ import "./App.css";
 import Home from "./pages/Home";
 import ConditionMap from "./pages/ConditionMap";
 import NavigationBar from "./pages/NavigationBar";
+import ImportData from "./pages/ImportData";
 
 export default function App() {
     return (
@@ -14,6 +15,7 @@ export default function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="home" element={<Home />} />
                 <Route path="conditionmap" element={<ConditionMap />} />
+                <Route path="importdata" element={<ImportData />} />
             </Routes>
         </div>
     );
