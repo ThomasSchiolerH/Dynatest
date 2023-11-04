@@ -8,7 +8,7 @@
     height: var(--navbar-height);
     background-color: var(--background);
     z-index: var(--navbar-z-index);
-    font-family: 'Noto Sans JP', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 .nav-container {
@@ -28,6 +28,8 @@
     margin: 0px 30px;
     padding: 6px 11px;
     border-radius: 6px;
+    text-shadow: 2px 2px black;
+    font-weight: 550;
 }
 
 

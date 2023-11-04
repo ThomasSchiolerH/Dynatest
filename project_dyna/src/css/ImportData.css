@@ -11,10 +11,11 @@
 }
 
 .importDataHeader {
-    font-size: 2em;
+    font-size: 3em;
     margin-bottom: 60px;
     width: 100%;
     text-align: center;
+    text-shadow: 3px 3px black;
 }
 
 /*Import data UI for upload*/
