@@ -133,6 +133,22 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         // Make an API call to your backend and pass parameters
         // Here you would return the result of that call
         // For now it returns an empty array as a placeholder
+
+        //POSSIBLE IMPLEMENTATION BELOW?
+        // try {
+        //     const response = await fetch(`/api/images?direction=${direction}&startIndex=${index}`);
+        //     if (response.ok) {
+        //         const images = await response.json();
+        //         return images;
+        //     } else {
+        //         // Handle errors, for example, if the response is not OK:
+        //         console.error('Failed to fetch images:', response.statusText);
+        //         return [];
+        //     }
+        // } catch (error) {
+        //     console.error('Error fetching images:', error);
+        //     return [];
+        // }
         return [
             MultipleConditionsToggledImg,//Place holder
             DataWindowImg,//Place holder
