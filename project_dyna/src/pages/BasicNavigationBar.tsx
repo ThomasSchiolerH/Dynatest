@@ -1,6 +1,7 @@
 import {Link, Outlet} from "react-router-dom";
 import "../css/basicnavigationbar.css"
 
+//IS NOT USED ANYMORE
 const basicNavigationBar = () => {
     return (
         <div>

@@ -60,6 +60,8 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         setIsDataWindowVisible((prev) => !prev);
     };
 
+
+
     const data = [
         {
             name: '15173',

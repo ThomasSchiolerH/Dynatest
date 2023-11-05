@@ -319,13 +319,11 @@ const ConditionMap = (props: any) => {
                 "Condition id: " + feature.properties.id)
         }*/
 
-        // TODO This query should be used instead of the popup implemented here before
-
         if (feature !== undefined && feature.properties !== null && feature.properties.id !== undefined) {
             layer.on('click', () => {
                 if(feature.properties) {
                     get(`/conditions/road_data/${feature.properties.id}`, (data: JSON) => {
-                        // TODO Pass the data to ConditionToggleButtons
+                        console.log(data)
                     })
                 }
             });
