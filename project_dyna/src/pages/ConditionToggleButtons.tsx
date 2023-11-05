@@ -1,8 +1,12 @@
 import {MapContainer, ScaleControl, TileLayer} from "react-leaflet";
 import Zoom from "../map/zoom";
-import React, { useState,PureComponent } from 'react';
+import React, {useState, PureComponent, useEffect} from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer, ReferenceLine } from 'recharts'
 import ToggleSwitch from './ToggleSwitch'; // Update the path to the ToggleSwitch component
+import PhotoScrollComponent from "./PhotoScrollComponent";
+import DataWindowImg from '../images/DataWindowImg.png';
+import SingleConditionToggledImg from '../images/singleConditionToggledImg.png';
+import MultipleConditionsToggledImg from '../images/multipleConditionsToggledImg.png';
 
 
 interface ConditionToggleButtonsProps {
@@ -99,6 +103,43 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         },
     ];
 
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
+
+    useEffect(() => {
+        // Fetch the initial image URLs on component mount
+        // Here you need to define how you determine the initial set of images
+        const initialSetOfImages = getInitialSetOfImages(); // Define this function based on your app's logic
+        setImageUrls(initialSetOfImages);
+    }, []);
+
+    const getInitialSetOfImages = (): string[] => {
+        // You would fetch or define the initial URLs here
+        return [
+            // Note, you have to import the images for them to be displayed?
+            DataWindowImg, //Place holder
+            SingleConditionToggledImg,//Place holder
+            DataWindowImg,//Place holder
+            SingleConditionToggledImg,//Place holder
+            DataWindowImg,//Place holder
+            MultipleConditionsToggledImg,//Place holder
+            DataWindowImg,//Place holder
+            // ... other image URLs
+        ];
+    };
+
+    //modify fetchAdjacentImages to accept the current index and direction
+    const fetchAdjacentImages = async (direction: 'left' | 'right', index: number): Promise<string[]> => {
+        // Implement the logic to fetch new images based on the direction and the index
+        // Make an API call to your backend and pass parameters
+        // Here you would return the result of that call
+        // For now it returns an empty array as a placeholder
+        return [
+            MultipleConditionsToggledImg,//Place holder
+            DataWindowImg,//Place holder
+            MultipleConditionsToggledImg,//Place holder
+        ];
+    };
+
     return (
         <div className="condition-toggle-buttons-container">
             <div className="condition-toggle-buttons">
@@ -121,6 +162,10 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                         paddingBottom: '70px',
                         paddingLeft: '0px',
                         paddingRight: '30px' }}>
+                        <PhotoScrollComponent
+                            imageUrls={imageUrls}
+                            fetchAdjacentImages={fetchAdjacentImages}
+                        />
                         <div className={"chart-container"}>
                             <h4>Graph 1 with data type KPI:</h4>
                             <ResponsiveContainer width="100%" height={230}>
