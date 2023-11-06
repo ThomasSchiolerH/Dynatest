@@ -29,7 +29,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
             // Determine the state to send to the parent component
             let stateToSend = updatedConditions.length > 0
-                ? getHighestPriorityConditionFromList(updatedConditions)
+                ? getHighestPriorityConditionFromList(updatedConditions) // If there is elements in updatedCondition then find priority
                 : "NONE"; // If no conditions are selected, we use "NONE"
             // Notify the parent component
             onConditionToggle(stateToSend, stateToSend !== "NONE");
@@ -39,21 +39,10 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     };
 
 
-    const getHighestPriorityCondition = () => {
-        for (let condition of conditionTypes) {
-            if (selectedConditions.includes(condition)) {
-                return condition;  // Return the first match which has the highest priority
-            }
-        }
-        return null;
-    };
-
-    const highestPriorityCondition = getHighestPriorityCondition();
-
     const getHighestPriorityConditionFromList = (conditionsList: string[]) => {
         for (let condition of conditionTypes) {
             if (conditionsList.includes(condition)) {
-                return condition;
+                return condition; // Return the first match which has the highest priority
             }
         }
         return null;
@@ -108,7 +97,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     useEffect(() => {
         // Fetch the initial image URLs on component mount
         // Here you need to define how you determine the initial set of images
-        const initialSetOfImages = getInitialSetOfImages(); // Define this function based on your app's logic
+        const initialSetOfImages = getInitialSetOfImages();
         setImageUrls(initialSetOfImages);
     }, []);
 
@@ -127,7 +116,6 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         ];
     };
 
-    //modify fetchAdjacentImages to accept the current index and direction
     const fetchAdjacentImages = async (direction: 'left' | 'right', index: number): Promise<string[]> => {
         // Implement the logic to fetch new images based on the direction and the index
         // Make an API call to your backend and pass parameters

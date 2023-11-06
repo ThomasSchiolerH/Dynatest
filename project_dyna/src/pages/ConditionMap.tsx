@@ -30,7 +30,7 @@ const conditionTypes = [
     DI,
     IRI, // IRInew,
     Mu,
-    Enrg ]
+    Enrg, ]
 
 interface YearMonth  {
     year: number
