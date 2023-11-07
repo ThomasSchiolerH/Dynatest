@@ -111,7 +111,7 @@ const ImportData = (props: any) => {
                         <DeleteIcon />
                     </button>
                 </label>
-                <input id="file" type="file" style={{ display: 'none' }} onChange={handleFileChange} accept=".rsp,.zip,image/png,image/jpeg" />
+                <input id="file" type="file" style={{ display: 'none' }} onChange={handleFileChange} accept=".rsp,.zip,image/png,image/jpeg,.gpx" />
                 {/* Submit Button */}
                 <button onClick={handleSubmit} className="submitButton">
                     Submit File
