@@ -8,6 +8,11 @@ import { Trips } from '../entity/Trips';
 import {Condition_Pictures} from "../entity/Condition_Pictures";
 
 
+import {parse_rsp } from "./dynatest.parser";
+const fetch = require("node-fetch");
+
+
+
 
 @Injectable()
 export class ConditionsService {
@@ -41,6 +46,7 @@ export class ConditionsService {
           'task_id',
           'ST_AsGeoJSON(coverage.section_geom) AS section_geom',
           'way."IsHighway" AS IsHighway',
+          'way."OSM_Id"',
         ])
         .innerJoin(
           Coverage,
@@ -108,13 +114,14 @@ export class ConditionsService {
             motorway: r.IsHighway,
             compute_time: r.compute_time,
             task_id: r.task_id,
+            osm_id: r.OSM_Id,
           },
         };
       }),
     };
   }
 
-  async getClicked(coverage_value_id: string): Promise<string> {
+  async getClicked(coverage_value_id: string) {
     const conditions = this.dataSource
         .getRepository(Coverage_Values)
         .createQueryBuilder('coverage_value')
@@ -125,6 +132,7 @@ export class ConditionsService {
           'lenght AS length',
           'ST_AsGeoJSON(coverage.section_geom, 5, 0) AS section_geom',
           'way."IsHighway" AS is_highway',
+          'way."OSM_Id" AS OSM_Id',
         ])
         .innerJoin(Coverage,'coverage','coverage_value.fk_coverage_id = coverage.id')
         .innerJoin(Ways, 'way', 'coverage.fk_way_id = way.id')
@@ -135,81 +143,269 @@ export class ConditionsService {
     return raw;
   }
 
-  async getNearConditionsFromCoverageValueId(coverage_value_id: string) {
-    let raw: any[];
-    const grouped: any[] = [];
-    const n: number = 3;
-    let coverage: any = {};
-    let types : any = new Set();
+  async getWayConditions(conditions_id: string){
 
-    try {
-      const clicked: any = await this.getClicked(coverage_value_id);
-      const way_name = clicked.way_name;
-      const trip_id = clicked.trip_id;
+    function computeSpatialDistance(p1: any, p2:any): number{
 
-      const conditions = this.dataSource
-        .getRepository(Coverage_Values)
-        .createQueryBuilder('coverage_value')
-        .select([
-          'coverage."id" as coverage_id',
-          'type',
-          'value',
-        ])
-        .innerJoin(
-          Coverage,
-          'coverage',
-          'coverage_value.fk_coverage_id = coverage.id',
-        )
-        .innerJoin(Ways, 'way', 'coverage.fk_way_id = way.id')
-        .innerJoin(Trips, 'trip', 'coverage.fk_trip_id = trip.id')
-        .where('coverage_value.ignore IS NULL')
-        .andWhere('way.way_name = :way_name', { way_name })
-        .andWhere('trip.id = :trip_id', { trip_id })
-        .addOrderBy('coverage.compute_time', 'ASC', 'NULLS FIRST');
+      // degrees to radians.
+      let lon1 : number = p1.lon * Math.PI / 180;
+      let lon2 : number = p2.lon * Math.PI / 180;
+      let lat1 : number = p1.lat * Math.PI / 180;
+      let lat2 : number = p2.lat * Math.PI / 180;
 
-      raw = await conditions.getRawMany();
+      // Haversine formula
+      let dlon : number = lon2 - lon1;
+      let dlat : number = lat2 - lat1;
+      let a : number = Math.pow(Math.sin(dlat / 2), 2)
+          + Math.cos(lat1) * Math.cos(lat2)
+          * Math.pow(Math.sin(dlon / 2),2);
 
-      // grouping by coverage_id
-      raw.forEach((r) => {
-        types.add(r.type);
+      let c : number = 2 * Math.asin(Math.sqrt(a));
 
-        if (grouped.length > 0 && r.coverage_id == grouped.at(-1).coverage_id) {
-          grouped.at(-1).coverage[r.type] = r.value;
-        } else {
-          grouped.push({
-            coverage_id: r.coverage_id,
-            coverage: {[r.type]: r.value}
-          });
-        }
+      // Radius of earth in meters
+      let r : number = 6371000;
+
+      // calculate the result
+      return(c * r);
+    }
+
+    try{
+      const clicked = await this.getClicked(conditions_id);
+      const osm_id = clicked.osm_id;
+
+      const way : any = await this.dataSource
+          .getRepository(Ways)
+          .createQueryBuilder('way')
+          .select([
+            'id',
+            'way."OSM_Id"',
+            'way_name',
+            'node_start',
+            'node_end',
+            'lenght as length',
+            'ST_AsGeoJSON(section_geom, 5, 0) AS way_geom',
+            'way."IsHighway"'])
+          .where('way."OSM_Id" = :osm_id', {osm_id}).getRawOne();
+
+      const conditions : any[] = await this.dataSource
+          .getRepository(Coverage_Values)
+          .createQueryBuilder('coverage_value')
+          .select([
+            'type',
+            'value',
+            'ST_AsGeoJSON(coverage.section_geom, 5, 0) AS section_geom'])
+          .innerJoin(Coverage, 'coverage', 'coverage_value.fk_coverage_id = coverage.id')
+          .innerJoin(Ways, 'way', 'coverage.fk_way_id = way.id')
+          .where('coverage_value.ignore IS NULL')
+          .andWhere('way."OSM_Id" = :osm_id', {osm_id}).getRawMany();
+
+      let way_coordinates = JSON.parse(way.way_geom).coordinates.map((p:any[]): any =>{ return {lat: p[1], lon: p[0]} });
+      let current = way_coordinates.pop();
+
+      let points_order : any[] = [{lat: current.lat, lon: current.lon}];
+
+      const points_set : Set<any> = new Set();
+
+      way_coordinates.forEach((wc:any) => points_set.add(JSON.stringify({lat:wc.lat,lon:wc.lon})));
+
+      conditions.forEach((c): void =>{
+        const geom = JSON.parse(c.section_geom).coordinates;
+        c["start"] = {lat: geom[0][0][1], lon: geom[0][0][0] };
+        c["end"] = {lat: geom[0][1][1], lon: geom[0][1][0] };
+        points_set.add(JSON.stringify(c.start));
+        points_set.add(JSON.stringify(c.end));
       });
 
-      let coverage_id_index: number = grouped.findIndex((r) : boolean => r.coverage_id == clicked.coverage_id);
+      const points_list : any[] = Array.from(points_set).map((x:string) => JSON.parse(x));
 
-      types.forEach((type:string) => coverage[type] = []);
-      for(let i : number = coverage_id_index - n; i < coverage_id_index + n + 1; i++){
-        if(i < 0 || i > grouped.length){
-          types.forEach((type: string) => coverage[type].push(null));
-        }else{
-          types.forEach((type: string): void => {
-            coverage[type].push(grouped[i].coverage[type])
-          });
+      let total_distance = 0;
+
+      while(points_list.length > 0){
+
+        let index = 0;
+        let min_distance = Infinity;
+        let distance = 0;
+
+        for(let i: number = 0; i < points_list.length; i++){
+          distance = computeSpatialDistance(current,points_list[i]);
+          if(distance < min_distance){
+
+            index = i;
+            min_distance = distance;
+          }
         }
+        current = points_list[index];
+        current.distance = Math.round(total_distance);
+        total_distance += min_distance;
+        points_order.push(points_list[index]);
+        points_list.splice(index,1);
       }
 
-      return {
-        success: true,
-        way_name: clicked.way_name,
-        is_highway: clicked.is_highway,
-        section_geom: clicked.section_geom,
-        coverage: coverage,
-      };
-    } catch (e) {
-      console.log(e);
-      return { success: false };
+      const geom : any = {"type":"MultiLineString","coordinates":[]};
+      for(let i : number = 1; i < points_order.length; i++){
+        let p1 = points_order[i-1];
+        let p2 = points_order[i]
+        geom.coordinates.push([[p1.lon,p1.lat],[p2.lon,p2.lat]]);
+      }
+
+      conditions.forEach((c: any): void =>{
+        points_order.forEach((p:any):void =>{
+          if((p.lat == c.start.lat && p.lon == c.start.lon) || (p.lat == c.end.lat && p.lon == c.end.lon)){
+            p[c.type] = c.value;
+          };
+        });
+      });
+
+      return {success: true, way_id: way.OSM_Id, geom: geom, road_name: clicked.way_name, way_distance: Math.round(total_distance), conditions: points_order};
+    }
+    catch (e){
+      return {success: false, message: e.message};
     }
   }
 
-  async getRoadConditions(coverage_value_id: string) {
+
+  async getWayConditions2(way_id: string){
+
+    function computeSpatialDistance(p1: any, p2:any): number{
+
+      // degrees to radians.
+      let lon1 : number = p1.lon * Math.PI / 180;
+      let lon2 : number = p2.lon * Math.PI / 180;
+      let lat1 : number = p1.lat * Math.PI / 180;
+      let lat2 : number = p2.lat * Math.PI / 180;
+
+      // Haversine formula
+      let dlon : number = lon2 - lon1;
+      let dlat : number = lat2 - lat1;
+      let a : number = Math.pow(Math.sin(dlat / 2), 2)
+          + Math.cos(lat1) * Math.cos(lat2)
+          * Math.pow(Math.sin(dlon / 2),2);
+
+      let c : number = 2 * Math.asin(Math.sqrt(a));
+
+      // Radius of earth in meters
+      let r : number = 6371000;
+
+      // calculate the result
+      return(c * r);
+    }
+
+    try{
+      const way : any = await this.dataSource
+          .getRepository(Ways)
+          .createQueryBuilder('way')
+          .select([
+            'id',
+            'way."OSM_Id"',
+            'way_name',
+            'node_start',
+            'node_end',
+            'lenght as length',
+            'ST_AsGeoJSON(section_geom, 5, 0) AS way_geom',
+            'way."IsHighway"'])
+          .where('way."OSM_Id" = :way_id', {way_id}).getRawOne();
+
+      const conditions : any[] = await this.dataSource
+          .getRepository(Coverage_Values)
+          .createQueryBuilder('coverage_value')
+          .select([
+            'type',
+            'value',
+            'ST_AsGeoJSON(coverage.section_geom, 5, 0) AS section_geom'])
+          .innerJoin(Coverage, 'coverage', 'coverage_value.fk_coverage_id = coverage.id')
+          .innerJoin(Ways, 'way', 'coverage.fk_way_id = way.id')
+          .where('coverage_value.ignore IS NULL')
+          .andWhere('way."OSM_Id" = :way_id', {way_id}).getRawMany();
+
+      let way_coordinates = JSON.parse(way.way_geom).coordinates.map((p:any[]): any =>{ return {lat: p[1], lon: p[0]} });
+      let current = way_coordinates.pop();
+
+      let points_order : any[] = [{lat: current.lat, lon: current.lon}];
+
+      const points_set : Set<any> = new Set();
+
+      way_coordinates.forEach((wc:any) => points_set.add(JSON.stringify({lat:wc.lat,lon:wc.lon})));
+
+      conditions.forEach((c): void =>{
+        const geom = JSON.parse(c.section_geom).coordinates;
+        c["start"] = {lat: geom[0][0][1], lon: geom[0][0][0] };
+        c["end"] = {lat: geom[0][1][1], lon: geom[0][1][0] };
+        points_set.add(JSON.stringify(c.start));
+        points_set.add(JSON.stringify(c.end));
+      });
+
+      const points_list : any[] = Array.from(points_set).map((x:string) => JSON.parse(x));
+
+      let total_distance = 0;
+
+      while(points_list.length > 0){
+
+        let index = 0;
+        let min_distance = Infinity;
+        let distance = 0;
+
+        for(let i: number = 0; i < points_list.length; i++){
+          distance = computeSpatialDistance(current,points_list[i]);
+          if(distance < min_distance){
+
+            index = i;
+            min_distance = distance;
+          }
+        }
+        current = points_list[index];
+        current.distance = Math.round(total_distance);
+        total_distance += min_distance;
+        points_order.push(points_list[index]);
+        points_list.splice(index,1);
+      }
+
+      const geom : any = {"type":"MultiLineString","coordinates":[]};
+      for(let i : number = 1; i < points_order.length; i++){
+        let p1 = points_order[i-1];
+        let p2 = points_order[i]
+        geom.coordinates.push([[p1.lon,p1.lat],[p2.lon,p2.lat]]);
+      }
+
+      conditions.forEach((c: any): void =>{
+        points_order.forEach((p:any):void =>{
+          if((p.lat == c.start.lat && p.lon == c.start.lon) || (p.lat == c.end.lat && p.lon == c.end.lon)){
+            p[c.type] = c.value;
+          };
+        });
+      });
+
+      return {success: true, way_id: way.OSM_Id, geom: geom, way_distance: Math.round(total_distance), conditions: points_order};
+    }
+    catch (e){
+      return {success: false, way_id: way_id, message: e.message};
+    }
+  }
+
+  async getRoadConditions(conditions_id: string) {
+
+
+    async function computeWayIds(lat: number, lon: number, name: string, radius : number){
+
+      var result = await fetch(
+          "https://overpass-api.de/api/interpreter",
+          {
+            method: "POST",
+            body: "data="+ encodeURIComponent(`
+                [out:json]
+                [timeout:60];
+                way
+                (around:${radius},${lat},${lon})
+                ["name"="${name}"];
+                out body;
+        `)
+          },
+      ).then(
+          (data: { json: () => any; })=>data.json()
+      )
+      //console.log(JSON.stringify(result , null, 2))
+      const way_ids = result.elements.map((r:any) => {return r.id});
+      return way_ids;
+    }
 
     function computeRoad(points: any[]) : any{
       if(points.length == 0) return null;
@@ -300,13 +496,32 @@ export class ConditionsService {
       return(c * r);
     }
 
+
+
+    const clicked = await this.getClicked(conditions_id);
+
+    console.log(clicked);
+    const lon = JSON.parse(clicked.section_geom).coordinates[0][0][0];
+    const lat = JSON.parse(clicked.section_geom).coordinates[0][0][1];
+    const radius = 1000;
+
+    const ids = await computeWayIds(lat,lon,clicked.way_name,radius);
+
+    const road : any[] =  await Promise.all( ids.map(async (id: string) => await this.getWayConditions2(id)));
+
+    console.log(road);
+
+    return road;
+
+
+
     let raw: any[];
     let road_points_set : any = new Set();
     let road_points : any[] = [];
     let condition_types : any = new Set();
 
     try {
-      const clicked: any = await this.getClicked(coverage_value_id);
+      const clicked: any = await this.getClicked(conditions_id);
       const way_name = clicked.way_name;
 
       const conditions = this.dataSource
@@ -341,6 +556,7 @@ export class ConditionsService {
       });
 
       road_points = Array.from(road_points_set).map((x:string) => JSON.parse(x));
+
       const road_object: any = computeRoad(road_points);
 
       road_object.road.forEach((r:any):void =>{
@@ -364,9 +580,6 @@ export class ConditionsService {
         road_geom.coordinates.push([[p1.lon,p1.lat],[p2.lon,p2.lat]]);
       }
 
-      road_object.road.forEach((p:any):void =>{
-
-      });
 
       return {
         success: true,
@@ -380,6 +593,17 @@ export class ConditionsService {
       console.log(e);
       return { success: false };
     }
+  }
+
+  async post(file: any){
+    if(!file.originalname.toLowerCase().endsWith(".rsp")) return {success:false, message:"not a .rsp file"};
+
+
+    const ds : any[] = parse_rsp(file.buffer.toString());
+
+
+    return {success:true, message:"file uploaded", data: ds};
+
   }
 
 

@@ -1,5 +1,6 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query,  UploadedFile, UseInterceptors} from '@nestjs/common';
 import { ConditionsService } from './conditions.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('conditions')
 export class ConditionsController {
@@ -40,13 +41,6 @@ export class ConditionsController {
     );
   }
 
-  @Get('near_coverage_value/:id')
-  getNearConditionsFromCoverageValueId(@Param() params: any) {
-    return this.conditionsService.getNearConditionsFromCoverageValueId(
-      params.id,
-    );
-  }
-
     @Get('road_data/:id') // from the condition id clicked
     getRoadConditions(@Param() params: any) {
         return this.conditionsService.getRoadConditions(
@@ -54,6 +48,18 @@ export class ConditionsController {
         );
     }
 
+    @Get('way/:id')
+    getWayContions(@Param() params: any) {
+        return this.conditionsService.getWayConditions(
+            params.id,
+        );
+    }
+
+    @Post('import/rsp')
+    @UseInterceptors(FileInterceptor('fileName'))
+    upload(@UploadedFile() file : any) : any {
+        return this.conditionsService.post(file);
+    }
 
 
     /*  //attempt at getting the querey into this file
