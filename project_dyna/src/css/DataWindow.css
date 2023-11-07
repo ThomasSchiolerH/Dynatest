@@ -7,7 +7,6 @@
     z-index: 100;
     overflow-y: auto;
     width: 120px;  /* Define a width for the buttons container */
-    border-right: 2px solid black;
 }
 
 .data-window {
@@ -20,6 +19,7 @@
     overflow-x: hidden;
     transition: 0.5s;
     z-index: 10;  /* Ensure it's below the toggle buttons */
+    border-left: 1px solid var(--background-3);
 }
 
 .data-window-content {
