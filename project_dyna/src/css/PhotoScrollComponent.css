@@ -20,6 +20,7 @@
 .main-image {
     transform: scale(1.4); /* Make the central image larger */
     margin: 0 10px 0 10px;
+    border: 1px solid white;
 }
 
 .scroll-button {
