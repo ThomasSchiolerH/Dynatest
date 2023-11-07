@@ -324,7 +324,7 @@ const ConditionMap = (props: any) => {
         if (feature !== undefined && feature.properties !== null && feature.properties.id !== undefined) {
             layer.on('click', () => {
                 if(feature.properties) {
-                    get(`/conditions/road_data/${feature.properties.id}`, (data: JSON) => {
+                    get(`/conditions/near_coverage_value/${feature.properties.id}`, (data: JSON) => {
                         // TODO Pass the data to ConditionToggleButtons
                     })
                 }
