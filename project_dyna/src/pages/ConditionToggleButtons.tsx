@@ -3,16 +3,21 @@ import Zoom from "../map/zoom";
 import React, { useState,PureComponent } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer, ReferenceLine } from 'recharts'
 import ToggleSwitch from './ToggleSwitch'; // Update the path to the ToggleSwitch component
-
+import { useData } from "../context/RoadDataContext";
 
 interface ConditionToggleButtonsProps {
     conditionTypes: string[]; // Define the type of conditionTypes prop
     onConditionToggle: (condition: string | null, isSelected: boolean) => void;
 }
 
-const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditionTypes, onConditionToggle }) => {
+const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditionTypes, onConditionToggle}) => {
+    //data from pressed road segment
+    let { data } = useData();
+
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
     const [isDataWindowVisible, setIsDataWindowVisible] = useState<boolean>(false);
+
+
 
     const toggleCondition = (condition: string) => {
         setSelectedConditions(prevConditions => {
@@ -57,12 +62,12 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
 
     const toggleDataWindow = () => {
+
+        console.log(data)
         setIsDataWindowVisible((prev) => !prev);
     };
 
-
-
-    const data = [
+    const graphData = [
         {
             name: '15173',
             KPI: 4.75,
@@ -129,7 +134,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                 <LineChart
                                     width={500}
                                     height={200}
-                                    data={data}
+                                    data={graphData}
                                     syncId="anyId"
                                     margin={{
                                         top: 10,
@@ -151,7 +156,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                 <LineChart
                                     width={500}
                                     height={200}
-                                    data={data}
+                                    data={graphData}
                                     syncId="anyId"
                                     margin={{
                                         top: 40,
@@ -176,7 +181,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                                 <AreaChart
                                     width={500}
                                     height={200}
-                                    data={data}
+                                    data={graphData}
                                     syncId="anyId"
                                     margin={{
                                         top: 10,

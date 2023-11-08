@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
+import { DataProvider} from "./context/RoadDataContext";
 
 //pages
 import Home from "./pages/Home";
@@ -14,7 +15,7 @@ export default function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="home" element={<Home />} />
-                <Route path="conditionmap" element={<ConditionMap />} />
+                <Route path="conditionmap" element={<DataProvider> <ConditionMap /> </DataProvider>} />
                 <Route path="importdata" element={<ImportData />} />
             </Routes>
         </div>

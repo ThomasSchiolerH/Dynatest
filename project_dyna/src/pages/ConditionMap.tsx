@@ -3,12 +3,14 @@ import  ReactSlider  from "react-slider"
 import { MapContainer, TileLayer, ScaleControl, GeoJSON } from 'react-leaflet'
 import {Layer, LeafletMouseEvent, PathOptions} from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
+import { useData } from "../context/RoadDataContext";
 
 import Zoom from '../map/zoom'
 import { MAP_OPTIONS } from '../map/mapConstants'
 import { get } from '../queries/fetch'
 
 import ConditionToggleButtons from './ConditionToggleButtons';
+
 
 import "../css/slider.css";
 import "../css/map.css";
@@ -142,6 +144,8 @@ const getConditionColor = ( properties: GeoJSON.GeoJsonProperties) : string => {
 
 const ConditionMap = (props: any) => {
     const { children } = props;
+    let selectedRoadData = {} as JSON;
+    const { setData } = useData();
 
     const { center, zoom, minZoom, maxZoom, scaleWidth } = MAP_OPTIONS;
 
@@ -318,11 +322,13 @@ const ConditionMap = (props: any) => {
                 "Trip (task id): " + feature.properties.task_id + "<br>" +
                 "Condition id: " + feature.properties.id)
         }*/
-
+        //transfers road data to graphs
         if (feature !== undefined && feature.properties !== null && feature.properties.id !== undefined) {
             layer.on('click', () => {
                 if(feature.properties) {
                     get(`/conditions/road_data/${feature.properties.id}`, (data: JSON) => {
+                        //handleRoadDataUpdate(selectedRoadData);
+                        setData(data);
                         console.log(data)
                     })
                 }
@@ -358,6 +364,10 @@ const ConditionMap = (props: any) => {
         }
     };
 
+    /*const handleRoadDataUpdate = (roadData: JSON) => {
+        setData(roadData);
+    };*/
+
 
 
     return (
@@ -365,8 +375,7 @@ const ConditionMap = (props: any) => {
             <div className="condition-toggle-buttons-container">
                 <ConditionToggleButtons
                     conditionTypes={conditionTypes}
-                    onConditionToggle={handleConditionToggle}
-                />
+                    onConditionToggle={handleConditionToggle}/>
             </div>
             <div className="image-container" hidden={isImagePageHidden}>
                 {/*TODO fix it
@@ -400,46 +409,6 @@ const ConditionMap = (props: any) => {
                     {children}
                 </MapContainer>
             </div>
-            {/*<div style={{ display: "grid", gridTemplateColumns: "200px auto" }}>*/}
-            {/*    <select className="sweetalert-input" defaultValue={mode} onChange={inputChange} style={{ width: "200px" }}>*/}
-            {/*        {conditionTypes.map((value) => (*/}
-            {/*            <option value={value} key={value}>*/}
-            {/*                {value}*/}
-            {/*            </option>*/}
-            {/*        ))}*/}
-            {/*    </select>*/}
-
-            {/*    {rangeAll !== undefined && rangeAll.start !== undefined && rangeAll.end !== undefined && (*/}
-            {/*        <ReactSlider*/}
-            {/*            className="horizontal-slider"*/}
-            {/*            thumbClassName="example-thumb"*/}
-            {/*            trackClassName="example-track"*/}
-            {/*            markClassName="example-mark"*/}
-            {/*            min={0}*/}
-            {/*            max={noMonth(rangeAll)}*/}
-            {/*            marks={true}*/}
-            {/*            renderMark={(props: any) => <div {...props}>{yearMonthtoText(noToYearMonth(props.key, rangeAll))}</div>}*/}
-            {/*            defaultValue={[0, noMonth(rangeAll)]}*/}
-            {/*            ariaLabel={["Lower thumb", "Upper thumb"]}*/}
-            {/*            ariaValuetext={(state) => `Thumb value ${yearMonthtoText(noToYearMonth(state.valueNow, rangeAll))}`}*/}
-            {/*            renderThumb={(props, state) => <div {...props}>{yearMonthtoText(noToYearMonth(state.valueNow, rangeAll))}</div>}*/}
-            {/*            pearling*/}
-            {/*            minDistance={0}*/}
-            {/*            onChange={(value) => rangeChange(value)}*/}
-            {/*        />*/}
-            {/*    )}*/}
-            {/*    /!* Include the SlidingWindow component here if needed *!/*/}
-            {/*</div>*/}
-            {/*{mode === "ALL" && (*/}
-            {/*    <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", color: "white" }}>*/}
-            {/*        Colors indicate condition types (not their values): &nbsp;*/}
-            {/*        <div style={{ color: getTypeColor(KPI) }}>KPI</div> &nbsp; &nbsp;*/}
-            {/*        <div style={{ color: getTypeColor(DI) }}>DI</div> &nbsp; &nbsp;*/}
-            {/*        <div style={{ color: getTypeColor(IRI) }}>IRI</div> &nbsp; &nbsp;*/}
-            {/*        <div style={{ color: getTypeColor(Mu) }}>&mu;</div> &nbsp; &nbsp;*/}
-            {/*        <div style={{ color: getTypeColor(Enrg) }}>E</div> &nbsp; &nbsp;*/}
-            {/*    </div>*/}
-            {/*)}*/}
             {mode !== "ALL" && (
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", color: "white" }}>
                     Colors indicate condition values from &nbsp;
