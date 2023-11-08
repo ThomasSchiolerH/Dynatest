@@ -141,6 +141,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                             fill={conditionColors[dataType]}
                             connectNulls={true}
                         />
+                        <Brush dataKey="name" height={30} />
                     </LineChart>
                 </ResponsiveContainer>
             </div>

@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c7ceaf26-0a71-4457-bce7-ffa3d71ce935" name="Changes" comment="data transfer complete">
+    <list default="true" id="c7ceaf26-0a71-4457-bce7-ffa3d71ce935" name="Changes" comment="dynamic graph data">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_dyna/src/context/RoadDataContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/context/RoadDataContext.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_dyna/src/css/DataWindow.css" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/css/DataWindow.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project_dyna/src/pages/ConditionMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/pages/ConditionMap.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project_dyna/src/pages/ConditionToggleButtons.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/pages/ConditionToggleButtons.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project_dyna/src/pages/ImportData.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/project_dyna/src/pages/ImportData.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -240,7 +239,15 @@
       <option name="project" value="LOCAL" />
       <updated>1699196783831</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="dynamic graph data">
+      <option name="closed" value="true" />
+      <created>1699470855225</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1699470855225</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -311,6 +318,7 @@
     <MESSAGE value="toggle buttons - priority created" />
     <MESSAGE value="initial push" />
     <MESSAGE value="data transfer complete" />
-    <option name="LAST_COMMIT_MESSAGE" value="data transfer complete" />
+    <MESSAGE value="dynamic graph data" />
+    <option name="LAST_COMMIT_MESSAGE" value="dynamic graph data" />
   </component>
 </project>
