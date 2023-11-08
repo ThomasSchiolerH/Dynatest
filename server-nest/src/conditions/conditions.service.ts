@@ -392,6 +392,7 @@ export class ConditionsService {
           .select('ST_AsGeoJSON(picture_way.section_geom) AS section_geom')
           .from('picture_ways', 'picture_way')
           .where("picture_way.name = 'Motorvej syd 70kph'")
+          .distinct(true)
           .getRawOne();
       return await path.then(res => res.section_geom);
     } catch (e) {
@@ -400,22 +401,26 @@ export class ConditionsService {
     }
   }
 
-  // TODO Fix invalid geometry in query and return an image from local folder
+  // TODO Get related pictures from MinIO
   async getPicturesFromLatLon(lat: number, lon: number){
     try{
       const pictureName = this.dataSource
           .getRepository(Condition_Pictures)
           .createQueryBuilder('condition_pictures')
-          .select("ST_DISTANCE(" +
-              "ST_Transform('ST_POINT(condition_picture.lat_mapped condition_picture.lon_mapped)'::geometry, 3857)," +
-              "ST_Transform('ST_Point(lat lon)'::geometry, 3857)) AS distance")
+          .select(["ST_DISTANCE(" +
+              "ST_Transform(ST_Point(condition_picture.lat_mapped, condition_picture.lon_mapped, 4326), 3857)," +
+              "ST_Transform(ST_Point(:lat, :lon, 4326), 3857)) AS distance",
+              'condition_picture."name"'
+          ])
           .from('condition_pictures','condition_picture')
-          .where('distance < 3')
-          .andWhere('lat = :lat', {lat})
-          .andWhere('lon = :lon', {lon})
+          .where('ST_DISTANCE(' +
+              'ST_Transform(ST_Point(condition_picture.lat_mapped, condition_picture.lon_mapped, 4326), 3857),' +
+              'ST_Transform(ST_Point(:lat, :lon, 4326), 3857)) < 3')
+          .setParameter('lat', lat)
+          .setParameter('lon', lon)
           .orderBy('distance')
           .getRawOne();
-      console.log(await pictureName)
+      console.log(await pictureName.then(res => res.name))
 
       return{
         //needs to return pictures.

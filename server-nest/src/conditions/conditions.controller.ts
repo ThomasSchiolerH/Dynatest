@@ -62,7 +62,7 @@ export class ConditionsController {
 
   @Get('picture/:lat/:lon')
   //@Header('Content-type', 'image/jpg')
-  getPicturesFromLatLon(@Param() lan: number, lon: number) {
+  getPicturesFromLatLon(@Param('lat') lan: number, @Param('lon') lon: number) {
       return this.conditionsService.getPicturesFromLatLon(lan, lon);
   }
 }
