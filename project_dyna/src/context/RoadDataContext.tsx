@@ -1,10 +1,20 @@
-// DataContext.js
-
 import React, { createContext, useContext, useState, Dispatch, SetStateAction, ReactNode } from 'react';
 
+
+
+interface RoadData {
+    success: boolean;
+    way_name: string;
+    is_highway: boolean;
+    section_geom: string;
+    coverage: {
+        [key: string]: number[];
+    };
+}
+
 type ContextType = {
-    data: JSON | null;
-    setData: Dispatch<SetStateAction<JSON | null>>;
+    data: RoadData | null;
+    setData: Dispatch<SetStateAction<RoadData | null>>;
 };
 
 const DataContext = createContext<ContextType>({
@@ -17,11 +27,11 @@ type DataProviderProps = {
 };
 
 export function DataProvider({ children }: DataProviderProps) {
-    const [data, setData] = useState<JSON | null>(null);
+    const [data, setData] = useState<RoadData | null>(null);
 
     return (
         <DataContext.Provider value={{ data, setData }}>
-            {children}
+                {children}
         </DataContext.Provider>
     );
 }

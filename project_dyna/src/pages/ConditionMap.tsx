@@ -39,6 +39,16 @@ interface YearMonth  {
     month: number
 }
 
+interface RoadData {
+    success: boolean;
+    way_name: string;
+    is_highway: boolean;
+    section_geom: string;
+    coverage: {
+        [key: string]: number[];
+    };
+}
+
 interface DateRange {
     start?: YearMonth
     end?: YearMonth
@@ -126,17 +136,6 @@ const getConditionColor = ( properties: GeoJSON.GeoJsonProperties) : string => {
                 case Enrg:
                     return value <= 0.05 ? green : (value <= 0.1 ? greenyellow : (value <= 0.15 ? yellow : (value <= 0.25 ? orange : red )))
             }
-            /* } else {
-                // gradient for motorways
-                switch (type) {
-                    case KPI:
-                        return value <= 2.0 ? green : (value <= 4.5 ? yellow : red)
-                    case DI:
-                        return value <= 1.0 ? green : (value <= 3.0 ? yellow : red)
-                    case IRI:
-                        return value <= 1.0 ? green : (value <= 2.0 ? yellow : red)
-                }
-            } */
         }
     }
     return "grey"
@@ -296,40 +295,15 @@ const ConditionMap = (props: any) => {
     }, [dataAll, mode, rangeAll, rangeSelected])
 
     const onEachFeature = (feature: Feature,  layer: Layer) => {
-        /*if (layer.on !== undefined) {
-            layer.on({
-                // mouseover: ... ,
-                // mouseout: ... ,
-                click: (e) => {
-                    console.log(e.target)
-                    console.log(feature)
-                }
-            })
-        }
-        if (feature !== undefined && feature.properties !== null &&
-            feature.properties.type !== undefined &&
-            feature.properties.value !== undefined &&
-            feature.properties.value !== null) {
-            layer.bindPopup(
-                "Condition type: " + feature.properties.type + "<br>" +
-                "Value: " + feature.properties.value.toPrecision(3) + "<br>" +
-                ( feature.properties.std !== undefined && feature.properties.std !== null ?
-                    "&sigma;: " + feature.properties.std.toPrecision(3) + "<br>" : "" ) +
-                "Valid for " + feature.properties.valid_time + "<br>" +
-                "Computed on " + feature.properties.compute_time + "<br>" +
-                ((feature.properties.motorway !== undefined && feature.properties.motorway) ?
-                    "Motorway: yes <br>" : "" ) +
-                "Trip (task id): " + feature.properties.task_id + "<br>" +
-                "Condition id: " + feature.properties.id)
-        }*/
         //transfers road data to graphs
-        if (feature !== undefined && feature.properties !== null && feature.properties.id !== undefined) {
+        if (feature !== undefined && feature.properties !== null && feature.properties.id !== undefined  && feature.properties.value !== undefined) {
             layer.on('click', () => {
-                if(feature.properties) {
-                    get(`/conditions/road_data/${feature.properties.id}`, (data: JSON) => {
+                if (feature.properties) {
+                    get(`/conditions/near_coverage_value/${feature.properties.id}`, (data: RoadData) => {
                         //handleRoadDataUpdate(selectedRoadData);
                         setData(data);
                         console.log(data)
+
                     })
                 }
             });
@@ -363,12 +337,6 @@ const ConditionMap = (props: any) => {
             setMode(NONE); // Deselected - return to ALL
         }
     };
-
-    /*const handleRoadDataUpdate = (roadData: JSON) => {
-        setData(roadData);
-    };*/
-
-
 
     return (
         <div style={{ height: "100%" }}>

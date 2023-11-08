@@ -1,23 +1,40 @@
 import {MapContainer, ScaleControl, TileLayer} from "react-leaflet";
 import Zoom from "../map/zoom";
-import React, { useState,PureComponent } from 'react';
+import React, {useState, PureComponent, useEffect} from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer, ReferenceLine } from 'recharts'
 import ToggleSwitch from './ToggleSwitch'; // Update the path to the ToggleSwitch component
 import { useData } from "../context/RoadDataContext";
+
 
 interface ConditionToggleButtonsProps {
     conditionTypes: string[]; // Define the type of conditionTypes prop
     onConditionToggle: (condition: string | null, isSelected: boolean) => void;
 }
 
+interface RoadData {
+    success: boolean;
+    way_name: string;
+    is_highway: boolean;
+    section_geom: string;
+    coverage: {
+        [key: string]: number[];
+    };
+}
+
 const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditionTypes, onConditionToggle}) => {
     //data from pressed road segment
-    let { data } = useData();
-
+    let {data} = useData();
+    const [graphData, setGraphData] = useState<Record<string, any>[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
     const [isDataWindowVisible, setIsDataWindowVisible] = useState<boolean>(false);
 
-
+    //method to update graph data
+    useEffect(() => {
+        if (data) {
+            const newData = convertIntoGraphData(data);
+            setGraphData(newData || []); // Use an empty array as the default value if newData is undefined
+        }
+    }, [data]);
 
     const toggleCondition = (condition: string) => {
         setSelectedConditions(prevConditions => {
@@ -61,56 +78,82 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     };
 
 
-    const toggleDataWindow = () => {
+    function convertIntoGraphData(data: RoadData | null) {
+        if (data) {
+            const exportData = [];
 
-        console.log(data)
+            for (let i = 0; i < 7; i++) {
+                const dataPoint: Record<string, any> = {
+                    name: "Way " + i,
+                };
+                conditionTypes.forEach((condition) => {
+                    const value = data.coverage[condition][i];
+                    dataPoint[condition] = value !== null ? value.toPrecision(3) : null;
+                });
+                exportData.push(dataPoint);
+            }
+            return exportData;
+        }
+    }
+
+    const toggleDataWindow = () => {
         setIsDataWindowVisible((prev) => !prev);
     };
 
-    const graphData = [
-        {
-            name: '15173',
-            KPI: 4.75,
-            DI: 1.19,
-            IRI: 1.42,
-        },
-        {
-            name: '16090',
-            KPI: 6.30,
-            DI: 2.18,
-            IRI: 1.90,
-        },
-        {
-            name: '16025',
-            KPI: 4.73,
-            DI: 1.19,
-            IRI: 1.36,
-        },
-        {
-            name: '15935',
-            KPI: 4.78,
-            DI: 1.59,
-            IRI: 1.36,
-        },
-        {
-            name: '16025',
-            KPI: 6.05,
-            DI: 2.01,
-            IRI: 1.05,
-        },
-        {
-            name: '15935',
-            KPI: 4.66,
-            DI: 1.44,
-            IRI: 1.05,
-        },
-    ];
+    type ConditionColors = {
+        [key in typeof conditionTypes[number]]: string;
+    };
+
+
+    const conditionColors: ConditionColors = {
+        KPI: "#FF5733",
+        DI: "#33FF57",
+        IRI: "#397eff",
+        Mu: "#FF33E2",
+        E_norm: "#9eb626"
+    };
+
+    const renderLineCharts = () => {
+        return selectedConditions.map((dataType) => (
+            <div className="chart-container" key={dataType}>
+                <h4>Graph with data type {dataType}:</h4>
+                <ResponsiveContainer width="100%" height={230}>
+                    <LineChart
+                        width={500}
+                        height={200}
+                        data={graphData}
+                        syncId={`anyId`}
+                        margin={{
+                            top: 10,
+                            right: 30,
+                            left: 0,
+                            bottom: 30,
+                        }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" stroke="white" label={{ value: 'Way segments', angle: 0, position: 'bottom' }} />
+                        <YAxis stroke="white" label={{ value: 'Value', angle: -90, position: 'insideLeft' }} />
+                        <Tooltip />
+                        <Line
+                            type="linear"
+                            dataKey={dataType}
+                            stroke={conditionColors[dataType]}
+                            fill={conditionColors[dataType]}
+                            connectNulls={true}
+                        />
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
+        ));
+    };
+
 
     return (
         <div className="condition-toggle-buttons-container">
             <div className="condition-toggle-buttons">
                 <div className="DataWindowSwitch">
-                    <ToggleSwitch isDataWindowVisible={isDataWindowVisible} toggleDataWindow={toggleDataWindow} label={"Data"} />
+                    <ToggleSwitch isDataWindowVisible={isDataWindowVisible} toggleDataWindow={toggleDataWindow}
+                                  label={'Data'}/>
                 </div>
                 {conditionTypes.map((condition) => (
                     <ToggleSwitch
@@ -122,86 +165,15 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                 ))}
             </div>
             {isDataWindowVisible && (
-                <div className="data-window" style={{width: '50%'}}>
-                    <div className="data-window-content"
-                         style={{ paddingTop: '0px',
-                        paddingBottom: '70px',
-                        paddingLeft: '0px',
-                        paddingRight: '30px' }}>
-                        <div className={"chart-container"}>
-                            <h4>Graph 1 with data type KPI:</h4>
-                            <ResponsiveContainer width="100%" height={230}>
-                                <LineChart
-                                    width={500}
-                                    height={200}
-                                    data={graphData}
-                                    syncId="anyId"
-                                    margin={{
-                                        top: 10,
-                                        right: 30,
-                                        left: 0,
-                                        bottom: 30,
-                                    }}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" stroke={"white"} label={{ value: 'Trip-id', angle: 0, position: 'bottom' }}/>
-                                    <YAxis stroke={"white"} label={{ value: 'Value', angle: -90, position: 'insideLeft' }}/>
-                                    <Tooltip />
-                                    <Line type="linear" dataKey="KPI" stroke="#8884d8" fill="#8884d8" />
-                                </LineChart>
-                            </ResponsiveContainer>
-                            <h4>Zoom graph with data type DI:</h4>
-
-                            <ResponsiveContainer width="100%" height={260}>
-                                <LineChart
-                                    width={500}
-                                    height={200}
-                                    data={graphData}
-                                    syncId="anyId"
-                                    margin={{
-                                        top: 40,
-                                        right: 30,
-                                        left: 0,
-                                        bottom: 30,
-                                    }}
-                                >
-
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" stroke={"white"} label={{ value: 'Trip-id', angle: 0, position: 'bottom' }}/>
-                                    <YAxis stroke={"white"} label={{ value: 'Value', angle: -90, position: 'insideLeft' }}/>
-                                    <Tooltip />
-                                    <Brush y={5} height={20} />
-                                    <Line type="linear" dataKey="DI" stroke="#82ca9d" fill="#82ca9d" />
-
-                                </LineChart>
-                            </ResponsiveContainer>
-                            <h4>Graph with data type IRI:</h4>
-
-                            <ResponsiveContainer width="100%" height={230}>
-                                <AreaChart
-                                    width={500}
-                                    height={200}
-                                    data={graphData}
-                                    syncId="anyId"
-                                    margin={{
-                                        top: 10,
-                                        right: 30,
-                                        left: 0,
-                                        bottom: 30,
-                                    }}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" stroke={"white"} label={{ value: 'Trip-id', angle: 0, position: 'bottom' }}/>
-                                    <YAxis stroke={"white"} label={{ value: 'Value', angle: -90, position: 'insideLeft' }}/>
-                                    <Tooltip />
-                                    <Area type="linear" dataKey="IRI" stroke="#82ca9d" fill="#82ca9d" />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
+                <div className="data-window" style={{width: '40%'}}>
+                    <div className="data-window-content">
+                        {renderLineCharts()}
                     </div>
                 </div>
             )}
+
         </div>
+
     );
 };
 export default ConditionToggleButtons;

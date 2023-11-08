@@ -13,7 +13,6 @@
     position: fixed;
     top: var(--navbar-height);
     left: 120px;  /* Set left to the width of the buttons container to have it adjacent */
-    width: 0;
     height: 100%;
     background-color: var(--background-2);
     overflow-x: hidden;
@@ -24,7 +23,7 @@
 .data-window-content {
     margin-top: 20px;
     padding: 20px;
-    margin-left: 150px;
+    margin-left: 5px;
     color: white;
 }
 
@@ -128,4 +127,14 @@ input:checked ~ .slider .on {
 input:checked ~ .slider .off {
     transform: translate(-50%, -50%) translateX(-3rem); /* Move to the left */
     opacity: 0; /* Hide it */
+}
+.data-window-resizer {
+    background: #ccc;
+    width: 10px;
+    height: 100%;
+    cursor: col-resize;
+}
+
+.data-window-resizer.active {
+    background: #999;
 }
