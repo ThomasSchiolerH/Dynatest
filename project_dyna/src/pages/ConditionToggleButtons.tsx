@@ -3,6 +3,10 @@ import Zoom from "../map/zoom";
 import React, {useState, PureComponent, useEffect} from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer, ReferenceLine } from 'recharts'
 import ToggleSwitch from './ToggleSwitch'; // Update the path to the ToggleSwitch component
+import PhotoScrollComponent from "./PhotoScrollComponent";
+import DataWindowImg from '../images/DataWindowImg.png';
+import SingleConditionToggledImg from '../images/singleConditionToggledImg.png';
+import MultipleConditionsToggledImg from '../images/multipleConditionsToggledImg.png';
 import { useData } from "../context/RoadDataContext";
 
 
@@ -47,7 +51,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
             // Determine the state to send to the parent component
             let stateToSend = updatedConditions.length > 0
-                ? getHighestPriorityConditionFromList(updatedConditions)
+                ? getHighestPriorityConditionFromList(updatedConditions) // If there is elements in updatedCondition then find priority
                 : "NONE"; // If no conditions are selected, we use "NONE"
             // Notify the parent component
             onConditionToggle(stateToSend, stateToSend !== "NONE");
@@ -56,17 +60,6 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         });
     };
 
-
-    const getHighestPriorityCondition = () => {
-        for (let condition of conditionTypes) {
-            if (selectedConditions.includes(condition)) {
-                return condition;  // Return the first match which has the highest priority
-            }
-        }
-        return null;
-    };
-
-    const highestPriorityCondition = getHighestPriorityCondition();
 
     const getHighestPriorityConditionFromList = (conditionsList: string[]) => {
         for (let condition of conditionTypes) {
@@ -148,6 +141,58 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         ));
     };
 
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
+
+    useEffect(() => {
+        // Fetch the initial image URLs on component mount
+        // Here you need to define how you determine the initial set of images
+        const initialSetOfImages = getInitialSetOfImages();
+        setImageUrls(initialSetOfImages);
+    }, []);
+
+    const getInitialSetOfImages = (): string[] => {
+        // You would fetch or define the initial URLs here
+        return [
+            // Note, you have to import the images for them to be displayed?
+            DataWindowImg, //Place holder
+            SingleConditionToggledImg,//Place holder
+            DataWindowImg,//Place holder
+            SingleConditionToggledImg,//Place holder
+            DataWindowImg,//Place holder
+            MultipleConditionsToggledImg,//Place holder
+            DataWindowImg,//Place holder
+            // ... other image URLs
+        ];
+    };
+
+    const fetchAdjacentImages = async (direction: 'left' | 'right', index: number): Promise<string[]> => {
+        // Implement the logic to fetch new images based on the direction and the index
+        // Make an API call to your backend and pass parameters
+        // Here you would return the result of that call
+        // For now it returns an empty array as a placeholder
+
+        //POSSIBLE IMPLEMENTATION BELOW?
+        // try {
+        //     const response = await fetch(`/api/images?direction=${direction}&startIndex=${index}`);
+        //     if (response.ok) {
+        //         const images = await response.json();
+        //         return images;
+        //     } else {
+        //         // Handle errors, for example, if the response is not OK:
+        //         console.error('Failed to fetch images:', response.statusText);
+        //         return [];
+        //     }
+        // } catch (error) {
+        //     console.error('Error fetching images:', error);
+        //     return [];
+        // }
+        return [
+            MultipleConditionsToggledImg,//Place holder
+            DataWindowImg,//Place holder
+            MultipleConditionsToggledImg,//Place holder
+        ];
+    };
+
 
     return (
         <div className="condition-toggle-buttons-container">
@@ -168,6 +213,10 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
             {isDataWindowVisible && (
                 <div className="data-window" style={{width: '40%'}}>
                     <div className="data-window-content">
+                        <PhotoScrollComponent
+                            imageUrls={imageUrls}
+                            fetchAdjacentImages={fetchAdjacentImages}
+                        />
                         {renderLineCharts()}
                     </div>
                 </div>

@@ -43,32 +43,24 @@ const ImportData = (props: any) => {
     const [selectedFile, setSelectedFile] = useState<FileOrNull>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        console.log('File selected:', file); // Debugging: check the console to see if this logs correctly
-        setSelectedFile(file ?? null);
+        const file = event.target.files?.[0]; // Get the first file from input element, if it exists
+        console.log('File selected:', file);
+        setSelectedFile(file ?? null); // Hold selected file, or null if none is selected
     };
 
     const clearSelectedFile = () => {
-        setSelectedFile(null);
-        const fileInput = document.getElementById('file') as HTMLInputElement; // Cast to specific element type
-        if (fileInput) fileInput.value = '';
+        setSelectedFile(null); // reset to null
+        const fileInput = document.getElementById('file') as HTMLInputElement; // Get file input element by ID
+        if (fileInput) fileInput.value = ''; // If there is a file input element, then clear its value
     };
 
     const handleSubmit = () => {
         if (selectedFile) {
-            // Process the file submission here
             console.log('Submitting file:', selectedFile.name);
             // TODO: Send the file to the backend here
-            // You could send the file to a backend server using fetch or axios, for example.
 
-            // After submission, clear the selected file
-            setSelectedFile(null);
-
-            // Reset the input field
-            const fileInput = document.getElementById('file') as HTMLInputElement;
-            if (fileInput) {
-                fileInput.value = '';
-            }
+            // after file is submitted, clear the file
+            clearSelectedFile();
         }
     };
 
@@ -99,7 +91,7 @@ const ImportData = (props: any) => {
                     </label>
                     <label>
                         <input type="radio" name="radio" className="radioInput" />
-                        <span>E_norm</span>
+                        <span>E</span>
                     </label>
                 </div>
             </div>
@@ -119,7 +111,7 @@ const ImportData = (props: any) => {
                         <DeleteIcon />
                     </button>
                 </label>
-                <input id="file" type="file" style={{ display: 'none' }} onChange={handleFileChange} accept=".rsp,.zip,image/png,image/jpeg" />
+                <input id="file" type="file" style={{ display: 'none' }} onChange={handleFileChange} accept=".rsp,.zip,image/png,image/jpeg,.gpx" />
                 {/* Submit Button */}
                 <button onClick={handleSubmit} className="submitButton">
                     Submit File

@@ -11,7 +11,6 @@ import { get } from '../queries/fetch'
 
 import ConditionToggleButtons from './ConditionToggleButtons';
 
-
 import "../css/slider.css";
 import "../css/map.css";
 import "../css/DataWindow.css";
@@ -337,6 +336,8 @@ const ConditionMap = (props: any) => {
             setMode(NONE); // Deselected - return to ALL
         }
     };
+
+
 
     return (
         <div style={{ height: "100%" }}>

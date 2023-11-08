@@ -1,0 +1,32 @@
+.photo-scroll-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    border: 2px solid white;
+    margin: 0 50px 0 50px;
+}
+
+.image-container {
+    display: flex;
+    overflow: visible;
+}
+
+.road-image {
+    width: 75px; /* Example size, adjust as needed */
+    height: auto;
+    transition: transform 0.2s ease-in-out;
+}
+
+.main-image {
+    transform: scale(1.4); /* Make the central image larger */
+    margin: 0 10px 0 10px;
+    border: 1px solid white;
+}
+
+.scroll-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px; /* Example size, adjust as needed */
+    color: white;
+}
