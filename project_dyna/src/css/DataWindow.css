@@ -1,0 +1,140 @@
+.condition-toggle-buttons-container {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    bottom: 0;
+    background-color: var(--background-2);
+    z-index: 11;
+    overflow-y: auto;
+    width: 120px;  /* Define a width for the buttons container */
+}
+
+.data-window {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 120px;  /* Set left to the width of the buttons container to have it adjacent */
+    height: 100%;
+    background-color: var(--background-2);
+    overflow-x: hidden;
+    transition: 0.5s;
+    z-index: 10;  /* Ensure it's below the toggle buttons */
+}
+
+.data-window-content {
+    margin-top: 20px;
+    padding: 20px;
+    margin-left: 5px;
+    color: white;
+}
+
+.chart-container {
+    background-color: var(--background-2); /* Set your desired background color here */
+    padding: 10px; /* Optional: Add padding for spacing */
+}
+.chart-container p {
+    color: white; /* Define your desired text color here */
+}
+.chart-container h4 {
+    color: white; /* Define your desired text color here */
+}
+
+.DataWindowSwitch {
+    margin-bottom: 40px;
+    margin-top: 30px;
+}
+/* The switch - the box around the slider */
+.switch {
+    font-size: 17px;
+    position: relative;
+    display: inline-block;
+    width: 5.2em;
+    height: 2em;
+    overflow: hidden;
+    margin-left: 16px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #eee;
+    transition: .4s;
+    border-radius: 30px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 1.4em;
+    width: 1.4em;
+    border-radius: 20px;
+    border: 1px solid #333;
+    left: 0.4em;
+    bottom: 0.2em;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #04bd38;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #04bd38;
+}
+
+input:checked + .slider:before {
+    transform: translateX(3em);
+}
+
+.switch .on {
+    left: -0.8rem;
+    transform: translateX(-3rem) translateY(-50%);
+    position: absolute;
+    top: 50%;
+    pointer-events: none;
+    text-transform: uppercase;
+    transition: .4s;
+}
+
+.switch .off {
+    color: #999;
+    right: .8rem;
+    position: absolute;
+    top: 50%;
+    pointer-events: none;
+    text-transform: uppercase;
+    transform: translateY(-50%);
+    transition: .4s;
+}
+
+input:checked ~ .slider .on {
+    transform: translate(-50%, -50%) translateX(3rem); /* Move to the right */
+    opacity: 1; /* Make it visible */
+}
+
+input:checked ~ .slider .off {
+    transform: translate(-50%, -50%) translateX(-3rem); /* Move to the left */
+    opacity: 0; /* Hide it */
+}
+.data-window-resizer {
+    background: #ccc;
+    width: 10px;
+    height: 100%;
+    cursor: col-resize;
+}
+
+.data-window-resizer.active {
+    background: #999;
+}
