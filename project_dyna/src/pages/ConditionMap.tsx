@@ -300,9 +300,10 @@ const ConditionMap = (props: any) => {
                 if (feature.properties) {
                     get(`/conditions/near_coverage_value/${feature.properties.id}`, (data: RoadData) => {
                         //handleRoadDataUpdate(selectedRoadData);
-                        setData(data);
+                        if (data.success){
+                            setData(data);
+                        }
                         console.log(data)
-
                     })
                 }
             });

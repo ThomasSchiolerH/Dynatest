@@ -71,7 +71,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     };
 
 
-    function convertIntoGraphData(data: RoadData | null) {
+    function convertIntoGraphData(data: RoadData | undefined) {
         if (data) {
             const exportData = [];
 
