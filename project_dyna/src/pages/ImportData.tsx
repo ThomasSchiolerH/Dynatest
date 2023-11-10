@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import "../css/ImportData.css";
+import {post} from '../queries/fetch';
 
 const UploadIcon = () => (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -57,8 +58,15 @@ const ImportData = (props: any) => {
     const handleSubmit = () => {
         if (selectedFile) {
             console.log('Submitting file:', selectedFile.name);
-            // TODO: Send the file to the backend here
-
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            post('/conditions/import/zip', formData).then(res => {
+                res.statusText === 'Created' ? console.log('File uploaded successfully!') // TODO Show information page with text: File uploaded successfully!
+                    : console.error('Failed to upload file!') // TODO Show error page with text: Failed to upload file!
+            }).catch(e => {
+                e.response.status === 400 ? console.error('Wrong file format!') // TODO Show error page with text: Wrong file format!
+                    : console.error('Failed to upload file!') // TODO Show error page with text: Failed to upload file!
+            })
             // after file is submitted, clear the file
             clearSelectedFile();
         }
@@ -75,23 +83,19 @@ const ImportData = (props: any) => {
                 <div>
                     <label>
                         <input type="radio" name="radio" defaultChecked className="radioInput" />
-                        <span>KPI</span>
+                        <span>ZIP</span>
                     </label>
                     <label>
                         <input type="radio" name="radio" className="radioInput" />
-                        <span>DI</span>
+                        <span>GPX</span>
                     </label>
                     <label>
                         <input type="radio" name="radio" className="radioInput" />
-                        <span>IRI</span>
+                        <span>RSP</span>
                     </label>
                     <label>
                         <input type="radio" name="radio" className="radioInput" />
-                        <span>Mu</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="radio" className="radioInput" />
-                        <span>E</span>
+                        <span>Image</span>
                     </label>
                 </div>
             </div>

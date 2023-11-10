@@ -1,5 +1,5 @@
 
-import axios, { AxiosResponse } from 'axios'
+import axios, {AxiosRequestConfig, AxiosResponse } from 'axios'
 
 const development = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
 
@@ -15,9 +15,9 @@ export function get<T>(path: string, callback: (data: T) => void): void
         .then(data => callback(data));
 }
 
-export function post<T>(path: string, obj: object, callback: (data: T) => void): void
+export function post<T>(path: string, obj: object, config?: AxiosRequestConfig): Promise<AxiosResponse<T, any>>
 {
-    asyncPost<T>(path, obj).then(res => callback(res.data));
+    return axios.post(getPath(path), obj, config ? config : undefined)
 }
 
 export const put = ( path: string, obj: object ): void => {
