@@ -8,16 +8,6 @@ const prodURL = process.env.REACT_APP_BACKEND_URL_PROD
 
 const getPath = (p: string) => ( development ? devURL : prodURL ) + p
 
-export async function asyncPost<T>(path: string, obj: object ): Promise<AxiosResponse<T, any>>
-{
-    return axios.get<T>( getPath(path), {
-        params: obj,
-        paramsSerializer: params => Object.keys(params)
-            .map( (key: any) => new URLSearchParams(`${key}=${params[key]}`) )
-            .join("&")
-    } )
-}
-
 export function get<T>(path: string, callback: (data: T) => void): void 
 {
     fetch(getPath(path))
