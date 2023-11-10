@@ -1,5 +1,6 @@
-import {Controller, Get, Header, Param, Query} from '@nestjs/common';
+import {Controller, Get, Param, Post, Query, UseInterceptors, UploadedFile, ParseFilePipeBuilder, HttpStatus, HttpException} from '@nestjs/common';
 import { ConditionsService } from './conditions.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('conditions')
 export class ConditionsController {
@@ -61,8 +62,28 @@ export class ConditionsController {
   }
 
   @Get('picture/:lat/:lon')
-  //@Header('Content-type', 'image/jpg')
   getPicturesFromLatLon(@Param('lat') lan: number, @Param('lon') lon: number) {
       return this.conditionsService.getPicturesFromLatLon(lan, lon);
+  }
+
+  @Post('import/zip')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadZipFile(
+      @UploadedFile(
+          new ParseFilePipeBuilder()
+              .addFileTypeValidator({fileType: 'zip'})
+              .build({
+                  exceptionFactory: e => {
+                      if (e) {
+                          throw new HttpException(
+                              'Wrong file format',
+                              HttpStatus.BAD_REQUEST
+                          )
+                      }
+                  }
+              })
+      ) file: Express.Multer.File
+  ) {
+      return this.conditionsService.uploadZipFile(file);
   }
 }

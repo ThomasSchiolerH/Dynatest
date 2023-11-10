@@ -431,4 +431,31 @@ export class ConditionsService {
     }
 
   }
+
+  async uploadZipFile(file: Express.Multer.File) {
+    // TODO Extract ZIP file
+    // TODO Validate the file structure inside
+    // TODO Various processing of different datatypes
+
+    // For now it just says error
+    throw new HttpException("Internal server error", 500);
+
+    // TODO Make the image upload with this
+    /*let image: BufferedFile;
+    this.uploadImage(image).then((res) => {
+      this.dataSource
+          .createQueryBuilder()
+          .insert()
+          .into(Condition_Pictures)
+          .values({
+            lat_mapped: 55.555,   // TODO Get it from RSP file
+            lon_mapped: 55.555,   // TODO Get it from RSP file
+            name: image.originalname,
+            url: res.image_url
+          })
+          .execute()
+    }).catch(e => {
+      throw new HttpException("Internal server error", 500);
+    })*/
+  }
 }
