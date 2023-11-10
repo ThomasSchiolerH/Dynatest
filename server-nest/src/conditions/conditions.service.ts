@@ -7,6 +7,8 @@ import {Ways} from '../entity/Ways';
 import {Trips} from '../entity/Trips';
 import {Condition_Pictures} from "../entity/Condition_Pictures";
 import {Picture_ways} from "../entity/Picture_ways";
+import { BufferedFile } from 'src/minio-client/file.model';
+import { MinioClientService } from 'src/minio-client/minio-client.service';
 
 
 @Injectable()
@@ -14,6 +16,7 @@ export class ConditionsService {
   constructor(
     @InjectDataSource('lira-map')
     private dataSource: DataSource,
+    private minioClientService: MinioClientService
   ) {}
 
   async getConditions(
@@ -457,5 +460,14 @@ export class ConditionsService {
     }).catch(e => {
       throw new HttpException("Internal server error", 500);
     })*/
+  }
+
+  async uploadImage(image: BufferedFile) {
+    const uploaded_image = await this.minioClientService.upload(image);
+
+    return {
+      image_url: uploaded_image.url,
+      message: 'Image upload successful',
+    };
   }
 }

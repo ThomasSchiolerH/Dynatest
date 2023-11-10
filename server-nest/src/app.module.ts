@@ -5,10 +5,12 @@ import {DB_LIRAMAP_CONFIG} from "./config/database";
 import {ConditionsController} from "./conditions/conditions.controller";
 import {ConditionsService} from "./conditions/conditions.service";
 import {DataSource} from "typeorm";
+import { MinioClientModule } from './minio-client/minio-client.module';
 
 @Module({
   imports: [
-      ConfigModule.forRoot({}),
+      ConfigModule.forRoot({ isGlobal: true }),
+      MinioClientModule,
       TypeOrmModule.forRootAsync({
           name: 'lira-map',
           imports: [ConfigModule],
