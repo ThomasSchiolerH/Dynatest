@@ -147,17 +147,29 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     return (
         <div className="condition-toggle-buttons-container">
             <div className="condition-toggle-buttons">
+                {/* DataWindowSwitch component */}
                 <div className="DataWindowSwitch">
-                    <ToggleSwitch isDataWindowVisible={isDataWindowVisible} toggleDataWindow={toggleDataWindow} label={"Data"} />
-                </div>
-                {conditionTypes.map((condition) => (
                     <ToggleSwitch
-                        key={condition}
-                        isDataWindowVisible={selectedConditions.includes(condition)}
-                        toggleDataWindow={() => toggleCondition(condition)}
-                        label={condition}
+                        isDataWindowVisible={isDataWindowVisible}
+                        toggleDataWindow={toggleDataWindow}
+                        label={"Data"}
+                        isHighestPriority={false} // Assuming this is not a condition and thus not a candidate for highest priority
                     />
-                ))}
+                </div>
+
+                {/* ToggleSwitch components for each condition type */}
+                {conditionTypes.map((condition) => {
+                    const isHighestPriority = condition === getHighestPriorityConditionFromList(selectedConditions);
+                    return (
+                        <ToggleSwitch
+                            key={condition}
+                            isDataWindowVisible={selectedConditions.includes(condition)}
+                            toggleDataWindow={() => toggleCondition(condition)}
+                            label={condition}
+                            isHighestPriority={isHighestPriority}
+                        />
+                    );
+                })}
             </div>
             {isDataWindowVisible && (
                 <div className="data-window" style={{width: '50%'}}>
