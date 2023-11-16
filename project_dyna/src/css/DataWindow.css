@@ -95,6 +95,14 @@ input:focus + .slider {
     box-shadow: 0 0 1px #04bd38;
 }
 
+.switch.green .slider {
+    background-color: #04bd38; /* Green color when highest priority */
+}
+
+.switch.grey .slider {
+    background-color: grey; /* Grey color for other toggled switches */
+}
+
 input:checked + .slider:before {
     transform: translateX(3em);
 }
