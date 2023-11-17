@@ -2,16 +2,15 @@ import React, {useEffect, useState} from 'react';
 import '../css/SearchBar.css';
 import {get} from "../queries/fetch";
 
-interface RoadNamesResponse {
+interface RoadNames {
     success: boolean;
     roads: { way_name: string }[];
 }
 
-
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     //const [roadNames, setRoadNames] = useState<string[]>([]);
-    const mockRoadNames = ['Main Street', 'Elm Street', 'Oak Avenue', 'Maple Lane', 'Pine Road']
+    const mockRoadNames = ['Main Street', 'Elm Street', 'Oak Avenue', 'Maple Lane', 'Pine Road', 'Lyngby Hovedgade']
     const [roadNames] = useState<string[]>(mockRoadNames); // Use mock data
     const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);;
 
@@ -60,7 +59,6 @@ const SearchBar = () => {
         );
         setFilteredSuggestions(filtered);
     };
-
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
