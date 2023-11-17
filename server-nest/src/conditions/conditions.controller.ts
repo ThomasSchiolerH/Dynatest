@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Post, Query,  UploadedFile, UseInterceptors} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ConditionsService } from './conditions.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -41,28 +49,23 @@ export class ConditionsController {
     );
   }
 
-    @Get('road_data/:id') // from the condition id clicked
-    getRoadConditions(@Param() params: any) {
-        return this.conditionsService.getRoadConditions(
-            params.id,
-        );
-    }
+  @Get('road_data/:id') // from the condition id clicked
+  getRoadConditions(@Param() params: any) {
+    return this.conditionsService.getRoadConditions(params.id);
+  }
 
-    @Get('way/:id')
-    getWayContions(@Param() params: any) {
-        return this.conditionsService.getWayConditions(
-            params.id,
-        );
-    }
+  @Get('way/:id')
+  getWayContions(@Param() params: any) {
+    return this.conditionsService.getWayConditions(params.id);
+  }
 
-    @Post('import/rsp')
-    @UseInterceptors(FileInterceptor('fileName'))
-    upload(@UploadedFile() file : any) : any {
-        return this.conditionsService.post(file);
-    }
+  @Post('import/rsp')
+  @UseInterceptors(FileInterceptor('fileName'))
+  upload(@UploadedFile() file: any): any {
+    return this.conditionsService.post(file);
+  }
 
-
-    /*  //attempt at getting the querey into this file
+  /*  //attempt at getting the querey into this file
       @Get('conditionis/picture/:lat/:lon')
       getPicturesFromLatLon(@Param() params: any) {
           return this.conditionsService.getPicturesFromLatLon(lan, lon);
