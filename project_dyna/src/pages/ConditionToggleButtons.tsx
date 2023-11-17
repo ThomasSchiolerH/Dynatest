@@ -8,6 +8,7 @@ import DataWindowImg from '../images/DataWindowImg.png';
 import SingleConditionToggledImg from '../images/singleConditionToggledImg.png';
 import MultipleConditionsToggledImg from '../images/multipleConditionsToggledImg.png';
 import { useData } from "../context/RoadDataContext";
+import {ALL} from "dns";
 
 
 interface ConditionToggleButtonsProps {
@@ -80,8 +81,11 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                     name: "Way " + i,
                 };
                 conditionTypes.forEach((condition) => {
-                    const value = data.coverage[condition][i];
-                    dataPoint[condition] = value !== null ? value.toPrecision(3) : null;
+                    if (condition === "ALL") {return;}
+                    else {
+                        const value = data.coverage[condition][i];
+                        dataPoint[condition] = value !== null ? value.toPrecision(3) : null;
+                    }
                 });
                 exportData.push(dataPoint);
             }

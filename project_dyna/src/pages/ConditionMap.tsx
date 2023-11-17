@@ -15,7 +15,7 @@ import "../css/slider.css";
 import "../css/map.css";
 import "../css/DataWindow.css";
 
-//const ALL = "ALL"
+const ALL = "ALL"
 const KPI = "KPI"
 const DI = "DI"
 const IRI = "IRI"
@@ -26,7 +26,7 @@ const NONE = "NONE";
 
 const conditionTypes = [
     //NONE,
-    //ALL,
+    ALL,
     KPI,
     DI,
     IRI, // IRInew,
