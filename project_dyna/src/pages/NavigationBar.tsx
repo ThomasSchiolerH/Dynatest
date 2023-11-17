@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 
 
 import '../css/navigationbar.css';
+import SearchBar from "./SearchBar";
 
 interface NavBtnProps {
     to: string;
@@ -29,6 +30,7 @@ const NavigationBar: FC = () => {
                     <NavBtn  to='/conditionmap' name='Condition Map' />
                     <NavBtn  to='/importdata' name='Import Data' />
                 </div>
+                <SearchBar />
             </div>
         </div>
     )
