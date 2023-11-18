@@ -1,11 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import '../css/SearchBar.css';
 import {get} from "../queries/fetch";
+import {useData} from "../context/RoadDataContext";
 
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [roadNames, setRoadNames] = useState<string[]>([]);
-    const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);;
+    const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+    const { map } = useData();
+
+    let zoomLevel = 15;
 
     const SearchIcon = () => {
         return (
@@ -55,8 +59,39 @@ const SearchBar = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // Add search functionality here
+        executeSearch(searchQuery);
         console.log("Searching for:", searchQuery);
+    };
+
+    const executeSearch = async (query: string) => {
+        try {
+            console.log("Searching for:", query);
+            // Fetch the mock coordinates
+            const coordinates = await fetchRoadCoordinates(query);
+            console.log("Coordinates received:", coordinates);
+            if (coordinates) {
+                panToMapCoordinates(coordinates);
+            }
+        } catch (error) {
+            console.error("Error executing search:", error);
+        }
+    };
+
+    const handleSuggestionClick = (suggestion: string) => {
+        setSearchQuery(suggestion);
+        executeSearch(suggestion); // Execute search when suggestion is clicked
+    };
+
+    const fetchRoadCoordinates = async (roadName: string) => {
+        // Replace with API call
+        console.log("Fetching coordinates");
+        return { lat: 40.7128, lng: -74.0060 }; // placeholder
+    };
+
+    const panToMapCoordinates = (coords: { lat: number, lng: number }) => {
+        if (map) {
+            map.flyTo(coords, zoomLevel); // Set your desired zoom level
+        }
     };
 
     const handleReset = () => {
@@ -79,7 +114,7 @@ const SearchBar = () => {
             {searchQuery && filteredSuggestions.length > 0 && (
                 <ul className="suggestions">
                     {filteredSuggestions.map((suggestion, index) => (
-                        <li key={index} onClick={() => setSearchQuery(suggestion)}>
+                        <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
                             {suggestion}
                         </li>
                     ))}

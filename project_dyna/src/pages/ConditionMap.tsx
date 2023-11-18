@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import  ReactSlider  from "react-slider"
-import { MapContainer, TileLayer, ScaleControl, GeoJSON } from 'react-leaflet'
+import {MapContainer, TileLayer, ScaleControl, GeoJSON, useMap} from 'react-leaflet'
 import {Layer, LeafletMouseEvent, PathOptions} from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
 import { useData } from "../context/RoadDataContext";
@@ -14,6 +14,7 @@ import ConditionToggleButtons from './ConditionToggleButtons';
 import "../css/slider.css";
 import "../css/map.css";
 import "../css/DataWindow.css";
+import SearchBar from "./SearchBar";
 
 const ALL = "ALL"
 const KPI = "KPI"
@@ -144,6 +145,7 @@ const ConditionMap = (props: any) => {
     const { children } = props;
     let selectedRoadData = {} as JSON;
     const { setData } = useData();
+    const { setMap } = useData();
 
     const { center, zoom, minZoom, maxZoom, scaleWidth } = MAP_OPTIONS;
 
@@ -338,10 +340,23 @@ const ConditionMap = (props: any) => {
         }
     };
 
+    const MapInstanceComponent = () => {
+        const map = useMap();
+        useEffect(() => {
+            if (map) {
+                console.log("Setting map instance");
+                setMap(map);
+            }
+        }, [map, setMap]);
+
+        return null;
+    };
+
 
 
     return (
         <div style={{ height: "100%" }}>
+
             <div className="condition-toggle-buttons-container">
                 <ConditionToggleButtons
                     conditionTypes={conditionTypes}
@@ -361,6 +376,7 @@ const ConditionMap = (props: any) => {
                     scrollWheelZoom={true}
                     zoomControl={false}
                 >
+                    <MapInstanceComponent />
                     <TileLayer
                         maxNativeZoom={maxZoom}
                         maxZoom={maxZoom}

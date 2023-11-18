@@ -7,17 +7,20 @@ import Home from "./pages/Home";
 import ConditionMap from "./pages/ConditionMap";
 import NavigationBar from "./pages/NavigationBar";
 import ImportData from "./pages/ImportData";
+import SearchBar from "./pages/SearchBar";
 
 export default function App() {
     return (
         <div>
-            <NavigationBar />
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="home" element={<Home />} />
-                <Route path="conditionmap" element={<DataProvider> <ConditionMap /> </DataProvider>} />
-                <Route path="importdata" element={<ImportData />} />
-            </Routes>
+            <DataProvider>
+                <NavigationBar/>
+                <Routes>
+                    <Route path="/" element={<Home/>} />
+                    <Route path="home" element={<Home />} />
+                    <Route path="conditionmap" element={ <ConditionMap />} />
+                    <Route path="importdata" element={<ImportData />} />
+                </Routes>
+            </DataProvider>
         </div>
     );
 }
