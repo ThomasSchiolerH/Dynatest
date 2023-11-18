@@ -117,6 +117,22 @@ export class ConditionsService {
     };
   }
 
+  async getRoadNames() {
+    try {
+      const roadNames =this.dataSource
+          .getRepository(Ways)
+          .createQueryBuilder('ways')
+          .select('way_name')
+          .distinct(true)
+          .orderBy('way_name', 'ASC')
+          .getRawMany();
+      return await roadNames.then(res => res);
+    } catch (e) {
+      console.log(e);
+      throw new HttpException("Internal server error", 500);
+    }
+  }
+
   async getClicked(coverage_value_id: string): Promise<string> {
     const conditions = this.dataSource
         .getRepository(Coverage_Values)

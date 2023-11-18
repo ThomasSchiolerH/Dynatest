@@ -41,6 +41,11 @@ export class ConditionsController {
     );
   }
 
+  @Get('road-names')
+  getRoadNames() {
+      return this.conditionsService.getRoadNames();
+  }
+
   @Get('near_coverage_value/:id')
   getNearConditionsFromCoverageValueId(@Param() params: any) {
     return this.conditionsService.getNearConditionsFromCoverageValueId(
