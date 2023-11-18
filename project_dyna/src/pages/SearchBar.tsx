@@ -2,16 +2,9 @@ import React, {useEffect, useState} from 'react';
 import '../css/SearchBar.css';
 import {get} from "../queries/fetch";
 
-interface RoadNames {
-    success: boolean;
-    roads: { way_name: string }[];
-}
-
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
-    //const [roadNames, setRoadNames] = useState<string[]>([]);
-    const mockRoadNames = ['Main Street', 'Elm Street', 'Oak Avenue', 'Maple Lane', 'Pine Road', 'Lyngby Hovedgade']
-    const [roadNames] = useState<string[]>(mockRoadNames); // Use mock data
+    const [roadNames, setRoadNames] = useState<string[]>([]);
     const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);;
 
     const SearchIcon = () => {
@@ -39,16 +32,16 @@ const SearchBar = () => {
             </svg>
         );
     };
-    // useEffect(() => {
-    //     // Fetch road names when the component mounts
-    //     get("/conditions/road_names", (data: RoadNamesResponse) => {
-    //         if (data.success) {
-    //             // Extract way_name from each road and update the state
-    //             const names = data.roads.map(road => road.way_name);
-    //             setRoadNames(names);
-    //         }
-    //     });
-    // }, []);
+    useEffect(() => {
+        get("/conditions/road-names", (roadNameCollection: { way_name: string }[]) => {
+            try {
+                const names: string[] = roadNameCollection.map(road => road.way_name);
+                setRoadNames(names);
+            } catch (e) {
+                console.error(e);
+            }
+        });
+    }, []);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const userInput = event.target.value;
