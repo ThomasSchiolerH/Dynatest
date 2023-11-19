@@ -59,9 +59,13 @@ const SearchBar = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        setFilteredSuggestions([]);  // clear suggested
-        executeSearch(searchQuery);
+        // executeSearch(searchQuery);
         console.log("Searching for:", searchQuery);
+        get(`/conditions/road_data?wayName=${searchQuery}`, (data: any) => {
+            if(data.success) {
+                console.log(data);
+            }
+        })
     };
 
     const executeSearch = async (query: string) => {
@@ -82,6 +86,12 @@ const SearchBar = () => {
         setSearchQuery(suggestion);
         setFilteredSuggestions([]);  // clear suggested
         executeSearch(suggestion); // Execute search when suggestion is clicked
+        // executeSearch(suggestion); // Execute search when suggestion is clicked
+        get(`/conditions/road_data?wayName=${suggestion}`, (data: any) => {
+            if(data.success) {
+                console.log(data);
+            }
+        })
     };
 
     const fetchRoadCoordinates = async (roadName: string) => {
