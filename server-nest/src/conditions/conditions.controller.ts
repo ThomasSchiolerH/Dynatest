@@ -61,12 +61,6 @@ export class ConditionsController {
             );
     }}
 
-
-  @Get('road-pictures-path')
-    getRoadPicturesPath() {
-      return this.conditionsService.getRoadPicturesPath();
-  }
-
   @Get('picture/:lat/:lon')
   getPicturesFromLatLon(@Param('lat') lan: number, @Param('lon') lon: number) {
       return this.conditionsService.getPicturesFromLatLon(lan, lon);

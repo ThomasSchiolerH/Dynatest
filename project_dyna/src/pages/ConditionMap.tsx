@@ -162,7 +162,6 @@ const ConditionMap = (props: any) => {
     const [rangeAll, setRangeAll] = useState<DateRange>({});
     const [rangeSelected, setRangeSelected] = useState<DateRange>({});
     const [mode, setMode] = useState<string>("NONE");
-    const [pictureRoadPath, setPictureRoadPath] = useState<GeoJSON.MultiLineString>()
     const [isImagePageHidden, setIsImagePageHidden] = useState<boolean>(true);
     const [img, setImg] = useState<Blob>();
 
@@ -208,12 +207,6 @@ const ConditionMap = (props: any) => {
             setDataAll(data)
         })
     }, [] )
-
-    useEffect(() => {
-        get('/conditions/road-pictures-path', (sectionGeom: GeoJSON.MultiLineString) => {
-            setPictureRoadPath(sectionGeom);
-        })
-    }, []);
 
     useEffect ( () => {
 
@@ -320,21 +313,6 @@ const ConditionMap = (props: any) => {
 
     }
 
-    const handlePictureRoadClick = (e: LeafletMouseEvent) => {
-        get(`/conditions/picture/${e.latlng.lat}/${e.latlng.lng}`, (img: File) => {
-            setImg(img);
-        })
-        setIsImagePageHidden(false);
-    }
-
-    const onPictureRoadClick = (feature: Feature,  layer: Layer) => {
-        if (layer !== undefined) {
-            layer.on({
-                click: event => handlePictureRoadClick(event)
-            }
-        );}
-    }
-
     const handleConditionToggle = (condition: string | null, isSelected: boolean) => {
         if (condition === null) {
             // Handle the null case appropriately.
@@ -390,9 +368,6 @@ const ConditionMap = (props: any) => {
                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-
-                    { pictureRoadPath !== undefined &&
-                        <GeoJSON ref={geoJsonRef} data={pictureRoadPath} onEachFeature={onPictureRoadClick} />}
 
                     { dataAll !== undefined &&
                         <GeoJSON ref={geoJsonRef} data={dataAll} onEachFeature={onEachFeature} /> }
