@@ -300,7 +300,7 @@ const ConditionMap = (props: any) => {
         if (feature !== undefined && feature.properties !== null && feature.properties.id !== undefined  && feature.properties.value !== undefined) {
             layer.on('click', () => {
                 if (feature.properties) {
-                    get(`/conditions/near_coverage_value/${feature.properties.id}`, (data: RoadData) => {
+                    get(`/conditions/road_data?coverage_value_id=${feature.properties.id}`, (data: RoadData) => {
                         //handleRoadDataUpdate(selectedRoadData);
                         if (data.success){
                             setData(data);
