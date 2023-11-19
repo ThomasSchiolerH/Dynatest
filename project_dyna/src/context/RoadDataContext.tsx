@@ -2,16 +2,22 @@ import React, { createContext, useContext, useState, Dispatch, SetStateAction, R
 import {map} from "leaflet";
 
 
-
 interface RoadData {
     success: boolean;
-    way_name: string;
-    is_highway: boolean;
-    section_geom: string;
-    coverage: {
-        [key: string]: number[];
-    };
+    road_name: string;
+    road_distance: number;
+    road: Array<{
+        lat: number;
+        lon: number;
+        distance: number;
+        IRI: number | null;
+        E_norm: number | null;
+        KPI: number | null;
+        Mu: number | null;
+        DI: number | null;
+    }>;
 }
+
 
 type ContextType = {
     data: RoadData | null;

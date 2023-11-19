@@ -18,13 +18,20 @@ interface ConditionToggleButtonsProps {
 
 interface RoadData {
     success: boolean;
-    way_name: string;
-    is_highway: boolean;
-    section_geom: string;
-    coverage: {
-        [key: string]: number[];
-    };
+    road_name: string;
+    road_distance: number;
+    road: Array<{
+        lat: number;
+        lon: number;
+        distance: number;
+        IRI: number | null;
+        E_norm: number | null;
+        KPI: number | null;
+        Mu: number | null;
+        DI: number | null;
+    }>;
 }
+
 
 const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditionTypes, onConditionToggle}) => {
     //data from pressed road segment
@@ -38,6 +45,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         if (data) {
             const newData = convertIntoGraphData(data);
             setGraphData(newData || []); // Use an empty array as the default value if newData is undefined
+            console.log(newData);
         }
     }, [data]);
 
@@ -74,22 +82,24 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
     function convertIntoGraphData(data: RoadData | undefined) {
         if (data) {
-            const exportData = [];
+            const graphData: Array<Record<string, any>> = [];
 
-            for (let i = 0; i < 7; i++) {
-                const dataPoint: Record<string, any> = {
-                    name: "Way " + i,
-                };
-                conditionTypes.forEach((condition) => {
-                    if (condition === "ALL") {return;}
-                    else {
-                        const value = data.coverage[condition][i];
-                        dataPoint[condition] = value !== null ? value.toPrecision(3) : null;
-                    }
+            if (data) {
+                data.road.forEach((roadItem) => {
+                    const graphItem: Record<string, any> = {
+                        name: roadItem.distance,
+                        KPI: roadItem.KPI !== null ? roadItem.KPI.toPrecision(3) : null,
+                        DI: roadItem.DI !== null ? roadItem.DI.toPrecision(3) : null,
+                        IRI: roadItem.IRI !== null ? roadItem.IRI.toPrecision(3) : null,
+                        Mu: roadItem.Mu !== null ? roadItem.Mu.toPrecision(3) : null,
+                        E_norm: roadItem.E_norm !== null ? roadItem.E_norm.toPrecision(3) : null,
+                    };
+
+                    graphData.push(graphItem);
                 });
-                exportData.push(dataPoint);
             }
-            return exportData;
+
+            return graphData;
         }
     }
 
@@ -113,7 +123,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     const renderLineCharts = () => {
         return selectedConditions.map((dataType) => (
             <div className="chart-container" key={dataType}>
-                <h4>Graph with data type {dataType}:</h4>
+                <h4>{dataType} data from {data?.road_name}:</h4>
                 <ResponsiveContainer width="100%" height={230}>
                     <LineChart
                         width={500}
@@ -128,7 +138,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                         }}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" stroke="white" label={{ value: 'Way segments', angle: 0, position: 'bottom' }} />
+                        <XAxis dataKey="name" stroke="white" label={{ value: 'Distance', angle: 0, position: 'top' }} />
                         <YAxis stroke="white" label={{ value: 'Value', angle: -90, position: 'insideLeft' }} />
                         <Tooltip />
                         <Line
