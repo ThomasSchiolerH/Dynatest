@@ -8,15 +8,15 @@
     height: 90vh;
     z-index: 0;
 }
-.map-zoom {
-    position: absolute;
-    right: 55px;
-    z-index: calc( var(--navbar-z-index) - 2 );
-    color: var(--background-3);
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 2em;
-    margin-top: 5px;
-}
+/*.map-zoom {*/
+/*    position: absolute;*/
+/*    right: 55px;*/
+/*    z-index: calc( var(--navbar-z-index) - 2 );*/
+/*    color: var(--background-3);*/
+/*    font-family: 'Noto Sans JP', sans-serif;*/
+/*    font-size: 2em;*/
+/*    margin-top: 5px;*/
+/*}*/
 
 .leaflet-control-zoom, .leaflet-control-zoom-in, .leaflet-control-zoom-out {
     background: var(--background-3) !important;

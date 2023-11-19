@@ -117,6 +117,23 @@ export class ConditionsService {
     };
   }
 
+  async getRoadNames() {
+    try {
+      const roadNames =this.dataSource
+          .getRepository(Ways)
+          .createQueryBuilder('ways')
+          .select('way_name')
+          .innerJoin(Coverage, 'coverage', 'coverage.fk_way_id = ways.id')
+          .distinct(true)
+          .orderBy('way_name', 'ASC')
+          .getRawMany();
+      return await roadNames.then(res => res);
+    } catch (e) {
+      console.log(e);
+      throw new HttpException("Internal server error", 500);
+    }
+  }
+
   async getClicked(coverage_value_id: string): Promise<string> {
     const conditions = this.dataSource
         .getRepository(Coverage_Values)
@@ -212,7 +229,7 @@ export class ConditionsService {
     }
   }
 
-  async getRoadConditions(coverage_value_id: string) {
+  async getRoadConditions(coverage_value_id?: string, wayName?: string) {
 
     function computeRoad(points: any[]) : any{
       if(points.length == 0) return null;
@@ -308,10 +325,18 @@ export class ConditionsService {
     let road_points : any[] = [];
     let condition_types : any = new Set();
 
-    try {
+    let way_name: string = '';
+    if (coverage_value_id !== undefined) {
       const clicked: any = await this.getClicked(coverage_value_id);
-      const way_name = clicked.way_name;
+      way_name = clicked.way_name
+    } else if (wayName !== undefined) {
+      wayName = wayName.charAt(0).toUpperCase() + wayName.slice(1);
+      way_name = wayName;
+    } else {
+      throw new HttpException("Bad request", 400);
+    }
 
+    try {
       const conditions = this.dataSource
           .getRepository(Coverage_Values)
           .createQueryBuilder('coverage_value')
@@ -374,7 +399,7 @@ export class ConditionsService {
       return {
         success: true,
         road_geom: road_geom,
-        road_name: clicked.way_name,
+        road_name: way_name,
         road_distance: road_object.distance,
         road: road_object.road,
       };

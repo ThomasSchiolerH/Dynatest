@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 
 import '../css/navigationbar.css';
@@ -21,7 +21,11 @@ const NavBtn: FC<NavBtnProps> = ( { to, name } ) => {
     )
 }
 
-const NavigationBar: FC = () => {
+const NavigationBar = () => {
+    const location = useLocation();
+
+    const isConditionMapRoute = location.pathname === '/conditionmap';
+
     return (
         <div className="nav-wrapper">
             <div className="nav-container">
@@ -30,7 +34,7 @@ const NavigationBar: FC = () => {
                     <NavBtn  to='/conditionmap' name='Condition Map' />
                     <NavBtn  to='/importdata' name='Import Data' />
                 </div>
-                <SearchBar />
+                {isConditionMapRoute && <SearchBar />}
             </div>
         </div>
     )

@@ -1,19 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import '../css/SearchBar.css';
 import {get} from "../queries/fetch";
-
-interface RoadNamesResponse {
-    success: boolean;
-    roads: { way_name: string }[];
-}
-
+import {useData} from "../context/RoadDataContext";
 
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
-    //const [roadNames, setRoadNames] = useState<string[]>([]);
-    const mockRoadNames = ['Main Street', 'Elm Street', 'Oak Avenue', 'Maple Lane', 'Pine Road']
-    const [roadNames] = useState<string[]>(mockRoadNames); // Use mock data
-    const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);;
+    const [roadNames, setRoadNames] = useState<string[]>([]);
+    const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+    const { map } = useData();
+
+    let zoomLevel = 15;
 
     const SearchIcon = () => {
         return (
@@ -40,16 +36,16 @@ const SearchBar = () => {
             </svg>
         );
     };
-    // useEffect(() => {
-    //     // Fetch road names when the component mounts
-    //     get("/conditions/road_names", (data: RoadNamesResponse) => {
-    //         if (data.success) {
-    //             // Extract way_name from each road and update the state
-    //             const names = data.roads.map(road => road.way_name);
-    //             setRoadNames(names);
-    //         }
-    //     });
-    // }, []);
+    useEffect(() => {
+        get("/conditions/road-names", (roadNameCollection: { way_name: string }[]) => {
+            try {
+                const names: string[] = roadNameCollection.map(road => road.way_name);
+                setRoadNames(names);
+            } catch (e) {
+                console.error(e);
+            }
+        });
+    }, []);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const userInput = event.target.value;
@@ -61,11 +57,70 @@ const SearchBar = () => {
         setFilteredSuggestions(filtered);
     };
 
-
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // Add search functionality here
-        console.log("Searching for:", searchQuery);
+        executeSearch(searchQuery);
+        setFilteredSuggestions([]); // clear suggested
+        console.log("Manually searching for:", searchQuery);
+
+        get(`/conditions/road_data?wayName=${searchQuery}`, (data: any) => {
+            if(data.success && data.road && data.road.length > 0) {
+                const firstPoint = data.road[0];
+                const coordinates = { lat: firstPoint.lat, lng: firstPoint.lon };
+                panToMapCoordinates(coordinates);
+                console.log("Panning to coordinates:", coordinates);
+                console.log(data);
+            }
+        });
+    };
+
+    const executeSearch = (query: string) => {
+        try {
+            console.log("Searching for:", query);
+            fetchRoadCoordinates(query, (coordinates) => {
+                if (coordinates) {
+                    console.log("Coordinates received:", coordinates);
+                    panToMapCoordinates(coordinates);
+                } else {
+                    console.error("Coordinates not found for the road:", query);
+                }
+            });
+        } catch (error) {
+            console.error("Error executing search:", error);
+        }
+    };
+
+    const handleSuggestionClick = (suggestion: string) => {
+        setSearchQuery(suggestion);
+        executeSearch(suggestion);
+        setFilteredSuggestions([]); // clear suggested
+        get(`/conditions/road_data?wayName=${suggestion}`, (data: any) => {
+            if(data.success && data.road && data.road.length > 0) {
+                const firstPoint = data.road[0];
+                const coordinates = { lat: firstPoint.lat, lng: firstPoint.lon };
+                panToMapCoordinates(coordinates);
+                console.log("Panning to coordinates:", coordinates);
+                console.log(data);
+            } else {
+                console.error("No data found for road:", suggestion);
+            }
+        });
+    };
+
+    const fetchRoadCoordinates = (roadName: string, callback: (coords: { lat: number, lng: number }) => void) => {
+        get(`/conditions/road_data?wayName=${roadName}`, (data: any) => {
+            if(data.success && data.road && data.road.length > 0) {
+                const firstPoint = data.road[0];
+                const coordinates = { lat: firstPoint.lat, lng: firstPoint.lon };
+                callback(coordinates); // Pass to callback function
+            }
+        });
+    };
+
+    const panToMapCoordinates = (coords: { lat: number, lng: number }) => {
+        if (map) {
+            map.flyTo(coords, zoomLevel); // Set your desired zoom level
+        }
     };
 
     const handleReset = () => {
@@ -88,7 +143,7 @@ const SearchBar = () => {
             {searchQuery && filteredSuggestions.length > 0 && (
                 <ul className="suggestions">
                     {filteredSuggestions.map((suggestion, index) => (
-                        <li key={index} onClick={() => setSearchQuery(suggestion)}>
+                        <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
                             {suggestion}
                         </li>
                     ))}

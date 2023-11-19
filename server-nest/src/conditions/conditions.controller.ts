@@ -41,6 +41,11 @@ export class ConditionsController {
     );
   }
 
+  @Get('road-names')
+  getRoadNames() {
+      return this.conditionsService.getRoadNames();
+  }
+
   @Get('near_coverage_value/:id')
   getNearConditionsFromCoverageValueId(@Param() params: any) {
     return this.conditionsService.getNearConditionsFromCoverageValueId(
@@ -48,12 +53,13 @@ export class ConditionsController {
     );
   }
 
-    @Get('road_data/:id') // from the condition id clicked
-    getRoadConditions(@Param() params: any) {
-        return this.conditionsService.getRoadConditions(
-            params.id,
-        );
-    }
+    @Get('road_data') // from the condition id clicked
+    getRoadConditions(@Query() query: { coverage_value_id: string, wayName: string }):
+        Promise<any> { const { coverage_value_id, wayName } = query; {
+            return this.conditionsService.getRoadConditions(
+                coverage_value_id, wayName
+            );
+    }}
 
 
   @Get('road-pictures-path')

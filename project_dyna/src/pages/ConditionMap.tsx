@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import  ReactSlider  from "react-slider"
-import { MapContainer, TileLayer, ScaleControl, GeoJSON } from 'react-leaflet'
+import {MapContainer, TileLayer, ScaleControl, GeoJSON, useMap} from 'react-leaflet'
 import {Layer, LeafletMouseEvent, PathOptions} from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
 import { useData } from "../context/RoadDataContext";
@@ -15,6 +15,7 @@ import ConditionToggleButtons from './ConditionToggleButtons';
 import "../css/slider.css";
 import "../css/map.css";
 import "../css/DataWindow.css";
+import SearchBar from "./SearchBar";
 
 const ALL = "ALL"
 const KPI = "KPI"
@@ -42,13 +43,20 @@ interface YearMonth  {
 
 interface RoadData {
     success: boolean;
-    way_name: string;
-    is_highway: boolean;
-    section_geom: string;
-    coverage: {
-        [key: string]: number[];
-    };
+    road_name: string;
+    road_distance: number;
+    road: Array<{
+        lat: number;
+        lon: number;
+        distance: number;
+        IRI: number | null;
+        E_norm: number | null;
+        KPI: number | null;
+        Mu: number | null;
+        DI: number | null;
+    }>;
 }
+
 
 interface DateRange {
     start?: YearMonth
@@ -148,6 +156,7 @@ const ConditionMap = (props: any) => {
     const { children } = props;
     let selectedRoadData = {} as JSON;
     const { setData } = useData();
+    const { setMap } = useData();
 
     const { center, zoom, minZoom, maxZoom, scaleWidth } = MAP_OPTIONS;
 
@@ -297,10 +306,9 @@ const ConditionMap = (props: any) => {
         }
     }, [dataAll, mode, rangeAll, rangeSelected])
 
-
-
     // Create a dedicated layer group for highlights
     const highlightLayerGroup = new L.LayerGroup();
+
 
     const onEachFeature = (feature: Feature, layer: Layer) => {
         // transfers road data to graphs
@@ -321,9 +329,9 @@ const ConditionMap = (props: any) => {
                     highlightLayerGroup.addTo(e.target._map);
 
                     // Open a popup with more information
-                   
+
                     // Fetch additional data and update state
-                    get(`/conditions/near_coverage_value/${feature.properties.id}`, (data: RoadData) => {
+                    get(`/conditions/road_data?coverage_value_id=${feature.properties.id}`, (data: RoadData) => {
                         if (data.success) {
                             setData(data);
                         }
@@ -333,7 +341,6 @@ const ConditionMap = (props: any) => {
             });
         }
     };
-
 
     const handlePictureRoadClick = (e: LeafletMouseEvent) => {
         get(`/conditions/picture/${e.latlng.lat}/${e.latlng.lng}`, (img: File) => {
@@ -362,10 +369,23 @@ const ConditionMap = (props: any) => {
         }
     };
 
+    const MapInstanceComponent = () => {
+        const map = useMap();
+        useEffect(() => {
+            if (map) {
+                console.log("Setting map instance");
+                setMap(map);
+            }
+        }, [map, setMap]);
+
+        return null;
+    };
+
 
 
     return (
         <div style={{ height: "100%" }}>
+
             <div className="condition-toggle-buttons-container">
                 <ConditionToggleButtons
                     conditionTypes={conditionTypes}
@@ -385,6 +405,7 @@ const ConditionMap = (props: any) => {
                     scrollWheelZoom={true}
                     zoomControl={false}
                 >
+                    <MapInstanceComponent />
                     <TileLayer
                         maxNativeZoom={maxZoom}
                         maxZoom={maxZoom}
