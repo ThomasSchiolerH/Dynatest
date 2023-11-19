@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, ScaleControl, GeoJSON } from 'react-leaflet'
 import {Layer, LeafletMouseEvent, PathOptions} from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
 import { useData } from "../context/RoadDataContext";
+import L from 'leaflet';
 
 import Zoom from '../map/zoom'
 import { MAP_OPTIONS } from '../map/mapConstants'
@@ -23,6 +24,7 @@ const IRInew = "IRI_new"
 const Mu = "Mu"
 const Enrg = "E_norm"
 const NONE = "NONE";
+const muSymbol = '\u03BC';
 
 const conditionTypes = [
     //NONE,
@@ -112,6 +114,8 @@ const greenyellow = "#02FC02" // "#BFFF00"
 const yellow = "#FFFF00"
 const orange = "#FFBF00"
 const red = "#FF0000"
+const cyan = "#00AACC"
+const magenta = "#CC00CC"
 
 const getConditionColor = ( properties: GeoJSON.GeoJsonProperties) : string => {
     if (properties !== null) {
@@ -293,23 +297,43 @@ const ConditionMap = (props: any) => {
         }
     }, [dataAll, mode, rangeAll, rangeSelected])
 
-    const onEachFeature = (feature: Feature,  layer: Layer) => {
-        //transfers road data to graphs
-        if (feature !== undefined && feature.properties !== null && feature.properties.id !== undefined  && feature.properties.value !== undefined) {
-            layer.on('click', () => {
+
+
+    // Create a dedicated layer group for highlights
+    const highlightLayerGroup = new L.LayerGroup();
+
+    const onEachFeature = (feature: Feature, layer: Layer) => {
+        // transfers road data to graphs
+        if (feature !== undefined && feature.properties !== null && feature.properties.id !== undefined && feature.properties.value !== undefined) {
+            layer.on('click', (e) => {
                 if (feature.properties) {
+                    // Clear the previous highlights
+                    highlightLayerGroup.clearLayers();
+
+                    // Add a new highlight layer on top of the clicked feature
+                    const highlight = new L.GeoJSON(feature.geometry, {
+                        style: {
+                            weight: 8,
+                            color: 'blue', // Change to the desired color
+                        },
+                    });
+                    highlightLayerGroup.addLayer(highlight);
+                    highlightLayerGroup.addTo(e.target._map);
+
+                    // Open a popup with more information
+                   
+                    // Fetch additional data and update state
                     get(`/conditions/near_coverage_value/${feature.properties.id}`, (data: RoadData) => {
-                        //handleRoadDataUpdate(selectedRoadData);
-                        if (data.success){
+                        if (data.success) {
                             setData(data);
                         }
-                        console.log(data)
-                    })
+                        console.log(data);
+                    });
                 }
             });
         }
+    };
 
-    }
 
     const handlePictureRoadClick = (e: LeafletMouseEvent) => {
         get(`/conditions/picture/${e.latlng.lat}/${e.latlng.lng}`, (img: File) => {
@@ -379,6 +403,16 @@ const ConditionMap = (props: any) => {
                     {children}
                 </MapContainer>
             </div>
+            {mode == "ALL" && (
+                <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", color: "white" }}>
+                    Colors indicate what condition is displayed &nbsp;
+                    <span style={{ color: red }}>KPI </span>&nbsp;
+                    <span style={{ color: green }}>DI </span>&nbsp;
+                    <span style={{ color: yellow }}>IRI </span>&nbsp;
+                    <span style={{ color: cyan }}>{muSymbol} </span>&nbsp;
+                    <span style={{ color: magenta }}>E</span>
+                </div>
+            )}
             {mode !== "ALL" && (
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", color: "white" }}>
                     Colors indicate condition values from &nbsp;

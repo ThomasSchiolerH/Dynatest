@@ -105,13 +105,17 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     const conditionColors: ConditionColors = {
         KPI: "#FF5733",
         DI: "#33FF57",
-        IRI: "#397eff",
-        Mu: "#FF33E2",
-        E_norm: "#9eb626"
+        IRI: "#9eb626",
+        Mu: "#397eff",
+        E_norm: "#FF33E2"
     };
 
     const renderLineCharts = () => {
-        return selectedConditions.map((dataType) => (
+        return selectedConditions.map((dataType) => {
+            if (dataType === "ALL") { // If dataType is "ALL", return nothing
+                return;
+            }
+        return (
             <div className="chart-container" key={dataType}>
                 <h4>Graph with data type {dataType}:</h4>
                 <ResponsiveContainer width="100%" height={230}>
@@ -142,7 +146,8 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                     </LineChart>
                 </ResponsiveContainer>
             </div>
-        ));
+            );
+    });
     };
 
     const [imageUrls, setImageUrls] = useState<string[]>([]);
