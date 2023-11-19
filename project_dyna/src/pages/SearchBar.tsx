@@ -59,24 +59,32 @@ const SearchBar = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // executeSearch(searchQuery);
-        console.log("Searching for:", searchQuery);
+        executeSearch(searchQuery);
+        setFilteredSuggestions([]); // clear suggested
+        console.log("Manually searching for:", searchQuery);
+
         get(`/conditions/road_data?wayName=${searchQuery}`, (data: any) => {
-            if(data.success) {
+            if(data.success && data.road && data.road.length > 0) {
+                const firstPoint = data.road[0];
+                const coordinates = { lat: firstPoint.lat, lng: firstPoint.lon };
+                panToMapCoordinates(coordinates);
+                console.log("Panning to coordinates:", coordinates);
                 console.log(data);
             }
-        })
+        });
     };
 
-    const executeSearch = async (query: string) => {
+    const executeSearch = (query: string) => {
         try {
             console.log("Searching for:", query);
-            // Fetch the mock coordinates
-            const coordinates = await fetchRoadCoordinates(query);
-            console.log("Coordinates received:", coordinates);
-            if (coordinates) {
-                panToMapCoordinates(coordinates);
-            }
+            fetchRoadCoordinates(query, (coordinates) => {
+                if (coordinates) {
+                    console.log("Coordinates received:", coordinates);
+                    panToMapCoordinates(coordinates);
+                } else {
+                    console.error("Coordinates not found for the road:", query);
+                }
+            });
         } catch (error) {
             console.error("Error executing search:", error);
         }
@@ -84,20 +92,29 @@ const SearchBar = () => {
 
     const handleSuggestionClick = (suggestion: string) => {
         setSearchQuery(suggestion);
-        setFilteredSuggestions([]);  // clear suggested
-        executeSearch(suggestion); // Execute search when suggestion is clicked
-        // executeSearch(suggestion); // Execute search when suggestion is clicked
+        executeSearch(suggestion);
+        setFilteredSuggestions([]); // clear suggested
         get(`/conditions/road_data?wayName=${suggestion}`, (data: any) => {
-            if(data.success) {
+            if(data.success && data.road && data.road.length > 0) {
+                const firstPoint = data.road[0];
+                const coordinates = { lat: firstPoint.lat, lng: firstPoint.lon };
+                panToMapCoordinates(coordinates);
+                console.log("Panning to coordinates:", coordinates);
                 console.log(data);
+            } else {
+                console.error("No data found for road:", suggestion);
             }
-        })
+        });
     };
 
-    const fetchRoadCoordinates = async (roadName: string) => {
-        // Replace with API call
-        console.log("Fetching coordinates");
-        return { lat: 40.7128, lng: -74.0060 }; // placeholder
+    const fetchRoadCoordinates = (roadName: string, callback: (coords: { lat: number, lng: number }) => void) => {
+        get(`/conditions/road_data?wayName=${roadName}`, (data: any) => {
+            if(data.success && data.road && data.road.length > 0) {
+                const firstPoint = data.road[0];
+                const coordinates = { lat: firstPoint.lat, lng: firstPoint.lon };
+                callback(coordinates); // Pass to callback function
+            }
+        });
     };
 
     const panToMapCoordinates = (coords: { lat: number, lng: number }) => {
