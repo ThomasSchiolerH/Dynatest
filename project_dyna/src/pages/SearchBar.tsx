@@ -59,6 +59,7 @@ const SearchBar = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setFilteredSuggestions([]);  // clear suggested
         executeSearch(searchQuery);
         console.log("Searching for:", searchQuery);
     };
@@ -79,6 +80,7 @@ const SearchBar = () => {
 
     const handleSuggestionClick = (suggestion: string) => {
         setSearchQuery(suggestion);
+        setFilteredSuggestions([]);  // clear suggested
         executeSearch(suggestion); // Execute search when suggestion is clicked
     };
 
