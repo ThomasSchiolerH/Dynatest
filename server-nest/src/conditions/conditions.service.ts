@@ -123,6 +123,7 @@ export class ConditionsService {
           .getRepository(Ways)
           .createQueryBuilder('ways')
           .select('way_name')
+          .innerJoin(Coverage, 'coverage', 'coverage.fk_way_id = ways.id')
           .distinct(true)
           .orderBy('way_name', 'ASC')
           .getRawMany();
