@@ -330,6 +330,7 @@ export class ConditionsService {
       const clicked: any = await this.getClicked(coverage_value_id);
       way_name = clicked.way_name
     } else if (wayName !== undefined) {
+      wayName = wayName.charAt(0).toUpperCase() + wayName.slice(1);
       way_name = wayName;
     } else {
       throw new HttpException("Bad request", 400);
