@@ -9,7 +9,7 @@ const SearchBar = () => {
     const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
     const { map } = useData();
 
-    let zoomLevel = 15;
+    let zoomLevel = 15; // Set zoom for when search for road is moving map
 
     const SearchIcon = () => {
         return (
@@ -57,13 +57,18 @@ const SearchBar = () => {
         setFilteredSuggestions(filtered);
     };
 
+    const toTitleCase = (name: string) => {
+        return name.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    };
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        executeSearch(searchQuery);
+        const formattedQuery = toTitleCase(searchQuery);
+        executeSearch(formattedQuery);
         setFilteredSuggestions([]); // clear suggested
-        console.log("Manually searching for:", searchQuery);
+        console.log("Manually searching for:", formattedQuery);
 
-        get(`/conditions/road_data?wayName=${searchQuery}`, (data: any) => {
+        get(`/conditions/road_data?wayName=${formattedQuery}`, (data: any) => {
             if(data.success && data.road && data.road.length > 0) {
                 const firstPoint = data.road[0];
                 const coordinates = { lat: firstPoint.lat, lng: firstPoint.lon };
@@ -119,7 +124,7 @@ const SearchBar = () => {
 
     const panToMapCoordinates = (coords: { lat: number, lng: number }) => {
         if (map) {
-            map.flyTo(coords, zoomLevel); // Set your desired zoom level
+            map.flyTo(coords, zoomLevel);
         }
     };
 
