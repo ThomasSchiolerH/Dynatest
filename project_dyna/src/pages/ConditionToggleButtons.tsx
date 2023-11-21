@@ -41,6 +41,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     const [isDataWindowVisible, setIsDataWindowVisible] = useState<boolean>(false);
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [widthPercentage, setWidthPercentage] = useState<number>(40);
+    const [isResizing, setIsResizing] = useState(false);
 
     const increaseWidth = () => {
         setWidthPercentage((prevWidth) => Math.min(prevWidth + 5, 100));
@@ -55,6 +56,30 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     const toggleFullScreen = () => {
         setIsFullScreen(prev => !prev);
     };
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (isResizing) {
+                setWidthPercentage((prevWidth) => {
+                    const sensitivityFactor = 10;
+                    const newWidth = Math.max(10, Math.min(prevWidth + e.movementX / sensitivityFactor, 100));
+                    return newWidth;
+                });
+            }
+        };
+
+        const handleMouseUp = () => {
+            setIsResizing(false);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isResizing]);
 
     //method to update graph data
     useEffect(() => {
@@ -268,6 +293,17 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
             </div>
             {isDataWindowVisible && (
                 <div className="data-window" style={{ width: isFullScreen ? 'calc(100% - 120px)' : `${widthPercentage}%` }}>
+                    <div className="resizable-bar" onMouseDown={() => setIsResizing(true)}
+                         style={{
+                             cursor: 'ew-resize',
+                             height: '100%',
+                             width: '10px',
+                             background: 'var(--background-2)',
+                             position: 'absolute',
+                             right: 0,
+                             top: 0,
+                         }}
+                    />
                     <div className="data-window-content">
                         <PhotoScrollComponent
                             imageUrls={imageUrls}
