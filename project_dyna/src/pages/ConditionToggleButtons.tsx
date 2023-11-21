@@ -180,32 +180,34 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     };
 
     const fetchAdjacentImages = async (direction: 'left' | 'right', index: number): Promise<string[]> => {
-        // Implement the logic to fetch new images based on the direction and the index
-        // Make an API call to your backend and pass parameters
-        // Here you would return the result of that call
-        // For now it returns an empty array as a placeholder
+        let newImageSet = [...imageUrls]; // Clone the current image array
 
-        //POSSIBLE IMPLEMENTATION BELOW?
-        // try {
-        //     const response = await fetch(`/api/images?direction=${direction}&startIndex=${index}`);
-        //     if (response.ok) {
-        //         const images = await response.json();
-        //         return images;
-        //     } else {
-        //         // Handle errors, for example, if the response is not OK:
-        //         console.error('Failed to fetch images:', response.statusText);
-        //         return [];
-        //     }
-        // } catch (error) {
-        //     console.error('Error fetching images:', error);
-        //     return [];
-        // }
-        return [
-            MultipleConditionsToggledImg,//Place holder
-            DataWindowImg,//Place holder
-            MultipleConditionsToggledImg,//Place holder
-        ];
+        if (direction === 'right') {
+            // Safely remove the last image
+            const lastImage = newImageSet.pop();
+            if (lastImage !== undefined) {
+                newImageSet.unshift(lastImage); // Add it to the beginning
+            }
+        } else { // direction is 'left'
+            // Safely remove the first image
+            const firstImage = newImageSet.shift();
+            if (firstImage !== undefined) {
+                newImageSet.push(firstImage); // Add it to the end
+            }
+        }
+
+        return newImageSet;
     };
+
+
+    // const onRoadSegmentSelected = (selectedSegmentId) => {
+    //     // Fetch or determine the new image URLs for the selected road segment
+    //     // This could be an API call or some other logic
+    //     const newImageUrls = getImagesForSelectedSegment(selectedSegmentId);
+    //     setImageUrls(newImageUrls);
+    // };
+
+
 
     return (
         <div className="condition-toggle-buttons-container">
@@ -238,8 +240,9 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                 <div className="data-window" style={{width: '40%'}}>
                     <div className="data-window-content">
                         <PhotoScrollComponent
+                            initialIndex={0}
                             imageUrls={imageUrls}
-                            fetchAdjacentImages={fetchAdjacentImages}
+                            fetchImages={fetchAdjacentImages} // Pass the fetch function
                         />
                         {renderLineCharts()}
                     </div>
