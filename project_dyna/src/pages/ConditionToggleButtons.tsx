@@ -39,6 +39,22 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     const [graphData, setGraphData] = useState<Record<string, any>[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
     const [isDataWindowVisible, setIsDataWindowVisible] = useState<boolean>(false);
+    const [isFullScreen, setIsFullScreen] = useState(false);
+    const [widthPercentage, setWidthPercentage] = useState<number>(40);
+
+    const increaseWidth = () => {
+        setWidthPercentage((prevWidth) => Math.min(prevWidth + 5, 100));
+        console.log('Increase width clicked');
+    };
+
+    const decreaseWidth = () => {
+        setWidthPercentage((prevWidth) => Math.max(prevWidth - 5, 10));
+        console.log('Decrease width clicked');
+    };
+
+    const toggleFullScreen = () => {
+        setIsFullScreen(prev => !prev);
+    };
 
     //method to update graph data
     useEffect(() => {
@@ -216,26 +232,42 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                         isDataWindowVisible={isDataWindowVisible}
                         toggleDataWindow={toggleDataWindow}
                         label={"Data"}
-                        isHighestPriority={false} // Assuming this is not a condition and thus not a candidate for highest priority
+                        isHighestPriority={false} // Assuming this is not a condition and thus not a candidate for the highest priority
                     />
                 </div>
+                {isDataWindowVisible && (
+                    <div>
+                        <button onClick={increaseWidth} className="custom-zoom-in-button">+</button>
+                        <button onClick={decreaseWidth} className="custom-zoom-out-button">-</button>
+                        <div className="FullScreenSwitch">
+                            <ToggleSwitch
+                                isDataWindowVisible={isFullScreen}
+                                toggleDataWindow={toggleFullScreen}
+                                label={"Full"}
+                                isHighestPriority={false}
+                            />
+                        </div>
+                    </div>
+                )}
 
                 {/* ToggleSwitch components for each condition type */}
                 {conditionTypes.map((condition) => {
                     const isHighestPriority = condition === getHighestPriorityConditionFromList(selectedConditions);
+                    const label = condition === "E_norm" ? "E" : condition;
+
                     return (
                         <ToggleSwitch
                             key={condition}
                             isDataWindowVisible={selectedConditions.includes(condition)}
                             toggleDataWindow={() => toggleCondition(condition)}
-                            label={condition}
+                            label={label}
                             isHighestPriority={isHighestPriority}
                         />
                     );
                 })}
             </div>
             {isDataWindowVisible && (
-                <div className="data-window" style={{width: '40%'}}>
+                <div className="data-window" style={{ width: isFullScreen ? 'calc(100% - 120px)' : `${widthPercentage}%` }}>
                     <div className="data-window-content">
                         <PhotoScrollComponent
                             imageUrls={imageUrls}

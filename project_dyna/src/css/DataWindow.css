@@ -43,6 +43,11 @@
     margin-bottom: 40px;
     margin-top: 30px;
 }
+
+.FullScreenSwitch {
+    margin-bottom: 40px;
+}
+
 /* The switch - the box around the slider */
 .switch {
     font-size: 17px;
@@ -136,4 +141,36 @@ input:checked ~ .slider .on {
 input:checked ~ .slider .off {
     transform: translate(-50%, -50%) translateX(-3rem); /* Move to the left */
     opacity: 0; /* Hide it */
+}
+
+.custom-zoom-in-button {
+    border-radius: 40px !important;
+    border: 1px grey;
+    background: grey;
+    color: black;
+    width: 2.5em;
+    height: 2em;
+    font-size: 17px;
+    margin-left: 15px;
+    margin-bottom: 0.2em;
+}
+
+.custom-zoom-in-button:hover {
+    color: black !important;
+}
+
+.custom-zoom-out-button {
+    border-radius: 40px !important;
+    border: 1px grey;
+    background: grey;
+    color: black;
+    width: 2.5em;
+    height: 2em;
+    font-size: 17px;
+    margin-left: 0.2em;
+    margin-bottom: 0.2em;
+}
+
+.custom-zoom-out-button:hover {
+    color: black !important;
 }
