@@ -49,7 +49,7 @@ export class ConditionsController {
     );
   }
 
-  @Get('road_data/:id') // from the condition id clicked
+  @Get('road/:id') // from the condition id clicked
   getRoadConditions(@Param() params: any) {
     return this.conditionsService.getRoadConditions(params.id);
   }
