@@ -39,6 +39,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     const [graphData, setGraphData] = useState<Record<string, any>[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
     const [isDataWindowVisible, setIsDataWindowVisible] = useState<boolean>(false);
+    const { map } = useData();
 
     //method to update graph data
     useEffect(() => {
@@ -105,6 +106,15 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
     const toggleDataWindow = () => {
         setIsDataWindowVisible((prev) => !prev);
+
+        if (!isDataWindowVisible && data && data.road.length > 0) {
+            const firstPoint = data.road[0];
+            const coordinates = { lat: firstPoint.lat, lon: firstPoint.lon };
+            if (map) {
+                const currentZoomLevel = map.getZoom();
+                map.flyTo([coordinates.lat, coordinates.lon], currentZoomLevel);
+            }
+        }
     };
 
     type ConditionColors = {

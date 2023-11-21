@@ -146,7 +146,7 @@ const SearchBar = () => {
                 className="input"
                 placeholder="Search"
                 required
-                title="Write the road name that you want to find."
+                title="Search for a road name."
                 type="text"
                 value={searchQuery}
                 onChange={handleInputChange}
