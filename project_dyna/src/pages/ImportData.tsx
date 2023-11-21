@@ -42,6 +42,8 @@ type FileOrNull = File | null;
 const ImportData = (props: any) => {
     // Additional logic or state can be added here
     const [selectedFile, setSelectedFile] = useState<FileOrNull>(null);
+    const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+    const [isErrorMessage, setIsErrorMessage] = useState(false);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]; // Get the first file from input element, if it exists
@@ -53,6 +55,8 @@ const ImportData = (props: any) => {
         setSelectedFile(null); // reset to null
         const fileInput = document.getElementById('file') as HTMLInputElement; // Get file input element by ID
         if (fileInput) fileInput.value = ''; // If there is a file input element, then clear its value
+        setFeedbackMessage(null); // Reset feedback message
+        setIsErrorMessage(false); // Reset error state
     };
 
     const handleSubmit = () => {
@@ -61,11 +65,24 @@ const ImportData = (props: any) => {
             const formData = new FormData();
             formData.append('file', selectedFile);
             post('/conditions/import/zip', formData).then(res => {
-                res.statusText === 'Created' ? console.log('File uploaded successfully!') // TODO Show information page with text: File uploaded successfully!
-                    : console.error('Failed to upload file!') // TODO Show error page with text: Failed to upload file!
+                if (res.statusText === 'Created') {
+                    console.log('File uploaded successfully!')
+                    setFeedbackMessage('File uploaded successfully!');
+                    setIsErrorMessage(false);
+                } else {
+                    console.error('Failed to upload file!')
+                    setFeedbackMessage('Failed to upload file!');
+                    setIsErrorMessage(true);
+                }
             }).catch(e => {
-                e.response.status === 400 ? console.error('Wrong file format!') // TODO Show error page with text: Wrong file format!
-                    : console.error('Failed to upload file!') // TODO Show error page with text: Failed to upload file!
+                if (e.response.status === 400) {
+                    console.error('Wrong file format!')
+                    setFeedbackMessage('Wrong file format!');
+                } else {
+                    console.error('Failed to upload file!')
+                    setFeedbackMessage('Failed to upload file!');
+                }
+                setIsErrorMessage(true);
             })
             // after file is submitted, clear the file
             clearSelectedFile();
@@ -116,6 +133,11 @@ const ImportData = (props: any) => {
                     </button>
                 </label>
                 <input id="file" type="file" style={{ display: 'none' }} onChange={handleFileChange} accept=".rsp,.zip,image/png,image/jpeg,.gpx" />
+                {feedbackMessage && (
+                    <div className={isErrorMessage ? 'feedback-message error-message' : 'feedback-message success-message'}>
+                        {feedbackMessage}
+                    </div>
+                )}
                 {/* Submit Button */}
                 <button onClick={handleSubmit} className="submitButton">
                     Submit File
