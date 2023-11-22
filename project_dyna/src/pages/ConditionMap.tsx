@@ -314,21 +314,19 @@ const ConditionMap = (props: any) => {
 
                     roadHighlightLayerGroup.clearLayers();
 
-                    const roadName = feature.properties.task_id;
+                    const roadName = feature.properties.way_name;
 
                     if (dataAll && dataAll.features) {
                         const roadFeatures = dataAll.features.filter((f) =>
-                            f.properties !== null && f.properties.task_id === roadName);
+                            f.properties !== null && f.properties.way_name === roadName);
 
-                        console.log('Road Features:', dataAll.features);
-                        console.log('Feature', feature)
 
                         roadFeatures.forEach((roadFeature) => {
                             const roadHighlight = new L.GeoJSON(roadFeature.geometry, {
                                 style: {
                                     weight: 8,
                                     color: 'blue',
-                                    opacity: 0.1,
+                                    opacity: 0.3,
                                 },
                             });
                             roadHighlightLayerGroup.addLayer(roadHighlight);

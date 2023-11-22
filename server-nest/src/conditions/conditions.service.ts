@@ -20,39 +20,40 @@ export class ConditionsService {
   ) {}
 
   async getConditions(
-    minLat: string,
-    maxLat: string,
-    minLng: string,
-    maxLng: string,
-    type: string,
-    valid_before: string,
-    valid_after: string,
-    computed_after: string,
+      minLat: string,
+      maxLat: string,
+      minLng: string,
+      maxLng: string,
+      type: string,
+      valid_before: string,
+      valid_after: string,
+      computed_after: string,
   ) {
     let res;
     try {
       const conditions = this.dataSource
-        .getRepository(Coverage_Values)
-        .createQueryBuilder('coverage_value')
-        .select([
-          'coverage_value.id AS id',
-          'type',
-          'value',
-          'std',
-          'start_time_utc',
-          'compute_time',
-          'task_id',
-          'ST_AsGeoJSON(coverage.section_geom) AS section_geom',
-          'way."IsHighway" AS IsHighway',
-        ])
-        .innerJoin(
-          Coverage,
-          'coverage',
-          'coverage_value.fk_coverage_id = coverage.id',
-        )
-        .innerJoin(Trips, 'trip', 'coverage.fk_trip_id = trip.id')
-        .innerJoin(Ways, 'way', 'coverage.fk_way_id = way.id')
-        .where('coverage_value.ignore IS NULL');
+          .getRepository(Coverage_Values)
+          .createQueryBuilder('coverage_value')
+          .select([
+            'coverage_value.id AS id',
+            'type',
+            'value',
+            'std',
+            'start_time_utc',
+            'compute_time',
+            'task_id',
+            'ST_AsGeoJSON(coverage.section_geom) AS section_geom',
+            'way."IsHighway" AS IsHighway',
+            'way.way_name AS way_name', // Add this line to include way_name
+          ])
+          .innerJoin(
+              Coverage,
+              'coverage',
+              'coverage_value.fk_coverage_id = coverage.id',
+          )
+          .innerJoin(Trips, 'trip', 'coverage.fk_trip_id = trip.id')
+          .innerJoin(Ways, 'way', 'coverage.fk_way_id = way.id')
+          .where('coverage_value.ignore IS NULL');
       if (type !== undefined) {
         conditions.andWhere('type = :type', { type });
       }
@@ -62,13 +63,13 @@ export class ConditionsService {
       const minLngNo = Number(minLng);
       const maxLngNo = Number(maxLng);
       if (
-        !isNaN(minLatNo) &&
-        !isNaN(maxLatNo) &&
-        !isNaN(minLngNo) &&
-        !isNaN(maxLngNo)
+          !isNaN(minLatNo) &&
+          !isNaN(maxLatNo) &&
+          !isNaN(minLngNo) &&
+          !isNaN(maxLngNo)
       ) {
         conditions.andWhere(
-          'ST_Intersects(ST_MakeEnvelope(minLngNo,minLatNo, maxLngNo,maxLatNo), section_geom',
+            'ST_Intersects(ST_MakeEnvelope(minLngNo,minLatNo, maxLngNo,maxLatNo), section_geom',
         );
       }
 
@@ -111,11 +112,13 @@ export class ConditionsService {
             motorway: r.IsHighway,
             compute_time: r.compute_time,
             task_id: r.task_id,
+            way_name: r.way_name, // Include way_name in the properties
           },
         };
       }),
     };
   }
+
 
   async getRoadNames() {
     try {
