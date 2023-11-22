@@ -306,41 +306,48 @@ const ConditionMap = (props: any) => {
         }
     }, [dataAll, mode, rangeAll, rangeSelected])
 
-    // Create a dedicated layer group for highlights
-    const highlightLayerGroup = new L.LayerGroup();
-
-
+    const roadHighlightLayerGroup = new L.LayerGroup();
     const onEachFeature = (feature: Feature, layer: Layer) => {
-        // transfers road data to graphs
         if (feature !== undefined && feature.properties !== null && feature.properties.id !== undefined && feature.properties.value !== undefined) {
             layer.on('click', (e) => {
                 if (feature.properties) {
-                    // Clear the previous highlights
-                    highlightLayerGroup.clearLayers();
 
-                    // Add a new highlight layer on top of the clicked feature
-                    const highlight = new L.GeoJSON(feature.geometry, {
-                        style: {
-                            weight: 8,
-                            color: 'blue', // Change to the desired color
-                        },
-                    });
-                    highlightLayerGroup.addLayer(highlight);
-                    highlightLayerGroup.addTo(e.target._map);
+                    roadHighlightLayerGroup.clearLayers();
 
-                    // Open a popup with more information
+                    const roadName = feature.properties.task_id;
 
-                    // Fetch additional data and update state
-                    get(`/conditions/road_data?coverage_value_id=${feature.properties.id}`, (data: RoadData) => {
-                        if (data.success) {
-                            setData(data);
-                        }
-                        console.log(data);
-                    });
+                    if (dataAll && dataAll.features) {
+                        const roadFeatures = dataAll.features.filter((f) =>
+                            f.properties !== null && f.properties.task_id === roadName);
+
+                        console.log('Road Features:', dataAll.features);
+                        console.log('Feature', feature)
+
+                        roadFeatures.forEach((roadFeature) => {
+                            const roadHighlight = new L.GeoJSON(roadFeature.geometry, {
+                                style: {
+                                    weight: 8,
+                                    color: 'blue',
+                                    opacity: 0.1,
+                                },
+                            });
+                            roadHighlightLayerGroup.addLayer(roadHighlight);
+                        });
+
+                        roadHighlightLayerGroup.addTo(e.target._map);
+
+                        get(`/conditions/road_data?coverage_value_id=${feature.properties.id}`, (data: RoadData) => {
+                            if (data.success) {
+                                setData(data);
+                            }
+                            console.log(data);
+                        });
+                    }
                 }
             });
         }
     };
+
 
     const handlePictureRoadClick = (e: LeafletMouseEvent) => {
         get(`/conditions/picture/${e.latlng.lat}/${e.latlng.lng}`, (img: File) => {
@@ -392,8 +399,6 @@ const ConditionMap = (props: any) => {
                     onConditionToggle={handleConditionToggle}/>
             </div>
             <div className="image-container" hidden={isImagePageHidden}>
-                {/*TODO fix it
-                <img src={img} />*/}
             </div>
             <div>
                 <MapContainer
@@ -405,17 +410,15 @@ const ConditionMap = (props: any) => {
                     scrollWheelZoom={true}
                     zoomControl={false}
                 >
-                    <MapInstanceComponent />
                     <TileLayer
                         maxNativeZoom={maxZoom}
                         maxZoom={maxZoom}
                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-
-                    { pictureRoadPath !== undefined &&
-                        <GeoJSON ref={geoJsonRef} data={pictureRoadPath} onEachFeature={onPictureRoadClick} />}
-
+                    {//{ pictureRoadPath !== undefined &&
+                    //<GeoJSON ref={geoJsonRef} data={pictureRoadPath} onEachFeature={onPictureRoadClick} />}
+                    }
                     { dataAll !== undefined &&
                         <GeoJSON ref={geoJsonRef} data={dataAll} onEachFeature={onEachFeature} /> }
 
@@ -441,7 +444,7 @@ const ConditionMap = (props: any) => {
                     <span style={{ color: greenyellow }}>over</span>&nbsp;
                     <span style={{ color: yellow }}>yellow (medium)</span>&nbsp;
                     <span style={{ color: orange }}>to</span>&nbsp;
-                    <span style={{ color: red }}>red (bad)</span>!
+                    <span style={{ color: red }}>red (bad)</span>
                 </div>
             )}
         </div>

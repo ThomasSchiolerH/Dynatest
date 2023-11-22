@@ -45,7 +45,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         if (data) {
             const newData = convertIntoGraphData(data);
             setGraphData(newData || []); // Use an empty array as the default value if newData is undefined
-            console.log(newData);
+            //console.log(newData);
         }
     }, [data]);
 
