@@ -6,7 +6,7 @@
 
 .form {
     --timing: 0.3s;
-    --width-of-input: 200px;
+    --width-of-input: 270px;
     --height-of-input: 40px;
     --border-height: 2px;
     --input-bg: #fff;
@@ -18,7 +18,7 @@
     height: var(--height-of-input);
     display: flex;
     align-items: center;
-    padding-inline: 0.8em;
+    padding-inline: 0.2em;
     border-radius: var(--border-radius);
     transition: border-radius 0.5s ease;
     background: var(--input-bg,#fff);
@@ -82,8 +82,13 @@ input:not(:placeholder-shown) ~ .reset {
     visibility: visible;
 }
 
-.form svg {
-    width: 17px;
+.search-icon-container svg {
+    width: 26px;
+    margin-top: 3px;
+}
+
+.close-icon-container svg {
+    width: 24px;
     margin-top: 3px;
 }
 
@@ -121,5 +126,34 @@ input:not(:placeholder-shown) ~ .reset {
 .suggestions li:hover {
     background-color: #f0f0f0;
 }
+
+.search-icon-container {
+    position: relative;
+    display: inline-block;
+}
+
+.search-tooltip {
+    visibility: hidden;
+    width: 65px;
+    background-color: black;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: 100%; /* Position it below the icon */
+    left: 50%;
+    margin-left: calc(-65px/2);
+    opacity: 0;
+    transition: visibility 0s, opacity 0.6s;
+    font-weight: bold;
+}
+
+.search-icon-container:hover .search-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
 
 

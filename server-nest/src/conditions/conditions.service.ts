@@ -6,7 +6,6 @@ import {Coverage} from '../entity/Coverage';
 import {Ways} from '../entity/Ways';
 import {Trips} from '../entity/Trips';
 import {Condition_Pictures} from "../entity/Condition_Pictures";
-import {Picture_ways} from "../entity/Picture_ways";
 import { BufferedFile } from 'src/minio-client/file.model';
 import { MinioClientService } from 'src/minio-client/minio-client.service';
 
@@ -410,25 +409,6 @@ export class ConditionsService {
     } catch (e) {
       console.log(e);
       return { success: false };
-    }
-  }
-
-
-
-  async getRoadPicturesPath() {
-    try {
-      const path: Promise<{section_geom: MultiLineString}> = this.dataSource
-          .getRepository(Picture_ways)
-          .createQueryBuilder('picture_ways')
-          .select('ST_AsGeoJSON(picture_way.section_geom) AS section_geom')
-          .from('picture_ways', 'picture_way')
-          .where("picture_way.name = 'Motorvej syd 70kph'")
-          .distinct(true)
-          .getRawOne();
-      return await path.then(res => res.section_geom);
-    } catch (e) {
-      console.log(e);
-      throw new HttpException("Internal server error", 500);
     }
   }
 

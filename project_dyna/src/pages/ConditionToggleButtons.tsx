@@ -39,6 +39,48 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     const [graphData, setGraphData] = useState<Record<string, any>[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
     const [isDataWindowVisible, setIsDataWindowVisible] = useState<boolean>(false);
+    const { map } = useData();
+    const [isFullScreen, setIsFullScreen] = useState(false);
+    const [widthPercentage, setWidthPercentage] = useState<number>(40);
+    const [isResizing, setIsResizing] = useState(false);
+
+    const increaseWidth = () => {
+        setWidthPercentage((prevWidth) => Math.min(prevWidth + 5, 100));
+        console.log('Increase width clicked');
+    };
+
+    const decreaseWidth = () => {
+        setWidthPercentage((prevWidth) => Math.max(prevWidth - 5, 10));
+        console.log('Decrease width clicked');
+    };
+
+    const toggleFullScreen = () => {
+        setIsFullScreen(prev => !prev);
+    };
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (isResizing) {
+                setWidthPercentage((prevWidth) => {
+                    const sensitivityFactor = 10;
+                    const newWidth = Math.max(10, Math.min(prevWidth + e.movementX / sensitivityFactor, 100));
+                    return newWidth;
+                });
+            }
+        };
+
+        const handleMouseUp = () => {
+            setIsResizing(false);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isResizing]);
 
     //method to update graph data
     useEffect(() => {
@@ -105,6 +147,15 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
     const toggleDataWindow = () => {
         setIsDataWindowVisible((prev) => !prev);
+
+        if (!isDataWindowVisible && data && data.road.length > 0) {
+            const firstPoint = data.road[0];
+            const coordinates = { lat: firstPoint.lat, lon: firstPoint.lon };
+            if (map) {
+                const currentZoomLevel = map.getZoom();
+                map.flyTo([coordinates.lat, coordinates.lon], currentZoomLevel);
+            }
+        }
     };
 
     type ConditionColors = {
@@ -185,32 +236,34 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     };
 
     const fetchAdjacentImages = async (direction: 'left' | 'right', index: number): Promise<string[]> => {
-        // Implement the logic to fetch new images based on the direction and the index
-        // Make an API call to your backend and pass parameters
-        // Here you would return the result of that call
-        // For now it returns an empty array as a placeholder
+        let newImageSet = [...imageUrls]; // Clone the current image array
 
-        //POSSIBLE IMPLEMENTATION BELOW?
-        // try {
-        //     const response = await fetch(`/api/images?direction=${direction}&startIndex=${index}`);
-        //     if (response.ok) {
-        //         const images = await response.json();
-        //         return images;
-        //     } else {
-        //         // Handle errors, for example, if the response is not OK:
-        //         console.error('Failed to fetch images:', response.statusText);
-        //         return [];
-        //     }
-        // } catch (error) {
-        //     console.error('Error fetching images:', error);
-        //     return [];
-        // }
-        return [
-            MultipleConditionsToggledImg,//Place holder
-            DataWindowImg,//Place holder
-            MultipleConditionsToggledImg,//Place holder
-        ];
+        if (direction === 'right') {
+            // Safely remove the last image
+            const lastImage = newImageSet.pop();
+            if (lastImage !== undefined) {
+                newImageSet.unshift(lastImage); // Add it to the beginning
+            }
+        } else { // direction is 'left'
+            // Safely remove the first image
+            const firstImage = newImageSet.shift();
+            if (firstImage !== undefined) {
+                newImageSet.push(firstImage); // Add it to the end
+            }
+        }
+
+        return newImageSet;
     };
+
+
+    // const onRoadSegmentSelected = (selectedSegmentId) => {
+    //     // Fetch or determine the new image URLs for the selected road segment
+    //     // This could be an API call or some other logic
+    //     const newImageUrls = getImagesForSelectedSegment(selectedSegmentId);
+    //     setImageUrls(newImageUrls);
+    // };
+
+
 
     return (
         <div className="condition-toggle-buttons-container">
@@ -224,27 +277,55 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                         isHighestPriority={false} // Assuming this is not a condition and thus not a candidate for highest priority
                     />
                 </div>
+                {isDataWindowVisible && (
+                    <div>
+                        <button onClick={increaseWidth} className="custom-zoom-in-button">+</button>
+                        <button onClick={decreaseWidth} className="custom-zoom-out-button">-</button>
+                        <div className="FullScreenSwitch">
+                            <ToggleSwitch
+                                isDataWindowVisible={isFullScreen}
+                                toggleDataWindow={toggleFullScreen}
+                                label={"Full"}
+                                isHighestPriority={false}
+                            />
+                        </div>
+                    </div>
+                )}
 
                 {/* ToggleSwitch components for each condition type */}
                 {conditionTypes.map((condition) => {
                     const isHighestPriority = condition === getHighestPriorityConditionFromList(selectedConditions);
+                    const label = condition === "E_norm" ? "E" : condition;
+
                     return (
                         <ToggleSwitch
                             key={condition}
                             isDataWindowVisible={selectedConditions.includes(condition)}
                             toggleDataWindow={() => toggleCondition(condition)}
-                            label={condition}
+                            label={label}
                             isHighestPriority={isHighestPriority}
                         />
                     );
                 })}
             </div>
             {isDataWindowVisible && (
-                <div className="data-window" style={{width: '40%'}}>
+                <div className="data-window" style={{ width: isFullScreen ? 'calc(100% - 120px)' : `${widthPercentage}%` }}>
+                    <div className="resizable-bar" onMouseDown={() => setIsResizing(true)}
+                         style={{
+                             cursor: 'ew-resize',
+                             height: '100%',
+                             width: '10px',
+                             background: 'var(--background-2)',
+                             position: 'absolute',
+                             right: 0,
+                             top: 0,
+                         }}
+                    />
                     <div className="data-window-content">
                         <PhotoScrollComponent
+                            initialIndex={0}
                             imageUrls={imageUrls}
-                            fetchAdjacentImages={fetchAdjacentImages}
+                            fetchImages={fetchAdjacentImages} // Pass the fetch function
                         />
                         {renderLineCharts()}
                     </div>

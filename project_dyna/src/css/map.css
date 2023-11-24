@@ -8,6 +8,7 @@
     height: 90vh;
     z-index: 0;
 }
+/* Zoom number displayed */
 /*.map-zoom {*/
 /*    position: absolute;*/
 /*    right: 55px;*/
@@ -18,13 +19,37 @@
 /*    margin-top: 5px;*/
 /*}*/
 
+.leaflet-top.leaflet-right {
+    position: absolute;
+    top: auto; /* Remove from top */
+    bottom: 40px;
+    right: 10px;
+}
+
+
+.leaflet-control-zoom{
+    border-radius: 40px !important;
+    border: 1px solid black !important;
+}
+
+.leaflet-control-zoom-in {
+    border: none !important;
+    border-radius: 40px 40px 0 0 !important; /* Round only the top corners */
+    border-bottom: 1px solid rgb(100, 100, 100, 0.5) !important; /* Add a solid line for separation */
+}
+
+.leaflet-control-zoom-out {
+    border: none !important;
+    border-radius: 0 0 40px 40px !important; /* Round only the bottom corners */
+}
+
 .leaflet-control-zoom, .leaflet-control-zoom-in, .leaflet-control-zoom-out {
-    background: var(--background-3) !important;
-    color: white !important;
+    background: white !important;
+    color: rgb(100, 100, 100) !important;
 }
 
 .leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
-    background: var(--background-2) !important;
+    color: black !important;
 }
 
 .leaflet-tile {
