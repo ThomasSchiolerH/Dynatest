@@ -157,6 +157,8 @@ const ConditionMap = (props: any) => {
     let selectedRoadData = {} as JSON;
     const { setData } = useData();
     const { setMap } = useData();
+    const { setRoadHighlightLayerGroup } = useData();
+
 
     const { center, zoom, minZoom, maxZoom, scaleWidth } = MAP_OPTIONS;
 
@@ -183,6 +185,22 @@ const ConditionMap = (props: any) => {
             setRangeSelected(newSelectedRange);
         }
     };
+    //
+    //
+    // const mapInstance = useMap();
+    // // Initialize roadHighlightLayerGroup and add it to the map
+    // useEffect(() => {
+    //     const newRoadHighlightLayerGroup = L.layerGroup();
+    //     setRoadHighlightLayerGroup(newRoadHighlightLayerGroup);
+    //
+    //
+    //     newRoadHighlightLayerGroup.addTo(mapInstance);
+    //
+    //     // Cleanup function
+    //     return () => {
+    //         newRoadHighlightLayerGroup.clearLayers();
+    //     };
+    // }, [setRoadHighlightLayerGroup]);
 
 
     useEffect( () => {

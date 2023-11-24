@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, Dispatch, SetStateAction, ReactNode } from 'react';
-import {map} from "leaflet";
+import L, {map} from "leaflet";
 
 
 interface RoadData {
@@ -24,13 +24,17 @@ type ContextType = {
     setData: Dispatch<SetStateAction<RoadData | null>>;
     map: L.Map | null;
     setMap: Dispatch<SetStateAction<L.Map | null>>;
+    roadHighlightLayerGroup: L.LayerGroup | null;
+    setRoadHighlightLayerGroup: Dispatch<SetStateAction<L.LayerGroup | null>>;
 };
 
 const DataContext = createContext<ContextType>({
     data: null,
     setData: () => {},
     map: null,
-    setMap: () => {}
+    setMap: () => {},
+    roadHighlightLayerGroup: null,
+    setRoadHighlightLayerGroup: () => {},
 });
 
 type DataProviderProps = {
@@ -40,9 +44,10 @@ type DataProviderProps = {
 export function DataProvider({ children }: DataProviderProps) {
     const [data, setData] = useState<RoadData | null>(null);
     const [map, setMap] = useState<L.Map | null>(null);
+    const [roadHighlightLayerGroup, setRoadHighlightLayerGroup] = useState<L.LayerGroup | null>(null);
 
     return (
-        <DataContext.Provider value={{ data, setData, map, setMap }}>
+        <DataContext.Provider value={{ data, setData, map, setMap, roadHighlightLayerGroup, setRoadHighlightLayerGroup }}>
                 {children}
         </DataContext.Provider>
     );

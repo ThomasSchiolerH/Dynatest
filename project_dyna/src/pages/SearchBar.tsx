@@ -2,12 +2,18 @@ import React, {useEffect, useState} from 'react';
 import '../css/SearchBar.css';
 import {get} from "../queries/fetch";
 import {useData} from "../context/RoadDataContext";
+import L from "leaflet";
+import {FeatureCollection} from "geojson";
 
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [roadNames, setRoadNames] = useState<string[]>([]);
     const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
     const { map } = useData();
+
+    //const { roadHighlightLayerGroup } = useData();
+    const [dataAll, setDataAll] = useState<FeatureCollection>();
+
 
     let zoomLevel = 15; // Set zoom for when search for road is moving map
 
@@ -66,6 +72,46 @@ const SearchBar = () => {
         return name.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     };
 
+    // Initialize roadHighlightLayerGroup and add it to the map
+    useEffect(() => {
+        const roadHighlightLayerGroup = new L.LayerGroup();
+        if (map) {
+            roadHighlightLayerGroup.addTo(map);
+        }
+
+        // Fetch the dataAll feature collection
+        get('/conditions', (data: FeatureCollection) => {
+            setDataAll(data);
+        });
+
+        // Cleanup function
+        return () => {
+            if (map) {
+                roadHighlightLayerGroup.remove();
+            }
+        };
+    }, [map]);
+
+    const roadHighlightLayerGroup = new L.LayerGroup();
+    const highlightRoadByName = (roadName: string) => {
+        // Ensure roadHighlightLayerGroup is initialized and dataAll is available
+        if (map && dataAll && dataAll.features) {
+            roadHighlightLayerGroup.clearLayers();
+
+            const roadFeatures = dataAll.features.filter(
+                (f) => f.properties && f.properties.way_name === roadName
+            );
+
+            roadFeatures.forEach((roadFeature) => {
+                const roadHighlight = new L.GeoJSON(roadFeature.geometry, {
+                    style: { weight: 8, color: 'blue', opacity: 0.3 },
+                });
+                roadHighlightLayerGroup.addLayer(roadHighlight);
+            });
+        }
+    };
+
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formattedQuery = toTitleCase(searchQuery);
@@ -77,6 +123,7 @@ const SearchBar = () => {
             if(data.success && data.road && data.road.length > 0) {
                 const firstPoint = data.road[0];
                 const coordinates = { lat: firstPoint.lat, lng: firstPoint.lon };
+                highlightRoadByName(formattedQuery);
                 panToMapCoordinates(coordinates);
                 console.log("Panning to coordinates:", coordinates);
                 console.log(data);
@@ -108,6 +155,7 @@ const SearchBar = () => {
             if(data.success && data.road && data.road.length > 0) {
                 const firstPoint = data.road[0];
                 const coordinates = { lat: firstPoint.lat, lng: firstPoint.lon };
+                highlightRoadByName(suggestion);
                 panToMapCoordinates(coordinates);
                 console.log("Panning to coordinates:", coordinates);
                 console.log(data);
