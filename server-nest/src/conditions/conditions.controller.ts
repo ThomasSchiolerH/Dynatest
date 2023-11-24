@@ -1,4 +1,12 @@
-import {Controller, Get, Param, Post, Query, UseInterceptors, UploadedFile, ParseFilePipeBuilder, HttpStatus, HttpException} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ConditionsService } from './conditions.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -41,49 +49,26 @@ export class ConditionsController {
     );
   }
 
-  @Get('road-names')
-  getRoadNames() {
-      return this.conditionsService.getRoadNames();
+  @Get('road_data/:id') // from the condition id clicked
+  getRoadConditions(@Param() params: any) {
+    return this.conditionsService.getRoadConditions(params.id);
   }
 
-  @Get('near_coverage_value/:id')
-  getNearConditionsFromCoverageValueId(@Param() params: any) {
-    return this.conditionsService.getNearConditionsFromCoverageValueId(
-      params.id,
-    );
+  @Get('way/:id')
+  getWayContions(@Param() params: any) {
+    return this.conditionsService.getWayConditions(params.id);
   }
 
-    @Get('road_data') // from the condition id clicked
-    getRoadConditions(@Query() query: { coverage_value_id: string, wayName: string }):
-        Promise<any> { const { coverage_value_id, wayName } = query; {
-            return this.conditionsService.getRoadConditions(
-                coverage_value_id, wayName
-            );
-    }}
-
-  @Get('picture/:lat/:lon')
-  getPicturesFromLatLon(@Param('lat') lan: number, @Param('lon') lon: number) {
-      return this.conditionsService.getPicturesFromLatLon(lan, lon);
+  @Post('import/rsp')
+  @UseInterceptors(FileInterceptor('fileName'))
+  upload(@UploadedFile() file: any): any {
+    return this.conditionsService.post(file);
   }
 
-  @Post('import/zip')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadZipFile(
-      @UploadedFile(
-          new ParseFilePipeBuilder()
-              .addFileTypeValidator({fileType: 'zip'})
-              .build({
-                  exceptionFactory: e => {
-                      if (e) {
-                          throw new HttpException(
-                              'Wrong file format',
-                              HttpStatus.BAD_REQUEST
-                          )
-                      }
-                  }
-              })
-      ) file: Express.Multer.File
-  ) {
-      return this.conditionsService.uploadZipFile(file);
-  }
+  /*  //attempt at getting the querey into this file
+      @Get('conditionis/picture/:lat/:lon')
+      getPicturesFromLatLon(@Param() params: any) {
+          return this.conditionsService.getPicturesFromLatLon(lan, lon);
+      }
+    */
 }
