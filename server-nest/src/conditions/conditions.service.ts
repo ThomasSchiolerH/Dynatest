@@ -111,7 +111,8 @@ export class ConditionsService {
             motorway: r.IsHighway,
             compute_time: r.compute_time,
             task_id: r.task_id,
-            way_name: r.way_name, // Include way_name in the properties
+            way_name: r.way_name,
+
           },
         };
       }),
