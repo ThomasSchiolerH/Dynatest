@@ -408,7 +408,7 @@ const ConditionMap = (props: any) => {
                     scrollWheelZoom={true}
                     zoomControl={false}
                 >
-                    <MapInstanceComponent />
+                    <MapInstanceComponent/>
                     <TileLayer
                         maxNativeZoom={maxZoom}
                         maxZoom={maxZoom}
