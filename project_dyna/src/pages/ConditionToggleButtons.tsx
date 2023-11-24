@@ -62,8 +62,10 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         const handleMouseMove = (e: MouseEvent) => {
             if (isResizing) {
                 setWidthPercentage((prevWidth) => {
-                    const sensitivityFactor = 10;
-                    const newWidth = Math.max(10, Math.min(prevWidth + e.movementX / sensitivityFactor, 100));
+                    const maxWidth = 91.75;
+                    const minWidth = 5;
+                    const sensitivityFactor = 14.6;
+                    const newWidth = Math.max(minWidth, Math.min(prevWidth + e.movementX / sensitivityFactor, maxWidth));
                     return newWidth;
                 });
             }
