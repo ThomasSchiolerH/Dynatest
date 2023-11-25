@@ -15,7 +15,7 @@ import ConditionToggleButtons from './ConditionToggleButtons';
 import "../css/slider.css";
 import "../css/map.css";
 import "../css/DataWindow.css";
-import SearchBar from "./SearchBar";
+import SearchBar from "../Components/SearchBar";
 
 const ALL = "ALL"
 const KPI = "KPI"
@@ -41,10 +41,17 @@ interface YearMonth  {
     month: number
 }
 
+interface Geometry {
+    type: string;
+    coordinates: Array<Array<[number, number]>>;
+}
+
 interface RoadData {
     success: boolean;
     road_name: string;
     road_distance: number;
+    initial_distance: number;
+    road_geometry: Geometry;
     road: Array<{
         lat: number;
         lon: number;
@@ -334,7 +341,9 @@ const ConditionMap = (props: any) => {
 
                         roadHighlightLayerGroup.addTo(e.target._map);
 
-                        get(`/conditions/road_data?coverage_value_id=${feature.properties.id}`, (data: RoadData) => {
+                        {//get(`/conditions/road_data?coverage_value_id=${feature.properties.id}`, (data: RoadData) => {
+                        }
+                        get(`/conditions/road/${feature.properties.osm_id}`, (data: RoadData) => {
                             if (data.success) {
                                 setData(data);
                             }
@@ -378,7 +387,6 @@ const ConditionMap = (props: any) => {
         const map = useMap();
         useEffect(() => {
             if (map) {
-                console.log("Setting map instance");
                 setMap(map);
             }
         }, [map, setMap]);

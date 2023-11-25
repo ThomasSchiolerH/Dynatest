@@ -6,6 +6,7 @@ import { Coverage } from '../entity/Coverage';
 import { Ways } from '../entity/Ways';
 import { Trips } from '../entity/Trips';
 import { Condition_Pictures } from '../entity/Condition_Pictures';
+import { MinioClientService } from 'src/minio-client/minio-client.service';
 
 import { parse_rsp } from './dynatest.parser';
 import {
@@ -14,12 +15,13 @@ import {
   computeWayIds,
 } from './utility';
 
+
 @Injectable()
 export class ConditionsService {
   constructor(
     @InjectDataSource('lira-map')
     private dataSource: DataSource,
-    //private minioClientService: MinioClientService
+    private minioClientService: MinioClientService
   ) {}
 
   async getConditions(
@@ -48,6 +50,7 @@ export class ConditionsService {
           'ST_AsGeoJSON(coverage.section_geom) AS section_geom',
           'way."IsHighway" AS IsHighway',
           'way."OSM_Id"',
+          'way.way_name AS way_name'
         ])
         .innerJoin(
           Coverage,
@@ -116,7 +119,7 @@ export class ConditionsService {
             compute_time: r.compute_time,
             task_id: r.task_id,
             way_name: r.way_name,
-            osm_id: r.OSM_Id,
+            osm_id: r.OSM_Id
           },
         };
       }),
@@ -269,11 +272,11 @@ export class ConditionsService {
 
       return {
         success: true,
-        name: clicked_way.way_name,
-        distance: result.distance,
+        road_name: clicked_way.way_name,
+        road_distance: result.distance,
         initial_distance: 0,
         road_geometry: result.geometry,
-        conditions: result.conditions,
+        road: result.conditions,
       };
     } catch (e) {
       return { success: false, message: e.message };

@@ -2,8 +2,8 @@ import {MapContainer, ScaleControl, TileLayer} from "react-leaflet";
 import Zoom from "../map/zoom";
 import React, {useState, PureComponent, useEffect} from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer, ReferenceLine } from 'recharts'
-import ToggleSwitch from './ToggleSwitch'; // Update the path to the ToggleSwitch component
-import PhotoScrollComponent from "./PhotoScrollComponent";
+import ToggleSwitch from '../Components/ToggleSwitch'; // Update the path to the ToggleSwitch component
+import PhotoScrollComponent from "../Components/PhotoScrollComponent";
 import DataWindowImg from '../images/DataWindowImg.png';
 import SingleConditionToggledImg from '../images/singleConditionToggledImg.png';
 import MultipleConditionsToggledImg from '../images/multipleConditionsToggledImg.png';
@@ -16,10 +16,17 @@ interface ConditionToggleButtonsProps {
     onConditionToggle: (condition: string | null, isSelected: boolean) => void;
 }
 
+interface Geometry {
+    type: string;
+    coordinates: Array<Array<[number, number]>>;
+}
+
 interface RoadData {
     success: boolean;
     road_name: string;
     road_distance: number;
+    initial_distance: number;
+    road_geometry: Geometry;
     road: Array<{
         lat: number;
         lon: number;
@@ -46,12 +53,10 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
     const increaseWidth = () => {
         setWidthPercentage((prevWidth) => Math.min(prevWidth + 5, 100));
-        console.log('Increase width clicked');
     };
 
     const decreaseWidth = () => {
         setWidthPercentage((prevWidth) => Math.max(prevWidth - 5, 10));
-        console.log('Decrease width clicked');
     };
 
     const toggleFullScreen = () => {
@@ -126,16 +131,24 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         if (data) {
             const graphData: Array<Record<string, any>> = [];
 
-            if (data) {
+            if (data.road.length > 0) {
+                const expectedConditionTypes = ['KPI', 'DI', 'IRI', 'Mu', 'E_norm'];
+
                 data.road.forEach((roadItem) => {
                     const graphItem: Record<string, any> = {
                         name: roadItem.distance,
-                        KPI: roadItem.KPI !== null ? roadItem.KPI.toPrecision(3) : null,
-                        DI: roadItem.DI !== null ? roadItem.DI.toPrecision(3) : null,
-                        IRI: roadItem.IRI !== null ? roadItem.IRI.toPrecision(3) : null,
-                        Mu: roadItem.Mu !== null ? roadItem.Mu.toPrecision(3) : null,
-                        E_norm: roadItem.E_norm !== null ? roadItem.E_norm.toPrecision(3) : null,
                     };
+
+                    expectedConditionTypes.forEach((conditionType) => {
+                        if (roadItem.hasOwnProperty(conditionType as keyof typeof roadItem)) {
+                            const conditionValue = roadItem[conditionType as keyof typeof roadItem];
+
+                            graphItem[conditionType] =
+                                conditionValue !== null ? conditionValue.toPrecision(3) : null;
+                        } else {
+                            graphItem[conditionType] = null;
+                        }
+                    });
 
                     graphData.push(graphItem);
                 });
@@ -144,6 +157,8 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
             return graphData;
         }
     }
+
+
 
     const toggleDataWindow = () => {
         setIsDataWindowVisible((prev) => !prev);

@@ -2,10 +2,17 @@ import React, { createContext, useContext, useState, Dispatch, SetStateAction, R
 import {map} from "leaflet";
 
 
+interface Geometry {
+    type: string;
+    coordinates: Array<Array<[number, number]>>;
+}
+
 interface RoadData {
     success: boolean;
     road_name: string;
     road_distance: number;
+    initial_distance: number;
+    road_geometry: Geometry;
     road: Array<{
         lat: number;
         lon: number;

@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 
 
 import '../css/navigationbar.css';
-import SearchBar from "./SearchBar";
+import SearchBar from "../Components/SearchBar";
 
 interface NavBtnProps {
     to: string;

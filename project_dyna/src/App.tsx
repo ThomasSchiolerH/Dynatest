@@ -7,7 +7,7 @@ import Home from "./pages/Home";
 import ConditionMap from "./pages/ConditionMap";
 import NavigationBar from "./pages/NavigationBar";
 import ImportData from "./pages/ImportData";
-import SearchBar from "./pages/SearchBar";
+import SearchBar from "./Components/SearchBar";
 
 export default function App() {
     return (
