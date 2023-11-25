@@ -49,6 +49,12 @@ export class ConditionsController {
     );
   }
 
+  @Get('road-names')
+  async getRoadNames(@Query() query: {name: string}): Promise<any>{
+    const {name} = query;
+    return this.conditionsService.getRoadNames(name);
+  }
+
   @Get('road/:id') // from the condition id clicked
   getRoadConditions(@Param() params: any) {
     return this.conditionsService.getRoadConditions(params.id);

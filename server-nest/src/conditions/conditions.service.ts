@@ -1,19 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { Coverage_Values } from '../entity/Coverage_Values';
-import { Coverage } from '../entity/Coverage';
-import { Ways } from '../entity/Ways';
-import { Trips } from '../entity/Trips';
-import { Condition_Pictures } from '../entity/Condition_Pictures';
-import { MinioClientService } from 'src/minio-client/minio-client.service';
+import {HttpException, Injectable} from '@nestjs/common';
+import {InjectDataSource} from '@nestjs/typeorm';
+import {DataSource} from 'typeorm';
+import {Coverage_Values} from '../entity/Coverage_Values';
+import {Coverage} from '../entity/Coverage';
+import {Ways} from '../entity/Ways';
+import {Trips} from '../entity/Trips';
+import {Condition_Pictures} from '../entity/Condition_Pictures';
+import {MinioClientService} from 'src/minio-client/minio-client.service';
 
-import { parse_rsp } from './dynatest.parser';
-import {
-  computeRoadConditions,
-  computeWayConditions,
-  computeWayIds,
-} from './utility';
+import {parse_rsp} from './dynatest.parser';
+import {computeRoadConditions, computeWayConditions, computeWayIds,} from './utility';
 
 
 @Injectable()
@@ -309,4 +305,32 @@ export class ConditionsService {
       };
     } catch (e) {}
   }
+
+    async getRoadNames(road_name: string) {
+        road_name = road_name.toLowerCase().trim();
+        try {
+            const roadNames =this.dataSource
+                .getRepository(Ways)
+                .createQueryBuilder('way')
+                .select(['way_name', 'AVG(lat_mapped) as lat', 'AVG(lon_mapped) as lon'])
+                .innerJoin(Coverage, 'coverage', 'coverage.fk_way_id = way.id')
+                .where("LOWER(way_name) LIKE :name", {name: road_name + '%'})
+                .groupBy('way_name')
+                .orderBy('way_name', 'ASC')
+                .getRawMany();
+
+            const res : any[] = await roadNames;
+            return res.reduce(function (acc, e) {
+                    acc.push({road_name: e.way_name, coordinates: {lat: e.lat, lng: e.lon}});
+                    return acc;
+                }
+                , []);
+        } catch (e) {
+            console.log(e);
+            throw new HttpException("Internal server error", 500);
+        }
+    }
+
+
+
 }

@@ -3,10 +3,19 @@ import '../css/SearchBar.css';
 import {get} from "../queries/fetch";
 import {useData} from "../context/RoadDataContext";
 
+type Coordinates = {
+    lat: number;
+    lng: number
+};
+
+type GeoReference = {
+    road_name: string;
+    coordinates: Coordinates
+};
+
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [roadNames, setRoadNames] = useState<string[]>([]);
-    const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+    const [geoReferences, setGeoReferences] = useState<GeoReference[]>([]);
     const { map } = useData();
 
     let zoomLevel = 15; // Set zoom for when search for road is moving map
@@ -42,24 +51,21 @@ const SearchBar = () => {
         );
     };
     useEffect(() => {
-        get("/conditions/road-names", (roadNameCollection: { way_name: string }[]) => {
+        if(searchQuery.trim().length == 0) return;
+
+        get("/conditions/road-names?name=" + searchQuery, (geoRefCollection: GeoReference[]) => {
             try {
-                const names: string[] = roadNameCollection.map(road => road.way_name);
-                setRoadNames(names);
+                const geoReferences: GeoReference[] = geoRefCollection.map((reference : GeoReference) => reference);
+                setGeoReferences(geoReferences);
             } catch (e) {
                 console.error(e);
             }
         });
-    }, []);
+    }, [searchQuery]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const userInput = event.target.value;
+        const userInput : string = event.target.value;
         setSearchQuery(userInput);
-
-        const filtered = roadNames.filter(
-            name => name.toLowerCase().includes(userInput.toLowerCase())
-        );
-        setFilteredSuggestions(filtered);
     };
 
     const toTitleCase = (name: string) => {
@@ -70,18 +76,6 @@ const SearchBar = () => {
         event.preventDefault();
         const formattedQuery = toTitleCase(searchQuery);
         executeSearch(formattedQuery);
-        setFilteredSuggestions([]); // clear suggested
-        console.log("Manually searching for:", formattedQuery);
-
-        get(`/conditions/road_data?wayName=${formattedQuery}`, (data: any) => {
-            if(data.success && data.road && data.road.length > 0) {
-                const firstPoint = data.road[0];
-                const coordinates = { lat: firstPoint.lat, lng: firstPoint.lon };
-                panToMapCoordinates(coordinates);
-                console.log("Panning to coordinates:", coordinates);
-                console.log(data);
-            }
-        });
     };
 
     const executeSearch = (query: string) => {
@@ -103,28 +97,11 @@ const SearchBar = () => {
     const handleSuggestionClick = (suggestion: string) => {
         setSearchQuery(suggestion);
         executeSearch(suggestion);
-        setFilteredSuggestions([]); // clear suggested
-        get(`/conditions/road_data?wayName=${suggestion}`, (data: any) => {
-            if(data.success && data.road && data.road.length > 0) {
-                const firstPoint = data.road[0];
-                const coordinates = { lat: firstPoint.lat, lng: firstPoint.lon };
-                panToMapCoordinates(coordinates);
-                console.log("Panning to coordinates:", coordinates);
-                console.log(data);
-            } else {
-                console.error("No data found for road:", suggestion);
-            }
-        });
     };
 
     const fetchRoadCoordinates = (roadName: string, callback: (coords: { lat: number, lng: number }) => void) => {
-        get(`/conditions/road_data?wayName=${roadName}`, (data: any) => {
-            if(data.success && data.road && data.road.length > 0) {
-                const firstPoint = data.road[0];
-                const coordinates = { lat: firstPoint.lat, lng: firstPoint.lon };
-                callback(coordinates); // Pass to callback function
-            }
-        });
+        const i: number = geoReferences.findIndex((e : GeoReference) : boolean => e.road_name === roadName);
+        callback(geoReferences[i].coordinates);
     };
 
     const panToMapCoordinates = (coords: { lat: number, lng: number }) => {
@@ -151,11 +128,11 @@ const SearchBar = () => {
                 value={searchQuery}
                 onChange={handleInputChange}
             />
-            {searchQuery && filteredSuggestions.length > 0 && (
+            {searchQuery && geoReferences.length > 0 && (
                 <ul className="suggestions">
-                    {filteredSuggestions.map((suggestion, index) => (
-                        <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
-                            {suggestion}
+                    {geoReferences.map((ref, index) => (
+                        <li key={index} onClick={() => handleSuggestionClick(ref.road_name)}>
+                            {ref.road_name}
                         </li>
                     ))}
                 </ul>
