@@ -1,7 +1,10 @@
 import {
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   Post,
   Query,
   UploadedFile,
@@ -77,4 +80,25 @@ export class ConditionsController {
           return this.conditionsService.getPicturesFromLatLon(lan, lon);
       }
     */
+  @Post('import/zip')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadZipFile(
+      @UploadedFile(
+          new ParseFilePipeBuilder()
+              .addFileTypeValidator({fileType: 'zip'})
+              .addMaxSizeValidator({ maxSize: 2000000000 })
+              .build({
+                exceptionFactory: e => {
+                  if (e) {
+                    throw new HttpException(
+                        'Wrong file format',
+                        HttpStatus.BAD_REQUEST
+                    )
+                  }
+                }
+              })
+      ) file: Express.Multer.File
+  ) {
+    return this.conditionsService.uploadZipFile(file);
+  }
 }
