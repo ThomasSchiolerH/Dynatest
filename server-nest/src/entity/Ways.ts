@@ -21,7 +21,7 @@ export class Ways {
     length: number
 
     @Column('geometry')
-    section_geometry: MultiLineString
+    section_geom: MultiLineString
 
     @Column()
     IsHighway: boolean
