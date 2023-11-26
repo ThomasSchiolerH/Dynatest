@@ -1,5 +1,10 @@
 // used to access overpass-api
+import { HttpException } from '@nestjs/common';
 import fetch from 'node-fetch';
+import { Coverage } from 'src/entity/Coverage';
+import { Coverage_Values } from 'src/entity/Coverage_Values';
+import { Ways } from 'src/entity/Ways';
+import { DataSource } from 'typeorm';
 
 /**
  * @author Andreas Hansen (s214969)
@@ -180,6 +185,119 @@ export async function computeRoadConditions(
     geometry: geometry,
     distance: distance,
   };
+}
+
+export async function addWayToDatabase(
+    dataSource: DataSource,
+    OSM_Id: number,
+    way_name: string,
+    node_start: number,
+    node_end: number,
+    length: number,
+    section_geometry: string,
+    isHighway: boolean
+): Promise<string> {
+  try {
+    const alreadyExistingWay = await dataSource
+        .getRepository(Ways)
+        .createQueryBuilder('ways')
+        .select(["ways.id", "ways.OSM_Id"])
+        .where("ways.OSM_Id = :OsmId", {OsmId: OSM_Id})
+        .getRawOne();
+
+    if (alreadyExistingWay)
+      return alreadyExistingWay.ways_id;
+    else {
+      const returnedValues = await dataSource
+        .createQueryBuilder()
+        .insert()
+        .into(Ways)
+        .values({
+          OSM_Id: OSM_Id,
+          way_name: way_name,
+          node_start: node_start,
+          node_end: node_end,
+          length: length,
+          section_geom: () => `ST_GeomFromGeoJSON('${section_geometry}')`,
+          IsHighway: isHighway
+        })
+        .returning("id")
+        .execute();
+    return returnedValues.raw[0].id;
+    }
+  } catch(e) {
+    console.log(e);
+    throw new HttpException("Internal server error", 500);
+  }
+}
+
+export async function addCoverageToDatabase(
+    dataSource: DataSource,
+    distance01: number,
+    distance02: number,
+    computeTime: string,
+    latMapped: number,
+    lonMapped: number,
+    sectionGeometry: string,
+    wayId: string
+): Promise<string> {
+  try {
+    const alreadyExistingCoverage = await dataSource
+        .getRepository(Coverage)
+        .createQueryBuilder('coverage')
+        .select("coverage.id")
+        .where("lat_mapped = :lat", {lat: latMapped})
+        .andWhere("lon_mapped = :lon", {lon: lonMapped})
+        .getRawOne();
+
+    if (alreadyExistingCoverage)
+      return alreadyExistingCoverage.coverage_id;
+    else {
+      const returnedValues = await dataSource
+        .createQueryBuilder()
+        .insert()
+        .into(Coverage)
+        .values({
+          distance01: distance01,
+          distance02: distance02,
+          compute_time: computeTime,
+          lat_mapped: latMapped,
+          lon_mapped: lonMapped,
+          section_geom: () => `ST_GeomFromGeoJSON('${sectionGeometry}')`,
+          way: wayId
+        })
+        .returning("id")
+        .execute();
+    return returnedValues.raw[0].id;
+    }
+  } catch (e) {
+    console.log(e);
+    throw new HttpException("Internal server error", 500);
+  }
+}
+
+export async function addCoverageValueToDatabase(
+    dataSource: DataSource,
+    type: string,
+    value: number,
+    coverageId: string
+) {
+  try {
+    dataSource
+        .createQueryBuilder()
+        .insert()
+        .into(Coverage_Values)
+        .values({
+          type: type,
+          value: value,
+          data_source: "Dynatest",
+          coverage: coverageId as any
+        })
+        .execute();
+  } catch (e) {
+    console.log(e);
+    throw new HttpException("Internal server error", 500);
+  }
 }
 
 /*
