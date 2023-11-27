@@ -98,9 +98,6 @@ const SearchBar = () => {
     const handleSuggestionClick = (suggestion: string) => {
         setSearchQuery(suggestion);
         executeSearch(suggestion);
-        setTimeout(() => {
-            setGeoReferences([]);
-        }, 100);
     };
 
     const fetchRoadCoordinates = (roadName: string, callback: (coords: { lat: number, lng: number }) => void) => {
@@ -116,7 +113,6 @@ const SearchBar = () => {
 
     const handleReset = () => {
         setSearchQuery('');
-        setGeoReferences([]);
     };
 
     return (
