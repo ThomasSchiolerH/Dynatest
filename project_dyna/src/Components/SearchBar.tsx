@@ -51,7 +51,7 @@ const SearchBar = () => {
         );
     };
     useEffect(() => {
-        if(searchQuery.trim().length == 0) return;
+        if(searchQuery.trim().length === 0) return;
 
         get("/conditions/road-names?name=" + searchQuery, (geoRefCollection: GeoReference[]) => {
             try {
@@ -85,6 +85,7 @@ const SearchBar = () => {
                 if (coordinates) {
                     console.log("Coordinates received:", coordinates);
                     panToMapCoordinates(coordinates);
+                    setGeoReferences([]);
                 } else {
                     console.error("Coordinates not found for the road:", query);
                 }
@@ -97,6 +98,9 @@ const SearchBar = () => {
     const handleSuggestionClick = (suggestion: string) => {
         setSearchQuery(suggestion);
         executeSearch(suggestion);
+        setTimeout(() => {
+            setGeoReferences([]);
+        }, 100);
     };
 
     const fetchRoadCoordinates = (roadName: string, callback: (coords: { lat: number, lng: number }) => void) => {
@@ -112,6 +116,7 @@ const SearchBar = () => {
 
     const handleReset = () => {
         setSearchQuery('');
+        setGeoReferences([]);
     };
 
     return (
