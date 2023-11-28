@@ -232,8 +232,12 @@ export function parse_rsp_Pictures(str: string): any[] {
       multiString.push([locations[i], locations[i + 1]]);
       i++;
     }
+    /*different possible outputs:
+    If you return locations, you get a list of coordinates.
+    If you return GeoMultilineString(multiString) you get a geojson output, with pairs of coordinates
+     */
 
-    return [GeoMultilineString(multiString)];
+    return locations;
   }
 
   function havresine(
