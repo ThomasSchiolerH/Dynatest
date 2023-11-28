@@ -364,8 +364,8 @@ export class ConditionsService {
     // For now it just says error
     throw new HttpException('Internal server error', 500);
 
-    // TODO Make the image upload with this
-    /*let image: BufferedFile;
+        // TODO Make the image upload with this
+        /*let image: BufferedFile;
         this.uploadImage(image).then((res) => {
           this.dataSource
               .createQueryBuilder()
@@ -375,7 +375,8 @@ export class ConditionsService {
                 lat_mapped: 55.555,   // TODO Get it from RSP file
                 lon_mapped: 55.555,   // TODO Get it from RSP file
                 name: image.originalname,
-                url: res.image_url
+                url: res.image_url,
+                way: wayId
               })
               .execute()
         }).catch(e => {
