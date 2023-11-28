@@ -50,8 +50,8 @@ export class ConditionsController {
   }
 
   @Get('road-names')
-  async getRoadNames(@Query() query: {name: string}): Promise<any>{
-    const {name} = query;
+  async getRoadNames(@Query() query: { name: string }): Promise<any> {
+    const { name } = query;
     return this.conditionsService.getRoadNames(name);
   }
 

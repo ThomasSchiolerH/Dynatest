@@ -1,34 +1,35 @@
-import {HttpException, Injectable} from '@nestjs/common';
-import {InjectDataSource} from '@nestjs/typeorm';
-import {DataSource} from 'typeorm';
-import {Coverage_Values} from '../entity/Coverage_Values';
-import {Coverage} from '../entity/Coverage';
-import {Ways} from '../entity/Ways';
-import {Trips} from '../entity/Trips';
-import {Condition_Pictures} from '../entity/Condition_Pictures';
-import {MinioClientService} from 'src/minio-client/minio-client.service';
+import { HttpException, Injectable } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { Coverage_Values } from '../entity/Coverage_Values';
+import { Coverage } from '../entity/Coverage';
+import { Ways } from '../entity/Ways';
+import { Trips } from '../entity/Trips';
+import { Condition_Pictures } from '../entity/Condition_Pictures';
+import { MinioClientService } from 'src/minio-client/minio-client.service';
 
-import {parse_rsp} from './dynatest.parser';
-import {computeRoadConditions, computeWayConditions, computeWayIds,} from './utility';
+import { parse_rsp } from './dynatest.parser';
+import { computeRoadConditions, computeWayConditions } from './utility';
 
+import { fetch_OSM_Ids } from './external_api_calls';
 
 @Injectable()
 export class ConditionsService {
   constructor(
     @InjectDataSource('lira-map')
     private dataSource: DataSource,
-    private minioClientService: MinioClientService
+    private minioClientService: MinioClientService,
   ) {}
 
   async getConditions(
-      minLat: string,
-      maxLat: string,
-      minLng: string,
-      maxLng: string,
-      type: string,
-      valid_before: string,
-      valid_after: string,
-      computed_after: string,
+    minLat: string,
+    maxLat: string,
+    minLng: string,
+    maxLng: string,
+    type: string,
+    valid_before: string,
+    valid_after: string,
+    computed_after: string,
   ) {
     let res;
     try {
@@ -46,7 +47,7 @@ export class ConditionsService {
           'ST_AsGeoJSON(coverage.section_geom) AS section_geom',
           'way."IsHighway" AS IsHighway',
           'way."OSM_Id"',
-          'way.way_name AS way_name'
+          'way.way_name AS way_name',
         ])
         .innerJoin(
           Coverage,
@@ -115,7 +116,7 @@ export class ConditionsService {
             compute_time: r.compute_time,
             task_id: r.task_id,
             way_name: r.way_name,
-            osm_id: r.OSM_Id
+            osm_id: r.OSM_Id,
           },
         };
       }),
@@ -218,7 +219,7 @@ export class ConditionsService {
           'way_name',
           'node_start',
           'node_end',
-          'lenght as length',
+          'length',
           'ST_AsGeoJSON(section_geom, 5, 0) AS geometry',
           'way."IsHighway"',
         ])
@@ -232,7 +233,7 @@ export class ConditionsService {
       const radius = 1000; // 1000 meter radius
 
       // Find all OSM way_ids within a 1000-meter radius around the first GPS-point
-      const osm_ids = await computeWayIds(
+      const osm_ids = await fetch_OSM_Ids(
         lat,
         lon,
         clicked_way.way_name,
@@ -249,7 +250,7 @@ export class ConditionsService {
           'value',
           'way."OSM_Id"',
           'ST_AsGeoJSON(coverage.section_geom, 5, 0) AS section_geom',
-          'lenght as length',
+          'length',
           'distance01',
           'distance02',
         ])
@@ -283,9 +284,9 @@ export class ConditionsService {
     if (!file.originalname.toLowerCase().endsWith('.rsp'))
       return { success: false, message: 'not a .rsp file' };
 
-    const ds: any[] = parse_rsp(file.buffer.toString());
+    const data: any[] = await parse_rsp(file.buffer.toString());
 
-    return { success: true, message: 'file uploaded', data: ds };
+    return { success: true, message: 'file uploaded', data: data };
   }
 
   async getPicturesFromLatLon(lat: number, lon: number) {
@@ -306,31 +307,34 @@ export class ConditionsService {
     } catch (e) {}
   }
 
-    async getRoadNames(road_name: string) {
-        road_name = road_name.toLowerCase().trim();
-        try {
-            const roadNames =this.dataSource
-                .getRepository(Ways)
-                .createQueryBuilder('way')
-                .select(['way_name', 'AVG(lat_mapped) as lat', 'AVG(lon_mapped) as lon'])
-                .innerJoin(Coverage, 'coverage', 'coverage.fk_way_id = way.id')
-                .where("LOWER(way_name) LIKE :name", {name: road_name + '%'})
-                .groupBy('way_name')
-                .orderBy('way_name', 'ASC')
-                .getRawMany();
+  async getRoadNames(road_name: string) {
+    road_name = road_name.toLowerCase().trim();
+    try {
+      const roadNames = this.dataSource
+        .getRepository(Ways)
+        .createQueryBuilder('way')
+        .select([
+          'way_name',
+          'AVG(lat_mapped) as lat',
+          'AVG(lon_mapped) as lon',
+        ])
+        .innerJoin(Coverage, 'coverage', 'coverage.fk_way_id = way.id')
+        .where('LOWER(way_name) LIKE :name', { name: road_name + '%' })
+        .groupBy('way_name')
+        .orderBy('way_name', 'ASC')
+        .getRawMany();
 
-            const res : any[] = await roadNames;
-            return res.reduce(function (acc, e) {
-                    acc.push({road_name: e.way_name, coordinates: {lat: e.lat, lng: e.lon}});
-                    return acc;
-                }
-                , []);
-        } catch (e) {
-            console.log(e);
-            throw new HttpException("Internal server error", 500);
-        }
+      const res: any[] = await roadNames;
+      return res.reduce(function (acc, e) {
+        acc.push({
+          road_name: e.way_name,
+          coordinates: { lat: e.lat, lng: e.lon },
+        });
+        return acc;
+      }, []);
+    } catch (e) {
+      console.log(e);
+      throw new HttpException('Internal server error', 500);
     }
-
-
-
+  }
 }
