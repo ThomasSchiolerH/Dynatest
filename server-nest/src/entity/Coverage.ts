@@ -21,10 +21,10 @@ export class Coverage {
     compute_time: string
 
     @Column()
-    lat_mapped: string
+    lat_mapped: number
 
     @Column()
-    lon_mapped: string
+    lon_mapped: number
 
     @Column('geometry')
     section_geom: MultiLineString

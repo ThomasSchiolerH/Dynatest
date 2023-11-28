@@ -18,6 +18,9 @@ export class Coverage_Values {
     @Column()
     ignore: boolean
 
+    @Column()
+    data_source: string
+
     @ManyToOne(type => Coverage)
     @JoinColumn({name: 'fk_coverage_id', referencedColumnName: 'id'})
     coverage: Coverage

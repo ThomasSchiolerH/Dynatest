@@ -8,10 +8,20 @@ import { Trips } from '../entity/Trips';
 import { Condition_Pictures } from '../entity/Condition_Pictures';
 import { MinioClientService } from 'src/minio-client/minio-client.service';
 
-import { parse_rsp } from './dynatest.parser';
-import { computeRoadConditions, computeWayConditions } from './utility';
+import { parseRSP } from './dynatest.parser';
 
+import {
+  computeRoadConditions,
+  computeWayConditions,
+  addCoverageToDatabase,
+  addCoverageValueToDatabase,
+  addWayToDatabase,
+} from './utility';
+
+import { BufferedFile } from 'src/minio-client/file.model';
 import { fetch_OSM_Ids } from './external_api_calls';
+
+import JSZip from 'jszip';
 
 @Injectable()
 export class ConditionsService {
@@ -131,7 +141,7 @@ export class ConditionsService {
         'way_name',
         'trip."id" as trip_id',
         'coverage."id" as coverage_id',
-        'lenght AS length',
+        'length AS length',
         'ST_AsGeoJSON(coverage.section_geom, 5, 0) AS section_geom',
         'way."IsHighway" AS is_highway',
         'way."OSM_Id" AS OSM_Id',
@@ -162,7 +172,7 @@ export class ConditionsService {
           'way_name',
           'node_start',
           'node_end',
-          'lenght as length',
+          'length as length',
           'ST_AsGeoJSON(section_geom, 5, 0) AS way_geom',
           'way."IsHighway"',
         ])
@@ -284,27 +294,102 @@ export class ConditionsService {
     if (!file.originalname.toLowerCase().endsWith('.rsp'))
       return { success: false, message: 'not a .rsp file' };
 
-    const data: any[] = await parse_rsp(file.buffer.toString());
+    const data: any[] = await parseRSP(file.buffer.toString());
 
     return { success: true, message: 'file uploaded', data: data };
   }
 
+  // TODO Get related pictures from MinIO
   async getPicturesFromLatLon(lat: number, lon: number) {
     try {
-      const conditions = this.dataSource
+      const pictureName = this.dataSource
         .getRepository(Condition_Pictures)
         .createQueryBuilder('condition_pictures')
-        .select('DISTINCT ON(c.id) c.id, c.lat_mapped, c.lon_mapped, c.name')
-        .from('condition_pictures', 'c')
-        .where('ST_DISTANCE(ST_Point(c.lon_mapped, c.lat_mapped),geo2, 3)')
-        .orderBy(
-          'c.id, ST_Distance(ST_Point(c.lon_mapped, c.lat_mapped),ST_Point(lat,lon), 3)',
-        );
+        .select([
+          'ST_DISTANCE(' +
+            'ST_Transform(ST_Point(condition_picture.lat_mapped, condition_picture.lon_mapped, 4326), 3857),' +
+            'ST_Transform(ST_Point(:lat, :lon, 4326), 3857)) AS distance',
+          'condition_picture."name"',
+        ])
+        .from('condition_pictures', 'condition_picture')
+        .where(
+          'ST_DISTANCE(' +
+            'ST_Transform(ST_Point(condition_picture.lat_mapped, condition_picture.lon_mapped, 4326), 3857),' +
+            'ST_Transform(ST_Point(:lat, :lon, 4326), 3857)) < 3',
+        )
+        .setParameter('lat', lat)
+        .setParameter('lon', lon)
+        .orderBy('distance')
+        .getRawOne();
+      console.log(await pictureName.then((res) => res.name));
 
       return {
         //needs to return pictures.
       };
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+      throw new HttpException('Internal server error', 500);
+    }
+  }
+
+  async uploadZipFile(file: Express.Multer.File) {
+    // TODO Extract ZIP file
+    const fileToProcess = new Uint8Array(file.buffer);
+    JSZip.loadAsync(fileToProcess)
+      .then((zip) => {
+        zip.forEach((name, file) => {
+          if (name.toLowerCase().endsWith('.rsp')) {
+            // TODO: Call RSP method below
+            // file.async("string").then(data => CALL RSP FUNCTION HERE).catch(e => console.log(e));
+          }
+        });
+
+        //TODO: Sample usage of adding data to DB from RSP, customize it
+        /*addWayToDatabase(this.dataSource, 1, "Test", 1, 1, 1, '{ "type": "MultiLineString", "coordinates": [[ [100.0, 0.0], [101.0, 1.0] ],[ [102.0, 2.0], [103.0, 3.0] ]] }', false)
+                .then(wayId => {
+                    addCoverageToDatabase(this.dataSource, 1, 1, new Date().toISOString(), 1, 1, '{ "type": "MultiLineString", "coordinates": [[ [100.0, 0.0], [101.0, 1.0] ],[ [102.0, 2.0], [103.0, 3.0] ]] }', wayId)
+                        .then(coverageId => addCoverageValueToDatabase(this.dataSource, "IRI", 1, coverageId))
+                }).catch(e => {
+                    console.log(e);
+                    throw new HttpException("Internal server error", 500);
+                });*/
+      })
+      .catch((e) => {
+        console.log(e);
+        throw new HttpException('Internal server error', 500);
+      });
+    // TODO Validate the file structure inside
+    // TODO Various processing of different datatypes
+
+    // For now it just says error
+    throw new HttpException('Internal server error', 500);
+
+    // TODO Make the image upload with this
+    /*let image: BufferedFile;
+        this.uploadImage(image).then((res) => {
+          this.dataSource
+              .createQueryBuilder()
+              .insert()
+              .into(Condition_Pictures)
+              .values({
+                lat_mapped: 55.555,   // TODO Get it from RSP file
+                lon_mapped: 55.555,   // TODO Get it from RSP file
+                name: image.originalname,
+                url: res.image_url
+              })
+              .execute()
+        }).catch(e => {
+          throw new HttpException("Internal server error", 500);
+        })*/
+  }
+
+  async uploadImage(image: BufferedFile) {
+    const uploaded_image = await this.minioClientService.upload(image);
+
+    return {
+      image_url: uploaded_image.url,
+      message: 'Image upload successful',
+    };
   }
 
   async getRoadNames(road_name: string) {

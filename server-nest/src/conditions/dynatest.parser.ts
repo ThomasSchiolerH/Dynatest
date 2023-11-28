@@ -2,7 +2,7 @@ import { interpolate } from './gps_interpolator';
 import { DynatestTypes, MatchedGPSPoint } from './Types';
 import { map_match } from './external_api_calls';
 
-export async function parse_rsp(str: string): Promise<any[]> {
+export async function parseRSP(str: string): Promise<any[]> {
   const lines: string[] = str.trim().split('\n');
   const items: string[][] = lines.map((line: string): any[] => line.split(','));
 
