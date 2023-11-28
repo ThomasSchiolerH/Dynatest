@@ -21,14 +21,28 @@ import {
 import { BufferedFile } from 'src/minio-client/file.model';
 import { fetch_OSM_Ids } from './external_api_calls';
 
-import JSZip from 'jszip';
+const JSZip = require("jszip");
+
+interface ExtractedObject {
+    name: string,
+    dir: boolean,
+    date: string,
+    comment: string,
+    unixPermissions: number,
+    dosPermissions: number,
+    _data: object,
+    _dataBinary: boolean,
+    options: object,
+    unsafeOriginalName: string
+}
+
 
 @Injectable()
 export class ConditionsService {
   constructor(
     @InjectDataSource('lira-map')
     private dataSource: DataSource,
-    private minioClientService: MinioClientService,
+    private minioClientService: MinioClientService
   ) {}
 
   async getConditions(
@@ -57,7 +71,7 @@ export class ConditionsService {
           'ST_AsGeoJSON(coverage.section_geom) AS section_geom',
           'way."IsHighway" AS IsHighway',
           'way."OSM_Id"',
-          'way.way_name AS way_name',
+          'way.way_name AS way_name'
         ])
         .innerJoin(
           Coverage,
@@ -126,7 +140,7 @@ export class ConditionsService {
             compute_time: r.compute_time,
             task_id: r.task_id,
             way_name: r.way_name,
-            osm_id: r.OSM_Id,
+            osm_id: r.OSM_Id
           },
         };
       }),
@@ -332,34 +346,51 @@ export class ConditionsService {
     }
   }
 
-  async uploadZipFile(file: Express.Multer.File) {
-    // TODO Extract ZIP file
-    const fileToProcess = new Uint8Array(file.buffer);
-    JSZip.loadAsync(fileToProcess)
-      .then((zip) => {
-        zip.forEach((name, file) => {
-          if (name.toLowerCase().endsWith('.rsp')) {
-            // TODO: Call RSP method below
-            // file.async("string").then(data => CALL RSP FUNCTION HERE).catch(e => console.log(e));
-          }
-        });
+    async uploadZipFile(file: Express.Multer.File) {
+        let imageIntArray: ExtractedObject[] = [];
+        let imageRngArray: ExtractedObject[] = [];
+        let image3DArray: ExtractedObject[] = [];
+        let overlayIntArray: ExtractedObject[] = [];
+        let overlayRngArray: ExtractedObject[] = [];
+        let overlay3DArray: ExtractedObject[] = [];
+        const fileToProcess = new Uint8Array(file.buffer);
+        JSZip.loadAsync(fileToProcess).then(zip => {
+            zip.forEach((name, file) => {
+                if(name.toLowerCase().endsWith('.jpg') || name.toLowerCase().endsWith('.png')) {
+                    if (name.toLowerCase().includes('imageint')) {
+                        imageIntArray.push(file);
+                    } else if (name.toLowerCase().includes('imagerng')) {
+                        imageRngArray.push(file);
+                    } else if (name.toLowerCase().includes('image3d')) {
+                        image3DArray.push(file);
+                    } else if (name.toLowerCase().includes('overlayint')) {
+                        overlayIntArray.push(file);
+                    } else if (name.toLowerCase().includes('overlayrng')) {
+                        overlayRngArray.push(file);
+                    } else if (name.toLowerCase().includes('overlay3d')) {
+                        overlay3DArray.push(file);
+                    } else {
+                        console.warn('Unknown type of picture: ' + name);
+                    }
+                }
+                if(name.toLowerCase().endsWith('.rsp')) {
+                    // TODO: Call RSP method below
+                    // file.async("string").then(data => CALL RSP FUNCTION HERE).catch(e => console.log(e));
+                }
+            })
 
-        //TODO: Sample usage of adding data to DB from RSP, customize it
-        /*addWayToDatabase(this.dataSource, 1, "Test", 1, 1, 1, '{ "type": "MultiLineString", "coordinates": [[ [100.0, 0.0], [101.0, 1.0] ],[ [102.0, 2.0], [103.0, 3.0] ]] }', false)
-                .then(wayId => {
-                    addCoverageToDatabase(this.dataSource, 1, 1, new Date().toISOString(), 1, 1, '{ "type": "MultiLineString", "coordinates": [[ [100.0, 0.0], [101.0, 1.0] ],[ [102.0, 2.0], [103.0, 3.0] ]] }', wayId)
-                        .then(coverageId => addCoverageValueToDatabase(this.dataSource, "IRI", 1, coverageId))
-                }).catch(e => {
-                    console.log(e);
-                    throw new HttpException("Internal server error", 500);
-                });*/
-      })
-      .catch((e) => {
-        console.log(e);
-        throw new HttpException('Internal server error', 500);
-      });
-    // TODO Validate the file structure inside
-    // TODO Various processing of different datatypes
+            imageIntArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
+            imageRngArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
+            image3DArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
+            overlayIntArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
+            overlayRngArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
+            overlay3DArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
+
+
+        }).then(console.log(imageIntArray)).catch(e => {
+            console.log(e);
+            throw new HttpException("Internal server error", 500);
+        })
 
     // For now it just says error
     throw new HttpException('Internal server error', 500);
