@@ -8,14 +8,14 @@ import { Trips } from '../entity/Trips';
 import { Condition_Pictures } from '../entity/Condition_Pictures';
 import { MinioClientService } from 'src/minio-client/minio-client.service';
 
-import { parseRSP } from './dynatest.parser';
+import { parseRSP, parse_rsp_Pictures } from './dynatest.parser';
 
 import {
-  computeRoadConditions,
-  computeWayConditions,
-  addCoverageToDatabase,
-  addCoverageValueToDatabase,
-  addWayToDatabase,
+    computeRoadConditions,
+    computeWayConditions,
+    addCoverageToDatabase,
+    addCoverageValueToDatabase,
+    addWayToDatabase, saveImageDataToDatabase,
 } from './utility';
 
 import { BufferedFile } from 'src/minio-client/file.model';
@@ -353,10 +353,12 @@ export class ConditionsService {
         let overlayIntArray: ExtractedObject[] = [];
         let overlayRngArray: ExtractedObject[] = [];
         let overlay3DArray: ExtractedObject[] = [];
+        let coordinates: object[];
         const fileToProcess = new Uint8Array(file.buffer);
         JSZip.loadAsync(fileToProcess).then(zip => {
+            const promises = []
             zip.forEach((name, file) => {
-                if(name.toLowerCase().endsWith('.jpg') || name.toLowerCase().endsWith('.png')) {
+                if (name.toLowerCase().endsWith('.jpg') || name.toLowerCase().endsWith('.png')) {
                     if (name.toLowerCase().includes('imageint')) {
                         imageIntArray.push(file);
                     } else if (name.toLowerCase().includes('imagerng')) {
@@ -373,9 +375,20 @@ export class ConditionsService {
                         console.warn('Unknown type of picture: ' + name);
                     }
                 }
-                if(name.toLowerCase().endsWith('.rsp')) {
-                    // TODO: Call RSP method below
-                    // file.async("string").then(data => CALL RSP FUNCTION HERE).catch(e => console.log(e));
+                if (name.toLowerCase().endsWith('.rsp')) {
+                    // TODO: Call RSP IRI processing method below
+                    // file.async("string").then(data => CALL RSP IRI PROCESSING FUNCTION HERE).catch(e => console.log(e));
+
+                    const promise = file.async("string")
+                        .then(data => {
+                            parse_rsp_Pictures(data)
+                                .then(coords => {
+                                    coordinates = coords
+                                })
+                        })
+                        .catch(e => console.log(e));
+
+                    promises.push(promise)
                 }
             })
 
@@ -386,6 +399,56 @@ export class ConditionsService {
             overlayRngArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
             overlay3DArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
 
+            return Promise.all(promises);
+        }).then(() => {
+            coordinates.forEach(coordinate => {
+                // Getwayid
+                this.dataSource
+                    .getRepository(Ways)
+                    .createQueryBuilder('ways')
+                    .select([
+                        'way.id',
+                        'ST_DISTANCE(' +
+                        'way.section_geom,' +
+                        'ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)) AS distance'
+                    ])
+                    .from('ways', 'way')
+                    .where(
+                        'ST_DWithin(' +
+                        'way.section_geom,' +
+                        'ST_SetSRID(ST_MakePoint(:lon, :lat), 4326), 0.001)',
+                    )
+                    .setParameter('lon', coordinate[0])
+                    .setParameter('lat', coordinate[1])
+                    .distinct(true)
+                    .orderBy('distance')
+                    .getRawOne()
+                    .then(wayQuery => {
+                        if (wayQuery) {
+                            if (imageIntArray.length > 0) {
+                                let fileObject: any = imageIntArray.shift();
+                                fileObject.async('uint8array')
+                                    .then(image => { this.uploadImage({
+                                        fieldname: '',
+                                        originalname: fileObject.name,
+                                        encoding: 'blob',
+                                        mimetype: 'image/jpeg',
+                                        size: fileObject._data.uncompressedSize,
+                                        buffer: Buffer.from(image)
+                                    }).then(res => {
+                                            saveImageDataToDatabase(
+                                                this.dataSource,
+                                                coordinate,
+                                                fileObject.name,
+                                                res.image_url,
+                                                wayQuery.way_id,
+                                                'ImageInt')
+                                        }
+                                    ).catch(e => {
+                                        console.log(e);
+                                        throw new HttpException("Internal server error", 500);
+                                    })})
+                            }
 
         }).then(console.log(imageIntArray)).catch(e => {
             console.log(e);
