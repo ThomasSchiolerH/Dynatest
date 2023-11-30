@@ -153,7 +153,7 @@ function parse_rsp_line(item: any[]): any {
   }
 }
 
-export function parse_rsp_Pictures(str: string): any[] {
+export async function parse_rsp_Pictures(str: string): Promise<any[]> {
   function pictureLocationList() {
     const lines = str.trim().split('\n');
 
@@ -242,7 +242,12 @@ export function parse_rsp_Pictures(str: string): any[] {
       i++;
     }
 
-    return [GeoMultilineString(multiString)];
+    /*different possible outputs:
+    If you return locations, you get a list of coordinates.
+    If you return GeoMultilineString(multiString) you get a geojson output, with pairs of coordinates
+     */
+
+    return locations;
   }
 
   function havresine(
