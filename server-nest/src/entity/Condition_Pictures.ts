@@ -24,6 +24,9 @@ export class Condition_Pictures {
     @Column()
     url: string
 
+    @Column()
+    disctance: number
+
     @ManyToOne(type => Ways)
     @JoinColumn({name: 'fk_way_id', referencedColumnName: 'id'})
     way: Ways
