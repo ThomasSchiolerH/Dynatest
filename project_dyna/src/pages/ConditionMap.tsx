@@ -341,8 +341,6 @@ const ConditionMap = (props: any) => {
 
                         roadHighlightLayerGroup.addTo(e.target._map);
 
-                        {//get(`/conditions/road_data?coverage_value_id=${feature.properties.id}`, (data: RoadData) => {
-                        }
                         get(`/conditions/road/${feature.properties.osm_id}`, (data: RoadData) => {
                             if (data.success) {
                                 setData(data);
