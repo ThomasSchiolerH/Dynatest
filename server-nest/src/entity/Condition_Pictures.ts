@@ -16,9 +16,6 @@ export class Condition_Pictures {
     name: string
 
     @Column()
-    order: number
-
-    @Column()
     type: string
 
     @Column()

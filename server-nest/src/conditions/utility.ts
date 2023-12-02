@@ -272,7 +272,8 @@ export async function saveImageDataToDatabase(
     imageName: string,
     url: string,
     wayId: string,
-    type: string
+    type: string,
+    distance: number
 ) {
     dataSource
         .createQueryBuilder()
@@ -284,7 +285,8 @@ export async function saveImageDataToDatabase(
           name: imageName,
           url: url,
           way: wayId,
-          type: type
+          type: type,
+          distance: distance
         })
         .execute()
 }
