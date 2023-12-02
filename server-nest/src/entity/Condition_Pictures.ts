@@ -22,7 +22,7 @@ export class Condition_Pictures {
     url: string
 
     @Column()
-    disctance: number
+    distance: number
 
     @ManyToOne(type => Ways)
     @JoinColumn({name: 'fk_way_id', referencedColumnName: 'id'})
