@@ -1,12 +1,13 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, MultiLineString } from 'typeorm';
 import { Coverage_Values } from '../entity/Coverage_Values';
 import { Coverage } from '../entity/Coverage';
 import { Ways } from '../entity/Ways';
 import { Trips } from '../entity/Trips';
 import { Condition_Pictures } from '../entity/Condition_Pictures';
 import { MinioClientService } from 'src/minio-client/minio-client.service';
+import { DBUpload } from '../entity/Internal_Types';
 
 import { parseRSP } from './dynatest.parser';
 
@@ -172,7 +173,7 @@ export class ConditionsService {
           'way_name',
           'node_start',
           'node_end',
-          'length as length',
+          'length',
           'ST_AsGeoJSON(section_geom, 5, 0) AS way_geom',
           'way."IsHighway"',
         ])
@@ -224,11 +225,8 @@ export class ConditionsService {
         .getRepository(Ways)
         .createQueryBuilder('way')
         .select([
-          'id',
           'way."OSM_Id"',
           'way_name',
-          'node_start',
-          'node_end',
           'length',
           'ST_AsGeoJSON(section_geom, 5, 0) AS geometry',
           'way."IsHighway"',
@@ -243,7 +241,7 @@ export class ConditionsService {
       const radius = 1000; // 1000 meter radius
 
       // Find all OSM way_ids within a 1000-meter radius around the first GPS-point
-      const osm_ids = await fetch_OSM_Ids(
+      const osm_ids: number[] = await fetch_OSM_Ids(
         lat,
         lon,
         clicked_way.way_name,
@@ -290,11 +288,67 @@ export class ConditionsService {
     }
   }
 
-  async post(file: any) {
+  async uploadRSP(file: any) {
     if (!file.originalname.toLowerCase().endsWith('.rsp'))
       return { success: false, message: 'not a .rsp file' };
 
     const data: any[] = await parseRSP(file.buffer.toString());
+
+    const multi: MultiLineString = {
+      type: 'MultiLineString',
+      coordinates: [
+        [
+          [100.0, 0.0],
+          [101.0, 1.0],
+        ],
+        [
+          [102.0, 2.0],
+          [103.0, 3.0],
+        ],
+      ],
+    };
+
+    const data2: DBUpload[] = [
+      {
+        way: {
+          way_name: '1',
+          OSM_Id: 1,
+          node_start: 1,
+          length: 1,
+          is_highway: false,
+          node_end: 1,
+          section_geom: JSON.stringify(multi),
+        },
+        coverage: {
+          distance01: 1,
+          distance02: 2,
+          lat_mapped: 1,
+          lon_mapped: 2,
+          compute_time: '1',
+          section_geom: JSON.stringify(multi),
+        },
+        coverage_value: {
+          value: 1,
+          type: 'KPI',
+        },
+      },
+    ];
+
+    data2.forEach((e: DBUpload): void => {
+      addWayToDatabase(
+        this.dataSource,
+        e.way.OSM_Id,
+        e.way.way_name,
+        e.way.node_start,
+        e.way.node_end,
+        e.way.length,
+        e.way.section_geom,
+        e.way.is_highway,
+      ).catch((e): void => {
+        console.log(e);
+        throw new HttpException('Internal server error', 500);
+      });
+    });
 
     return { success: true, message: 'file uploaded', data: data };
   }

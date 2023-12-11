@@ -33,6 +33,21 @@ export enum DynatestTypes {
   GPS = 5280,
 }
 
+export function typesetter_string(type: DynatestTypes): string {
+  switch (type) {
+    case DynatestTypes.GPS:
+      return 'GPS';
+    case DynatestTypes.IRI:
+      return 'IRI';
+    case DynatestTypes.LPE:
+      return 'LPE';
+    case DynatestTypes.RN:
+      return 'RN';
+    case DynatestTypes.RUTTING:
+      return 'RUTTING';
+  }
+}
+
 type ValhallaEdge = {
   way_id: number;
   names: string[];
@@ -49,16 +64,32 @@ export type ValhallaResult = {
   alternative_paths: any[];
 };
 
-/*
-type Result = {
-  type: TYPE;
-  value: number;
-  distance01: number;
-  distance02: number;
+export type InternalWay = {
+  way_name: string;
   OSM_Id: number;
-  compute_time: Date;
-  section_geom: any;
-  trip_id: number;
+  node_start: number;
+  node_end: number;
+  length: number;
+  section_geom: string;
+  is_highway: boolean;
 };
 
- */
+type IntervalCoverageValue = {
+  value: number;
+  type: string;
+};
+
+type InternalCoverage = {
+  distance01: number;
+  distance02: number;
+  lat_mapped: number;
+  lon_mapped: number;
+  compute_time: string;
+  section_geom: string;
+};
+
+export type DBUpload = {
+  way: InternalWay;
+  coverage_value: IntervalCoverageValue;
+  coverage: InternalCoverage;
+};

@@ -1,4 +1,8 @@
-import { GPSPointDistance, Measurement } from './Types';
+import {
+  GPSPoint,
+  GPSPointDistance,
+  Measurement,
+} from '../entity/Internal_Types';
 
 /*
 function gps_to_cartesian(p: GPSPoint): CartesianPoint {
@@ -52,67 +56,62 @@ function interpolate_gps(
  */
 
 function predecessor(
-  gps: any[],
-  distance: number,
+  array: any[],
+  target: number,
   i: number = 0,
-  j: number = gps.length,
+  j: number = array.length,
 ): any {
   if (j < i) return null;
   const m: number = Math.floor((i + j) / 2);
-  if (gps[m].distance == distance) return gps[m];
-  else if (gps[m].distance > distance)
-    return predecessor(gps, distance, i, m - 1);
-  const t = predecessor(gps, distance, m + 1, j);
+  if (array[m].distance == target) return array[m];
+  else if (array[m].distance > target)
+    return predecessor(array, target, i, m - 1);
+  const t = predecessor(array, target, m + 1, j);
   if (t != null) return t;
-  else return gps[m];
+  else return array[m];
 }
 
 function successor(
-  gps: any[],
-  distance: number,
+  array: any[],
+  target: number,
   i: number = 0,
-  j: number = gps.length,
+  j: number = array.length,
 ): any {
   if (j < i) return null;
   const m: number = Math.floor((i + j) / 2);
-  if (gps[m].distance == distance) return gps[m];
-  else if (gps[m].distance < distance)
-    return successor(gps, distance, m + 1, j);
-  const t = successor(gps, distance, i, m - 1);
+  if (array[m].distance == target) return array[m];
+  else if (array[m].distance < target)
+    return successor(array, target, m + 1, j);
+  const t = successor(array, target, i, m - 1);
   if (t != null) return t;
-  else return gps[m];
+  else return array[m];
 }
 
-export function interpolate(m: Measurement, points: GPSPointDistance[]): any {
-  const gps_start1 = predecessor(points, m.interval_begin);
-  const gps_start2 = successor(points, m.interval_begin);
-  const gps_end1 = predecessor(points, m.interval_end);
-  const gps_end2 = successor(points, m.interval_end);
+function interpolate_point(
+  distance: number,
+  points: GPSPointDistance[],
+): GPSPoint {
+  const p1 = predecessor(points, distance);
+  const p2 = successor(points, distance);
 
-  let start: any;
-  if (gps_start1 == null) start = gps_start2;
-  else if (gps_start2 == null) start = gps_start1;
-  else if (
-    Math.abs(m.interval_begin - gps_start1.distance) <
-    Math.abs(m.interval_begin - gps_start2.distance)
-  ) {
-    start = gps_start1;
-  } else start = gps_start2;
+  if (p1 == null) return p2;
+  else if (p2 == null) return p1;
+  else if (Math.abs(distance - p1.distance) > Math.abs(distance - p2.distance))
+    return p2;
+  else return p1;
+}
 
-  let end: any;
-  if (gps_end1 == null) end = gps_end2;
-  else if (gps_end2 == null) end = gps_end1;
-  else if (
-    Math.abs(m.interval_end - gps_end1.distance) <
-    Math.abs(m.interval_end - gps_end2.distance)
-  ) {
-    end = gps_end1;
-  } else end = gps_end2;
+export function interpolate(
+  measurement: Measurement,
+  points: GPSPointDistance[],
+): any {
+  const start: GPSPoint = interpolate_point(measurement.interval_begin, points);
+  const end: GPSPoint = interpolate_point(measurement.interval_end, points);
 
   return {
     start: { lat: start.lat, lon: start.lon },
     end: { lat: end.lat, lon: end.lon },
-    type: m.line_id,
-    value: m.center,
+    type: measurement.line_id,
+    value: measurement.center,
   };
 }

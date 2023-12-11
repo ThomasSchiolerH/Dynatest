@@ -1,6 +1,14 @@
 import { interpolate } from './gps_interpolator';
-import { DynatestTypes, MatchedGPSPoint } from './Types';
-import { map_match } from './external_api_calls';
+import {
+  DynatestTypes,
+  GPSPoint,
+  MatchedGPSPoint,
+  typesetter_string,
+  InternalWay,
+} from '../entity/Internal_Types';
+import { fetch_OSM_Id_geometry, map_match } from './external_api_calls';
+import { MultiLineString } from 'typeorm';
+import { computeSpatialDistance } from './utility';
 
 export async function parseRSP(str: string): Promise<any[]> {
   const lines: string[] = str.trim().split('\n');
@@ -29,8 +37,24 @@ export async function parseRSP(str: string): Promise<any[]> {
   points = [...new Set(points)].map((e: string) => JSON.parse(e));
   const map_matched_points: MatchedGPSPoint[] = await map_match(points);
 
+  const OSM_Ids: Set<number> = map_matched_points.reduce(
+    (acc: Set<number>, x: MatchedGPSPoint) => acc.add(x.way_id),
+    new Set<number>(),
+  );
+
+  //const OSM_Id_geometry: GPSPoint[] = await fetch_OSM_Id_geometry([...OSM_Ids]);
+  const OSM_Id_geometry: GPSPoint[][] = await fetch_OSM_Id_geometry([
+    95777556, 674640079,
+  ]);
+
+  const geometries: MultiLineString[] = OSM_Id_geometry.map((e) =>
+    GPSPointsToMultilineString(e),
+  );
+
+  console.log(OSM_Id_geometry, geometries);
+
   const result: any[] = interpolated.map(function (e) {
-    const p: any = { type: dynatesttype_tostring(e.type), value: e.value };
+    const p: any = { type: typesetter_string(e.type), value: e.value };
     p.way_id = map_matched_points.find(
       (x: MatchedGPSPoint) => x.lat == e.start.lat && x.lon == e.start.lon,
     ).way_id;
@@ -95,17 +119,30 @@ function parse_rsp_item(item: any[]): any {
   }
 }
 
-function dynatesttype_tostring(type: DynatestTypes): string {
-  switch (type) {
-    case DynatestTypes.GPS:
-      return 'GPS';
-    case DynatestTypes.IRI:
-      return 'IRI';
-    case DynatestTypes.LPE:
-      return 'LPE';
-    case DynatestTypes.RN:
-      return 'RN';
-    case DynatestTypes.RUTTING:
-      return 'RUTTING';
+function GPSPointsToMultilineString(points: GPSPoint[]): MultiLineString {
+  const coordinatesList: number[][] = points.map((p: GPSPoint) => [
+    p.lon,
+    p.lat,
+  ]);
+  const coordinates: number[][][] = [];
+  for (let i: number = 0; i < coordinatesList.length - 1; i++) {
+    coordinates.push([coordinatesList[i], coordinatesList[i + 1]]);
   }
+
+  return {
+    type: 'MultiLineString',
+    coordinates: coordinates,
+  };
+}
+
+function OSMIdToWay(OSM_Id: number): InternalWay {
+  return {
+    way_name: null,
+    OSM_Id: OSM_Id,
+    node_start: null,
+    node_end: 1,
+    length: 1,
+    section_geom: null,
+    is_highway: true,
+  };
 }

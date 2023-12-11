@@ -71,7 +71,7 @@ export class ConditionsController {
   @Post('import/rsp')
   @UseInterceptors(FileInterceptor('fileName'))
   upload(@UploadedFile() file: any): any {
-    return this.conditionsService.post(file);
+    return this.conditionsService.uploadRSP(file);
   }
 
   /*  //attempt at getting the querey into this file
@@ -83,21 +83,22 @@ export class ConditionsController {
   @Post('import/zip')
   @UseInterceptors(FileInterceptor('file'))
   async uploadZipFile(
-      @UploadedFile(
-          new ParseFilePipeBuilder()
-              .addFileTypeValidator({fileType: 'zip'})
-              .addMaxSizeValidator({ maxSize: 2000000000 })
-              .build({
-                exceptionFactory: e => {
-                  if (e) {
-                    throw new HttpException(
-                        'Wrong file format',
-                        HttpStatus.BAD_REQUEST
-                    )
-                  }
-                }
-              })
-      ) file: Express.Multer.File
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({ fileType: 'zip' })
+        .addMaxSizeValidator({ maxSize: 2000000000 })
+        .build({
+          exceptionFactory: (e) => {
+            if (e) {
+              throw new HttpException(
+                'Wrong file format',
+                HttpStatus.BAD_REQUEST,
+              );
+            }
+          },
+        }),
+    )
+    file: Express.Multer.File,
   ) {
     return this.conditionsService.uploadZipFile(file);
   }

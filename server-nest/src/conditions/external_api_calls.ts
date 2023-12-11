@@ -4,38 +4,63 @@ import {
   MatchedGPSPoint,
   ValhallaMatchedPoint,
   ValhallaResult,
-} from './Types';
+} from '../entity/Internal_Types';
 
 /**
  * @author Andreas Hansen (s214969)
- * @param lat Latitude of a GPS-point
- * @param lon Longitude of a GPS-point
- * @param name The name of a road
- * @param radius A number in meters
- * @output A list of OSM way ids with the given road name within the radius of the given point
+ * @output A json object containing the gps coordinates that make up each of the inputted ways
+ * @param OSM_Ids A list of OSM way Ids
  */
+export async function fetch_OSM_Id_geometry(
+  OSM_Ids: number[],
+): Promise<GPSPoint[][]> {
+  console.log(OSM_Ids.join(','));
+
+  const data: string = encodeURIComponent(
+    `[out:json];
+                 way(id:'${OSM_Ids.join(',')});
+                 out id geom;
+                 `,
+  );
+  //[out:json];way(id:95777556, 674640079);out geom;
+
+  //const str: string =
+  //'data=[out:json];way(id:' + OSM_Ids.join(',') + ');out geom;';
+
+  const result = await fetchOverpass(data);
+
+  //const result = await fetch('https://overpass-api.de/api/interpreter?' + str, {
+  //  method: 'GET',
+  //}).then((data: { json: () => any }) => data.json());
+  return result.elements.map((r: any) => r.geometry);
+}
+
 export async function fetch_OSM_Ids(
   lat: number,
   lon: number,
   name: string,
   radius: number,
 ): Promise<number[]> {
-  const result = await fetch('https://overpass-api.de/api/interpreter', {
-    method: 'POST',
-    body:
-      'data=' +
-      encodeURIComponent(`
+  const data: string = encodeURIComponent(`
                 [out:json]
                 [timeout:60];
                 way
                 (around:${radius},${lat},${lon})
                 ["name"="${name}"];
                 out body;
-        `),
+        `);
+  const result = await fetchOverpass(data);
+  return result.map((e) => e.id);
+}
+
+async function fetchOverpass(data: string): Promise<any> {
+  console.log(data);
+  const result = await fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    body: 'data=' + data,
   }).then((data: { json: () => any }) => data.json());
-  return result.elements.map((r: any) => {
-    return r.id;
-  });
+  console.log(result);
+  return result.elements.map((r: any) => r);
 }
 
 /**

@@ -4,6 +4,7 @@ import { Coverage } from 'src/entity/Coverage';
 import { Coverage_Values } from 'src/entity/Coverage_Values';
 import { Ways } from 'src/entity/Ways';
 import { DataSource } from 'typeorm';
+import { GPSPoint } from '../entity/Internal_Types';
 
 /**
  * @author Andreas Hansen (s214969)
@@ -24,7 +25,7 @@ export function groupBy(list: any[], key: any) {
  * @param p1 A point with a .lat and .lon attribute
  * @param p2 A point with a .lat and .lon attribute
  */
-export function computeSpatialDistance(p1: any, p2: any): number {
+export function computeSpatialDistance(p1: GPSPoint, p2: GPSPoint): number {
   // degrees to radians.
   const lon1: number = (p1.lon * Math.PI) / 180;
   const lon2: number = (p2.lon * Math.PI) / 180;
