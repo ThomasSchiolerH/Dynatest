@@ -303,7 +303,7 @@ export class ConditionsService {
           node_start: fetchedData[0][2],
           node_end: fetchedData[0][3],
           length: fetchedData[0][4],
-          section_geom: fetchedData[1][i][5],
+          section_geom: fetchedData[0][5],
           is_highway: fetchedData[0][6],
         },
         coverage: {
@@ -321,22 +321,75 @@ export class ConditionsService {
       };
       data.push(toAdd);
     }
-
-    data.forEach((e: DBUpload): void => {
-      addWayToDatabase(
+    const wayId = await addWayToDatabase(
+      this.dataSource,
+      data[0].way.OSM_Id,
+      data[0].way.way_name,
+      data[0].way.node_start,
+      data[0].way.node_end,
+      data[0].way.length,
+      data[0].way.section_geom,
+      data[0].way.is_highway,
+    ).catch((e): void => {
+      console.log(e);
+      throw new HttpException('Internal server error', 500);
+    });
+    console.log(wayId);
+    const coverageID = [];
+    for (const e of data) {
+      if (typeof wayId === 'string') {
+        const id = await addCoverageToDatabase(
+          this.dataSource,
+          e.coverage.distance01,
+          e.coverage.distance02,
+          e.coverage.compute_time,
+          e.coverage.lat_mapped,
+          e.coverage.lon_mapped,
+          e.coverage.section_geom,
+          wayId,
+        ).catch((e): void => {
+          console.log(e);
+          throw new HttpException('internal server error', 500);
+        });
+        coverageID.push(id);
+      }
+    }
+    console.log(coverageID);
+    for (let i = 0; i < data.length - 1; i++) {
+      for (let j = 0; j < i; j++) {
+        if (coverageID[i] == coverageID[j]) {
+          i++;
+          j = 0;
+        }
+      }
+      if (i >= data.length - 1) {
+        break;
+      }
+      addCoverageValueToDatabase(
         this.dataSource,
-        e.way.OSM_Id,
-        e.way.way_name,
-        e.way.node_start,
-        e.way.node_end,
-        e.way.length,
-        e.way.section_geom,
-        e.way.is_highway,
+        data[i].coverage_value.type,
+        data[i].coverage_value.value,
+        coverageID[i],
       ).catch((e): void => {
         console.log(e);
-        throw new HttpException('Internal server error', 500);
+        //throw new HttpException('internal server error', 500);
+      });
+      console.log(coverageID[i]);
+    }
+
+    /*
+    data.forEach((e: DBUpload): void => {
+      addCoverageValueToDatabase(
+        this.dataSource,
+        e.coverage_value.type,
+        e.coverage_value.value,
+        coverageID[e],
+      ).catch((e): void => {
+        console.log(e);
+        throw new HttpException('internal server error', 500);
       });
     });
+*/
     return { success: true, message: 'file uploaded', data: data };
   }
 

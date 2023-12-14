@@ -75,10 +75,9 @@ export async function parseRSP(str: string): Promise<any[]> {
   });
   result = result.filter((test) => test.type == 'IRI'); //include only IRI data
   // Following section creates the data needed for internal way. This part is uniform for the entire way, except for the geom
-  console.log(OSM_Id_data);
   const data = OSM_Id_data.pop();
-  let length: number = 0;//length is assmumed to be total length of way
-  for(let i = 0; i < data.geometry.length - 1; i++){
+  let length: number = 0; //length is assmumed to be total length of way
+  for (let i = 0; i < data.geometry.length - 1; i++) {
     length = length + havresine(
         data.geometry[i].lat,
         data.geometry[i].lon,
@@ -90,34 +89,41 @@ export async function parseRSP(str: string): Promise<any[]> {
   if(data.tags.highway == true){
     highway = true;
   }
-  const way = [data.tags.name, data.id, 0,0, length, ,highway]; //has the info needed for ways, in order, missing geom
+  const geomHelper = result[0].section_geom;
+  geomHelper.coordinates[0][1] = result[result.length - 1].section_geom.coordinates[0][1];
+  const geom = JSON.stringify(geomHelper );
+  const way = [data.tags.name, data.id, 0,0, length, geom,highway]; //has the info needed for ways, in order, missing geom
   //the following section creates an array of arrays with coverage data. This is unike to each geom.
   //the following section also creates an array with coverage values.
   const coverage: any[] = [];
-  const CValue: any[] = [];//coverage value
-  let CLength: number = 0;//coverage length so far.
+  const CValue: any[] = []; //coverage value
+  let CLength: number = 0; //coverage length so far.
   for(let i = 0;i < result.length; i++){
-    CValue.push([result[i].value, result[i].type]);//adds the coverage values.
+    CValue.push([result[i].value, result[i].type]); //adds the coverage values.
     const toAdd: any[] = [];
     const coords = result[i].section_geom.coordinates;
     if(i>0){
-      CLength = CLength + havresine(
-          result[i-1].section_geom.coordinates[0][1][1],
-          result[i-1].section_geom.coordinates[0][1][0],
-          coords[0][0][1],
-          coords[0][0][0]);//length from the last coordinates of the last value to the first of this one
+      CLength = CLength + Math.floor(havresine(
+            result[i - 1].section_geom.coordinates[0][1][1],
+            result[i - 1].section_geom.coordinates[0][1][0],
+            coords[0][0][1],
+            coords[0][0][0],
+          ) * 100,
+        ) /
+          100; //length from the last coordinates of the last value to the first of this one. rounded to 2 decimals
     }
-    toAdd.push(Math.round(CLength * 1000) / 1000);//adds d1, rounded to 3 decimals
-    CLength = CLength + havresine(
+    toAdd.push(CLength); //adds d1
+    CLength = CLength + Math.floor(havresine(
         coords[0][0][1], coords[0][0][0],
-        coords[0][1][1], coords[0][1][0]);
-    toAdd.push(Math.round(CLength * 1000) / 1000);//adds d2, rounded to 3 decimals
-    toAdd.push((coords[0][0][1]+coords[0][1][1])/2);//adds mapped lat, as average
-    toAdd.push((coords[0][0][0]+coords[0][1][0])/2);//adds mapped lat, as average
-    const timestamp = new Date();
-    toAdd.push(timestamp.toString());//adds compute time
-    toAdd.push(JSON.stringify(result[i].section_geom));//adds geom
-    coverage.push(toAdd);//adds this section to the coverage
+        coords[0][1][1], coords[0][1][0]) * 100)/100;
+    toAdd.push(Math.round(CLength * 1000) / 1000);//adds d2
+    toAdd.push((coords[0][0][1] + coords[0][1][1]) / 2); //adds mapped lat, as average
+    toAdd.push((coords[0][0][0] + coords[0][1][0]) / 2); //adds mapped lat, as average
+    const time = new Date();
+    const timestamp = time.toISOString().slice(0, -1) + '+00';
+    toAdd.push(timestamp); //adds compute time
+    toAdd.push(JSON.stringify(result[i].section_geom)); //adds geom
+    coverage.push(toAdd); //adds this section to the coverage
   }
   //TODO: seems like theres something wrong with the sorting of Results, which might adversly affect the length measurements if time, fix
   return [way, coverage, CValue];
