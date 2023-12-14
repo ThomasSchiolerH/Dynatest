@@ -7,32 +7,31 @@ import {
 } from '../entity/Internal_Types';
 
 /**
- * @author Andreas Hansen (s214969)
+ * @author Andreas Hansen (s214969) & Jeppe Holm Sørensen(s214961)
  * @output A json object containing the gps coordinates that make up each of the inputted ways
  * @param OSM_Ids A list of OSM way Ids
  */
 export async function fetch_OSM_Id_geometry(
   OSM_Ids: number[],
 ): Promise<GPSPoint[][]> {
-  console.log(OSM_Ids.join(','));
 
-  const data: string = encodeURIComponent(
-    `[out:json];
-                 way(id:'${OSM_Ids.join(',')});
-                 out id geom;
-                 `,
-  );
-  //[out:json];way(id:95777556, 674640079);out geom;
-
-  //const str: string =
-  //'data=[out:json];way(id:' + OSM_Ids.join(',') + ');out geom;';
-
-  const result = await fetchOverpass(data);
-
-  //const result = await fetch('https://overpass-api.de/api/interpreter?' + str, {
-  //  method: 'GET',
-  //}).then((data: { json: () => any }) => data.json());
+  const str: string =
+  'data=[out:json];way(id:' + OSM_Ids.join(',') + ');out geom;';
+  const result = await fetch('https://overpass-api.de/api/interpreter?' + str, {
+    method: 'GET',
+  }).then((data: { json: () => any }) => data.json());
   return result.elements.map((r: any) => r.geometry);
+}
+
+export async  function  fetch_OSM_Id_Data(
+    OSM_Ids: number[],
+): Promise<any[]> {
+  const str: string =
+      'data=[out:json];way(id:' + OSM_Ids.join(',') + ');out geom;';
+  const result = await fetch('https://overpass-api.de/api/interpreter?' + str, {
+    method: 'GET',
+  }).then((data: { json: () => any }) => data.json());
+  return result.elements;
 }
 
 export async function fetch_OSM_Ids(

@@ -292,49 +292,37 @@ export class ConditionsService {
     if (!file.originalname.toLowerCase().endsWith('.rsp'))
       return { success: false, message: 'not a .rsp file' };
 
-    const data: any[] = await parseRSP(file.buffer.toString());
-
-    const multi: MultiLineString = {
-      type: 'MultiLineString',
-      coordinates: [
-        [
-          [100.0, 0.0],
-          [101.0, 1.0],
-        ],
-        [
-          [102.0, 2.0],
-          [103.0, 3.0],
-        ],
-      ],
-    };
-
-    const data2: DBUpload[] = [
-      {
+    const fetchedData: any[] = await parseRSP(file.buffer.toString());
+    const data: any[] = [];
+    for (let i = 0; i < fetchedData[1].length; i++) {
+      //takes the fetched data and set it up right
+      const toAdd: DBUpload = {
         way: {
-          way_name: '1',
-          OSM_Id: 1,
-          node_start: 1,
-          length: 1,
-          is_highway: false,
-          node_end: 1,
-          section_geom: JSON.stringify(multi),
+          way_name: fetchedData[0][0],
+          OSM_Id: fetchedData[0][1],
+          node_start: fetchedData[0][2],
+          node_end: fetchedData[0][3],
+          length: fetchedData[0][4],
+          section_geom: fetchedData[1][i][5],
+          is_highway: fetchedData[0][6],
         },
         coverage: {
-          distance01: 1,
-          distance02: 2,
-          lat_mapped: 1,
-          lon_mapped: 2,
-          compute_time: '1',
-          section_geom: JSON.stringify(multi),
+          distance01: fetchedData[1][i][0],
+          distance02: fetchedData[1][i][1],
+          lat_mapped: fetchedData[1][i][2],
+          lon_mapped: fetchedData[1][i][3],
+          compute_time: fetchedData[1][i][4],
+          section_geom: fetchedData[1][i][5],
         },
         coverage_value: {
-          value: 1,
-          type: 'KPI',
+          value: fetchedData[2][i][0],
+          type: fetchedData[2][i][1],
         },
-      },
-    ];
+      };
+      data.push(toAdd);
+    }
 
-    data2.forEach((e: DBUpload): void => {
+    data.forEach((e: DBUpload): void => {
       addWayToDatabase(
         this.dataSource,
         e.way.OSM_Id,
@@ -349,7 +337,6 @@ export class ConditionsService {
         throw new HttpException('Internal server error', 500);
       });
     });
-
     return { success: true, message: 'file uploaded', data: data };
   }
 
