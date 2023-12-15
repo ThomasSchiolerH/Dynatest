@@ -139,7 +139,7 @@ export class ConditionsService {
     };
   }
 
-  async getClicked(coverage_value_id: string) {
+  /*async getClicked(coverage_value_id: string) {
     const conditions = this.dataSource
       .getRepository(Coverage_Values)
       .createQueryBuilder('coverage_value')
@@ -162,7 +162,8 @@ export class ConditionsService {
         coverage_value_id,
       });
     return await conditions.getRawOne();
-  }
+  }*/
+
   async getWayConditions(osm_id: string) {
     try {
       // First query information about the way, such as its name
