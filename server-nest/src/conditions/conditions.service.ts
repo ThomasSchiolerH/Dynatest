@@ -52,9 +52,9 @@ export class ConditionsService {
           'type',
           'value',
           'std',
-          'start_time_utc',
+          //'start_time_utc',
           'compute_time',
-          'task_id',
+          //'task_id',
           'ST_AsGeoJSON(coverage.section_geom) AS section_geom',
           'way."IsHighway" AS IsHighway',
           'way."OSM_Id"',
@@ -65,7 +65,7 @@ export class ConditionsService {
           'coverage',
           'coverage_value.fk_coverage_id = coverage.id',
         )
-        .innerJoin(Trips, 'trip', 'coverage.fk_trip_id = trip.id')
+        //.innerJoin(Trips, 'trip', 'coverage.fk_trip_id = trip.id')//removed
         .innerJoin(Ways, 'way', 'coverage.fk_way_id = way.id')
         .where('coverage_value.ignore IS NULL');
       if (type !== undefined) {
@@ -321,6 +321,7 @@ export class ConditionsService {
       };
       data.push(toAdd);
     }
+
     const wayId = await addWayToDatabase(
       this.dataSource,
       data[0].way.OSM_Id,
@@ -334,7 +335,7 @@ export class ConditionsService {
       console.log(e);
       throw new HttpException('Internal server error', 500);
     });
-    console.log(wayId);
+    console.log(wayId);//recommended to keep this around, so you can clean up the database when errors happen
     const coverageID = [];
     for (const e of data) {
       if (typeof wayId === 'string') {
@@ -354,7 +355,6 @@ export class ConditionsService {
         coverageID.push(id);
       }
     }
-    console.log(coverageID);
     for (let i = 0; i < data.length - 1; i++) {
       for (let j = 0; j < i; j++) {
         if (coverageID[i] == coverageID[j]) {
@@ -374,7 +374,6 @@ export class ConditionsService {
         console.log(e);
         //throw new HttpException('internal server error', 500);
       });
-      console.log(coverageID[i]);
     }
 
     /*

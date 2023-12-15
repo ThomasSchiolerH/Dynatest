@@ -6,10 +6,14 @@ import {
   typesetter_string,
   InternalWay,
 } from '../entity/Internal_Types';
-import { fetch_OSM_Id_geometry, map_match, fetch_OSM_Id_Data } from './external_api_calls';
-import { MultiLineString } from 'typeorm';
+import {
+  fetch_OSM_Id_geometry,
+  map_match,
+  fetch_OSM_Id_Data,
+} from './external_api_calls';
+import { MultiLineString, MultiPoint } from 'typeorm';
 import { computeSpatialDistance } from './utility';
-import {elementAt} from "rxjs";
+import { elementAt } from 'rxjs';
 
 export async function parseRSP(str: string): Promise<any[]> {
   const lines: string[] = str.trim().split('\n');
@@ -45,10 +49,12 @@ export async function parseRSP(str: string): Promise<any[]> {
 
   const OSM_Id_data: any[] = await fetch_OSM_Id_Data([...OSM_Ids]);
 
-  const OSM_Id_geometry: GPSPoint[][] = await fetch_OSM_Id_geometry([...OSM_Ids]);
+  const OSM_Id_geometry: GPSPoint[][] = await fetch_OSM_Id_geometry([
+    ...OSM_Ids,
+  ]);
   //const OSM_Id_geometry: GPSPoint[][] = await fetch_OSM_Id_geometry([95777556, 674640079,]);
 
- // console.log(OSM_Id_geometry);
+  // console.log(OSM_Id_geometry);
 
   const geometries: MultiLineString[] = OSM_Id_geometry.map((e) =>
     GPSPointsToMultilineString(e),
@@ -78,45 +84,77 @@ export async function parseRSP(str: string): Promise<any[]> {
   const data = OSM_Id_data.pop();
   let length: number = 0; //length is assmumed to be total length of way
   for (let i = 0; i < data.geometry.length - 1; i++) {
-    length = length + havresine(
+    length =
+      length +
+      havresine(
         data.geometry[i].lat,
         data.geometry[i].lon,
         data.geometry[i + 1].lat,
-        data.geometry[i + 1].lon);
+        data.geometry[i + 1].lon,
+      );
   }
   length = Math.floor(length * 1000) / 1000;
   let highway = false;
-  if(data.tags.highway == true){
+  if (data.tags.highway == true) {
     highway = true;
   }
-  const geomHelper = result[0].section_geom;
-  geomHelper.coordinates[0][1] = result[result.length - 1].section_geom.coordinates[0][1];
-  const geom = JSON.stringify(geomHelper );
-  const way = [data.tags.name, data.id, 0,0, length, geom,highway]; //has the info needed for ways, in order, missing geom
+
+  const geomHelper: any[] = [];
+  for (let i = 0; i < data.geometry.length - 1; i++) {
+    geomHelper.push([data.geometry[i].lon, data.geometry[i].lat]);
+  }
+
+  const geom: MultiPoint = {
+    type: 'MultiPoint',
+    coordinates: geomHelper,
+  };
+
+  const way = [
+    data.tags.name,
+    data.id,
+    0,
+    0,
+    length,
+    JSON.stringify(geom),
+    highway,
+  ]; //has the info needed for ways, in order, missing geom
   //the following section creates an array of arrays with coverage data. This is unike to each geom.
   //the following section also creates an array with coverage values.
   const coverage: any[] = [];
   const CValue: any[] = []; //coverage value
   let CLength: number = 0; //coverage length so far.
-  for(let i = 0;i < result.length; i++){
+  for (let i = 0; i < result.length; i++) {
     CValue.push([result[i].value, result[i].type]); //adds the coverage values.
     const toAdd: any[] = [];
     const coords = result[i].section_geom.coordinates;
-    if(i>0){
-      CLength = CLength + Math.floor(havresine(
+    if (i > 0) {
+      const lengthHelper =
+        Math.floor(
+          havresine(
             result[i - 1].section_geom.coordinates[0][1][1],
             result[i - 1].section_geom.coordinates[0][1][0],
             coords[0][0][1],
             coords[0][0][0],
           ) * 100,
-        ) /
-          100; //length from the last coordinates of the last value to the first of this one. rounded to 2 decimals
+        ) / 100000; //length from the last coordinates of the last value to the first of this one. rounded to 2 decimals
+      if (lengthHelper < 0.005) {
+        CLength = CLength + lengthHelper;
+      }
     }
     toAdd.push(CLength); //adds d1
-    CLength = CLength + Math.floor(havresine(
-        coords[0][0][1], coords[0][0][0],
-        coords[0][1][1], coords[0][1][0]) * 100)/100;
-    toAdd.push(Math.round(CLength * 1000) / 1000);//adds d2
+    const CLengthHelper =
+      Math.floor(
+        havresine(
+          coords[0][0][1],
+          coords[0][0][0],
+          coords[0][1][1],
+          coords[0][1][0],
+        ) * 100,
+      ) / 100000;
+    if (CLengthHelper < 0.005) {
+      CLength = CLength + CLengthHelper;
+    }
+    toAdd.push(CLength); //adds d2
     toAdd.push((coords[0][0][1] + coords[0][1][1]) / 2); //adds mapped lat, as average
     toAdd.push((coords[0][0][0] + coords[0][1][0]) / 2); //adds mapped lat, as average
     const time = new Date();
@@ -125,7 +163,7 @@ export async function parseRSP(str: string): Promise<any[]> {
     toAdd.push(JSON.stringify(result[i].section_geom)); //adds geom
     coverage.push(toAdd); //adds this section to the coverage
   }
-  //TODO: seems like theres something wrong with the sorting of Results, which might adversly affect the length measurements if time, fix
+
   return [way, coverage, CValue];
 }
 
@@ -191,10 +229,10 @@ function GPSPointsToMultilineString(points: GPSPoint[]): MultiLineString {
 }
 
 function havresine(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
 ): any {
   //haversine function, taken from here: https://www.movable-type.co.uk/scripts/latlong.html#ellipsoid
   const R = 6371e3; // metres
@@ -204,13 +242,12 @@ function havresine(
   const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
   const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return R * c;
 }
-
 
 function OSMIdToWay(OSM_Id: number): InternalWay {
   return {
