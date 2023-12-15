@@ -27,20 +27,20 @@ export class MinioClientService {
             );
         }
         const timestamp = Date.now().toString();
-        /*const hashedFileName = crypto
+        const hashedFileName = crypto
             .createHash('md5')
             .update(timestamp)
             .digest('hex');
         const extension = file.originalname.substring(
             file.originalname.lastIndexOf('.'),
             file.originalname.length,
-        );*/
+        );
         const metaData = {
             'Content-Type': file.mimetype,
         };
 
         // We need to append the extension at the end otherwise Minio will save it as a generic file
-        const fileName = file.originalname;
+        const fileName = hashedFileName + extension;
 
         this.client.putObject(
             bucketName,

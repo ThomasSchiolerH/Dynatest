@@ -9,27 +9,41 @@ import { Condition_Pictures } from '../entity/Condition_Pictures';
 import { MinioClientService } from 'src/minio-client/minio-client.service';
 import { DBUpload } from '../entity/Internal_Types';
 
-import { parseRSP } from './dynatest.parser';
+import { parseRSP, parse_rsp_Pictures } from './dynatest.parser';
 
 import {
-  computeRoadConditions,
-  computeWayConditions,
-  addCoverageToDatabase,
-  addCoverageValueToDatabase,
-  addWayToDatabase,
+    computeRoadConditions,
+    computeWayConditions,
+    addCoverageToDatabase,
+    addCoverageValueToDatabase,
+    addWayToDatabase, saveImageDataToDatabase,
 } from './utility';
 
 import { BufferedFile } from 'src/minio-client/file.model';
 import { fetch_OSM_Ids } from './external_api_calls';
 
-import JSZip from 'jszip';
+const JSZip = require("jszip");
+
+interface ExtractedObject {
+    name: string,
+    dir: boolean,
+    date: string,
+    comment: string,
+    unixPermissions: number,
+    dosPermissions: number,
+    _data: object,
+    _dataBinary: boolean,
+    options: object,
+    unsafeOriginalName: string
+}
+
 
 @Injectable()
 export class ConditionsService {
   constructor(
     @InjectDataSource('lira-map')
     private dataSource: DataSource,
-    private minioClientService: MinioClientService,
+    private minioClientService: MinioClientService
   ) {}
 
   async getConditions(
@@ -58,7 +72,7 @@ export class ConditionsService {
           'ST_AsGeoJSON(coverage.section_geom) AS section_geom',
           'way."IsHighway" AS IsHighway',
           'way."OSM_Id"',
-          'way.way_name AS way_name',
+          'way.way_name AS way_name'
         ])
         .innerJoin(
           Coverage,
@@ -127,7 +141,7 @@ export class ConditionsService {
             compute_time: r.compute_time,
             task_id: r.task_id,
             way_name: r.way_name,
-            osm_id: r.OSM_Id,
+            osm_id: r.OSM_Id
           },
         };
       }),
@@ -425,55 +439,260 @@ export class ConditionsService {
     }
   }
 
-  async uploadZipFile(file: Express.Multer.File) {
-    // TODO Extract ZIP file
-    const fileToProcess = new Uint8Array(file.buffer);
-    JSZip.loadAsync(fileToProcess)
-      .then((zip) => {
-        zip.forEach((name, file) => {
-          if (name.toLowerCase().endsWith('.rsp')) {
-            // TODO: Call RSP method below
-            // file.async("string").then(data => CALL RSP FUNCTION HERE).catch(e => console.log(e));
-          }
-        });
+    async uploadZipFile(file: Express.Multer.File) {
+        let imageIntArray: ExtractedObject[] = [];
+        let imageRngArray: ExtractedObject[] = [];
+        let image3DArray: ExtractedObject[] = [];
+        let overlayIntArray: ExtractedObject[] = [];
+        let overlayRngArray: ExtractedObject[] = [];
+        let overlay3DArray: ExtractedObject[] = [];
+        let coordinates: object[];
+        const fileToProcess = new Uint8Array(file.buffer);
+        JSZip.loadAsync(fileToProcess).then(zip => {
+            const promises = []
+            zip.forEach((name, file) => {
+                if (name.toLowerCase().endsWith('.jpg') || name.toLowerCase().endsWith('.png')) {
+                    if (name.toLowerCase().includes('imageint')) {
+                        imageIntArray.push(file);
+                    } else if (name.toLowerCase().includes('imagerng')) {
+                        imageRngArray.push(file);
+                    } else if (name.toLowerCase().includes('image3d')) {
+                        image3DArray.push(file);
+                    } else if (name.toLowerCase().includes('overlayint')) {
+                        overlayIntArray.push(file);
+                    } else if (name.toLowerCase().includes('overlayrng')) {
+                        overlayRngArray.push(file);
+                    } else if (name.toLowerCase().includes('overlay3d')) {
+                        overlay3DArray.push(file);
+                    } else {
+                        console.warn('Unknown type of picture: ' + name);
+                    }
+                }
+                if (name.toLowerCase().endsWith('.rsp')) {
+                    // TODO: Call RSP IRI processing method below
+                    // file.async("string").then(data => CALL RSP IRI PROCESSING FUNCTION HERE).catch(e => console.log(e));
 
-        //TODO: Sample usage of adding data to DB from RSP, customize it
-        /*addWayToDatabase(this.dataSource, 1, "Test", 1, 1, 1, '{ "type": "MultiLineString", "coordinates": [[ [100.0, 0.0], [101.0, 1.0] ],[ [102.0, 2.0], [103.0, 3.0] ]] }', false)
-                .then(wayId => {
-                    addCoverageToDatabase(this.dataSource, 1, 1, new Date().toISOString(), 1, 1, '{ "type": "MultiLineString", "coordinates": [[ [100.0, 0.0], [101.0, 1.0] ],[ [102.0, 2.0], [103.0, 3.0] ]] }', wayId)
-                        .then(coverageId => addCoverageValueToDatabase(this.dataSource, "IRI", 1, coverageId))
-                }).catch(e => {
-                    console.log(e);
-                    throw new HttpException("Internal server error", 500);
-                });*/
-      })
-      .catch((e) => {
-        console.log(e);
-        throw new HttpException('Internal server error', 500);
-      });
-    // TODO Validate the file structure inside
-    // TODO Various processing of different datatypes
+                    const promise = file.async("string")
+                        .then(data => {
+                            parse_rsp_Pictures(data)
+                                .then(coords => {
+                                    coordinates = coords
+                                })
+                        })
+                        .catch(e => console.log(e));
 
-    // For now it just says error
-    throw new HttpException('Internal server error', 500);
+                    promises.push(promise)
+                }
+            })
 
-    // TODO Make the image upload with this
-    /*let image: BufferedFile;
-        this.uploadImage(image).then((res) => {
-          this.dataSource
-              .createQueryBuilder()
-              .insert()
-              .into(Condition_Pictures)
-              .values({
-                lat_mapped: 55.555,   // TODO Get it from RSP file
-                lon_mapped: 55.555,   // TODO Get it from RSP file
-                name: image.originalname,
-                url: res.image_url
-              })
-              .execute()
+            imageIntArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
+            imageRngArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
+            image3DArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
+            overlayIntArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
+            overlayRngArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
+            overlay3DArray.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0);
+
+            return Promise.all(promises);
+        }).then(async () => {
+            let previousWayId: string = '';
+            let distanceCounter: number = 0;
+            for (const coordinate of coordinates) {
+                const wayQuery = await this.dataSource
+                    .getRepository(Ways)
+                    .createQueryBuilder('ways')
+                    .select([
+                        'way.id',
+                        'ST_DISTANCE(' +
+                        'way.section_geom,' +
+                        'ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)) AS distance'
+                    ])
+                    .from('ways', 'way')
+                    .where(
+                        'ST_DWithin(' +
+                        'way.section_geom,' +
+                        'ST_SetSRID(ST_MakePoint(:lon, :lat), 4326), 0.001)',
+                    )
+                    .setParameter('lon', coordinate[0])
+                    .setParameter('lat', coordinate[1])
+                    .distinct(true)
+                    .orderBy('distance')
+                    .getRawOne()
+
+                if (wayQuery) {
+                    try {
+                        if (wayQuery.way_id !== previousWayId) {
+                            // TODO: Calculate the initial distance from the starting point of the way
+                            distanceCounter = 0;
+                            previousWayId = wayQuery.way_id;
+                        }
+
+                        if (imageIntArray.length > 0) {
+                            let fileObject: any = imageIntArray.shift();
+                            fileObject.async('uint8array')
+                                .then(image => { this.uploadImage({
+                                    fieldname: '',
+                                    originalname: fileObject.name,
+                                    encoding: 'blob',
+                                    mimetype: 'image/jpeg',
+                                    size: fileObject._data.uncompressedSize,
+                                    buffer: Buffer.from(image)
+                                }).then(res => {
+                                        saveImageDataToDatabase(
+                                            this.dataSource,
+                                            coordinate,
+                                            fileObject.name,
+                                            res.image_url,
+                                            wayQuery.way_id,
+                                            'ImageInt',
+                                            distanceCounter)
+                                    }
+                                ).catch(e => {
+                                    console.log(e);
+                                    throw new HttpException("Internal server error", 500);
+                                })})
+                        }
+
+                        if (imageRngArray.length > 0) {
+                            let fileObject: any = imageRngArray.shift();
+                            fileObject.async('uint8array')
+                                .then(image => { this.uploadImage({
+                                    fieldname: '',
+                                    originalname: fileObject.name,
+                                    encoding: 'blob',
+                                    mimetype: 'image/jpeg',
+                                    size: fileObject._data.uncompressedSize,
+                                    buffer: Buffer.from(image)
+                                }).then(res => {
+                                        saveImageDataToDatabase(
+                                            this.dataSource,
+                                            coordinate,
+                                            fileObject.name,
+                                            res.image_url,
+                                            wayQuery.way_id,
+                                            'ImageRng',
+                                            distanceCounter)
+                                    }
+                                ).catch(e => {
+                                    console.log(e);
+                                    throw new HttpException("Internal server error", 500);
+                                })})
+                        }
+
+                        if (image3DArray.length > 0) {
+                            let fileObject: any = image3DArray.shift();
+                            fileObject.async('uint8array')
+                                .then(image => { this.uploadImage({
+                                    fieldname: '',
+                                    originalname: fileObject.name,
+                                    encoding: 'blob',
+                                    mimetype: 'image/jpeg',
+                                    size: fileObject._data.uncompressedSize,
+                                    buffer: Buffer.from(image)
+                                }).then(res => {
+                                        saveImageDataToDatabase(
+                                            this.dataSource,
+                                            coordinate,
+                                            fileObject.name,
+                                            res.image_url,
+                                            wayQuery.way_id,
+                                            'Image3D',
+                                            distanceCounter)
+                                    }
+                                ).catch(e => {
+                                    console.log(e);
+                                    throw new HttpException("Internal server error", 500);
+                                })})
+                        }
+
+                        if (overlayIntArray.length > 0) {
+                            let fileObject: any = overlayIntArray.shift();
+                            fileObject.async('uint8array')
+                                .then(image => { this.uploadImage({
+                                    fieldname: '',
+                                    originalname: fileObject.name,
+                                    encoding: 'blob',
+                                    mimetype: 'image/jpeg',
+                                    size: fileObject._data.uncompressedSize,
+                                    buffer: Buffer.from(image)
+                                }).then(res => {
+                                        saveImageDataToDatabase(
+                                            this.dataSource,
+                                            coordinate,
+                                            fileObject.name,
+                                            res.image_url,
+                                            wayQuery.way_id,
+                                            'OverlayInt',
+                                            distanceCounter)
+                                    }
+                                ).catch(e => {
+                                    console.log(e);
+                                    throw new HttpException("Internal server error", 500);
+                                })})
+                        }
+
+                        if (overlayRngArray.length > 0) {
+                            let fileObject: any = overlayRngArray.shift();
+                            fileObject.async('uint8array')
+                                .then(image => { this.uploadImage({
+                                    fieldname: '',
+                                    originalname: fileObject.name,
+                                    encoding: 'blob',
+                                    mimetype: 'image/jpeg',
+                                    size: fileObject._data.uncompressedSize,
+                                    buffer: Buffer.from(image)
+                                }).then(res => {
+                                        saveImageDataToDatabase(
+                                            this.dataSource,
+                                            coordinate,
+                                            fileObject.name,
+                                            res.image_url,
+                                            wayQuery.way_id,
+                                            'OverlayRng',
+                                            distanceCounter)
+                                    }
+                                ).catch(e => {
+                                    console.log(e);
+                                    throw new HttpException("Internal server error", 500);
+                                })})
+                        }
+
+                        if (overlay3DArray.length > 0) {
+                            let fileObject: any = overlay3DArray.shift();
+                            fileObject.async('uint8array')
+                                .then(image => { this.uploadImage({
+                                    fieldname: '',
+                                    originalname: fileObject.name,
+                                    encoding: 'blob',
+                                    mimetype: 'image/jpeg',
+                                    size: fileObject._data.uncompressedSize,
+                                    buffer: Buffer.from(image)
+                                }).then(res => {
+                                        saveImageDataToDatabase(
+                                            this.dataSource,
+                                            coordinate,
+                                            fileObject.name,
+                                            res.image_url,
+                                            wayQuery.way_id,
+                                            'Overlay3D',
+                                            distanceCounter)
+                                    }
+                                ).catch(e => {
+                                    console.log(e);
+                                    throw new HttpException("Internal server error", 500);
+                                })})
+                        }
+
+                        distanceCounter+=2;
+                    } catch (e) {
+                        console.log(e);
+                        throw new HttpException("Internal server error", 500);
+                    }
+                }
+            }
         }).catch(e => {
-          throw new HttpException("Internal server error", 500);
-        })*/
+            console.log(e);
+            throw new HttpException("Internal server error", 500);
+        })
   }
 
   async uploadImage(image: BufferedFile) {

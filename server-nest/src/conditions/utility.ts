@@ -1,5 +1,6 @@
 // used to access overpass-api
 import { HttpException } from '@nestjs/common';
+import { Condition_Pictures } from 'src/entity/Condition_Pictures';
 import { Coverage } from 'src/entity/Coverage';
 import { Coverage_Values } from 'src/entity/Coverage_Values';
 import { Ways } from 'src/entity/Ways';
@@ -264,6 +265,31 @@ export async function addCoverageValueToDatabase(
     console.log(e);
     throw new HttpException('Internal server error', 500);
   }
+}
+
+export async function saveImageDataToDatabase(
+    dataSource: DataSource,
+    coordinate: object,
+    imageName: string,
+    url: string,
+    wayId: string,
+    type: string,
+    distance: number
+) {
+    dataSource
+        .createQueryBuilder()
+        .insert()
+        .into(Condition_Pictures)
+        .values({
+          lat_mapped: coordinate[1],
+          lon_mapped: coordinate[0],
+          name: imageName,
+          url: url,
+          way: wayId,
+          type: type,
+          distance: distance
+        })
+        .execute()
 }
 
 /*

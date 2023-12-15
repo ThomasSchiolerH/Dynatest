@@ -1,4 +1,5 @@
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import { Ways } from "./Ways";
 
 @Entity()
 export class Condition_Pictures {
@@ -13,4 +14,17 @@ export class Condition_Pictures {
 
     @Column()
     name: string
+
+    @Column()
+    type: string
+
+    @Column()
+    url: string
+
+    @Column()
+    distance: number
+
+    @ManyToOne(type => Ways)
+    @JoinColumn({name: 'fk_way_id', referencedColumnName: 'id'})
+    way: Ways
 }
