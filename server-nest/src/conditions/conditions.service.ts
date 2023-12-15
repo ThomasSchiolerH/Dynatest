@@ -52,8 +52,7 @@ export class ConditionsService {
     minLng: string,
     maxLng: string,
     type: string,
-    valid_before: string,
-    valid_after: string,
+    computed_before: string,
     computed_after: string,
   ) {
     let res;
@@ -66,9 +65,7 @@ export class ConditionsService {
           'type',
           'value',
           'std',
-          //'start_time_utc',
           'compute_time',
-          //'task_id',
           'ST_AsGeoJSON(coverage.section_geom) AS section_geom',
           'way."IsHighway" AS IsHighway',
           'way."OSM_Id"',
@@ -79,7 +76,6 @@ export class ConditionsService {
           'coverage',
           'coverage_value.fk_coverage_id = coverage.id',
         )
-        //.innerJoin(Trips, 'trip', 'coverage.fk_trip_id = trip.id')//removed
         .innerJoin(Ways, 'way', 'coverage.fk_way_id = way.id')
         .where('coverage_value.ignore IS NULL');
       if (type !== undefined) {
@@ -101,13 +97,9 @@ export class ConditionsService {
         );
       }
 
-      if (valid_after !== undefined) {
-        conditions.andWhere('start_time_utc >= :valid_after', { valid_after });
-      }
-
-      if (valid_before !== undefined) {
-        conditions.andWhere('start_time_utc <= :valid_before', {
-          valid_before,
+      if (computed_before !== undefined) {
+        conditions.andWhere('compute_time <= :computed_before', {
+            computed_before,
         });
       }
 
@@ -139,7 +131,6 @@ export class ConditionsService {
             valid_time: r.start_time_utc,
             motorway: r.IsHighway,
             compute_time: r.compute_time,
-            task_id: r.task_id,
             way_name: r.way_name,
             osm_id: r.OSM_Id
           },
@@ -154,7 +145,6 @@ export class ConditionsService {
       .createQueryBuilder('coverage_value')
       .select([
         'way_name',
-        'trip."id" as trip_id',
         'coverage."id" as coverage_id',
         'length AS length',
         'ST_AsGeoJSON(coverage.section_geom, 5, 0) AS section_geom',
@@ -167,7 +157,6 @@ export class ConditionsService {
         'coverage_value.fk_coverage_id = coverage.id',
       )
       .innerJoin(Ways, 'way', 'coverage.fk_way_id = way.id')
-      .innerJoin(Trips, 'trip', 'coverage.fk_trip_id = trip.id')
       .where('coverage_value.ignore IS NULL')
       .andWhere('coverage_value.id = :coverage_value_id', {
         coverage_value_id,

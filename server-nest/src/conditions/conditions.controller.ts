@@ -25,8 +25,7 @@ export class ConditionsController {
       minLng: string;
       maxLng: string;
       type: string;
-      valid_before: string;
-      valid_after: string;
+      computed_before: string;
       computed_after: string;
     },
   ): Promise<any> {
@@ -36,8 +35,7 @@ export class ConditionsController {
       minLng,
       maxLng,
       type,
-      valid_before,
-      valid_after,
+      computed_before,
       computed_after,
     } = query;
     return this.conditionsService.getConditions(
@@ -46,8 +44,7 @@ export class ConditionsController {
       minLng,
       maxLng,
       type,
-      valid_before,
-      valid_after,
+      computed_before,
       computed_after,
     );
   }
