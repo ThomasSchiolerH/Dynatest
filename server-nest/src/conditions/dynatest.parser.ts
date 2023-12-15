@@ -137,7 +137,7 @@ export async function parseRSP(str: string): Promise<any[]> {
             coords[0][0][0],
           ) * 100,
         ) / 100000; //length from the last coordinates of the last value to the first of this one. rounded to 2 decimals
-      if (lengthHelper < 0.005) {
+      if (lengthHelper < 0.04) {
         CLength = CLength + lengthHelper;
       }
     }
@@ -151,7 +151,7 @@ export async function parseRSP(str: string): Promise<any[]> {
           coords[0][1][0],
         ) * 100,
       ) / 100000;
-    if (CLengthHelper < 0.005) {
+    if (CLengthHelper < 0.04) {
       CLength = CLength + CLengthHelper;
     }
     toAdd.push(CLength); //adds d2
