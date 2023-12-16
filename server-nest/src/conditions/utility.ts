@@ -156,6 +156,34 @@ export async function computeRoadConditions(
   };
 }
 
+export async function formatRoadImages(roadImagesByWayId) {
+  // TODO Order the ways
+  // const orderedRoadImages = orderByWayId(rawRoadImages);
+
+  // Combine the ways that make up the road
+  // TODO previousWayDistance starts from the relative distance of the beginning of the road
+  let previousWayDistance: number = 0;
+  let resultImageObject: object[] = [];
+  roadImagesByWayId.forEach((roadImagesByDistance: any) => {
+    for (let key in roadImagesByDistance.data_by_distance) {
+      const distance = previousWayDistance + Number(roadImagesByDistance.data_by_distance[key].distance);
+      const objectForDistance: object = { distance };
+
+      const types = ['Image3D', 'ImageInt', 'ImageRng', 'Overlay3D', 'OverlayInt', 'OverlayRng'];
+
+      types.forEach(type => {
+        const matchingImage = roadImagesByDistance.data_by_distance[key].data.find(image => image.type === type);
+
+        matchingImage ? objectForDistance[type] = matchingImage.url : objectForDistance[type] = null;
+      })
+
+      resultImageObject.push(objectForDistance);
+    }
+    previousWayDistance =+ Number(roadImagesByDistance.data_by_distance[roadImagesByDistance.data_by_distance.length - 1].distance)
+  })
+  return resultImageObject;
+}
+
 export async function addWayToDatabase(
   dataSource: DataSource,
   OSM_Id: number,

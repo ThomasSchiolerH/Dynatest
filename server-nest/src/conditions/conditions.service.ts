@@ -16,7 +16,7 @@ import {
     computeWayConditions,
     addCoverageToDatabase,
     addCoverageValueToDatabase,
-    addWayToDatabase, saveImageDataToDatabase,
+    addWayToDatabase, saveImageDataToDatabase, formatRoadImages,
 } from './utility';
 
 import { BufferedFile } from 'src/minio-client/file.model';
@@ -279,6 +279,39 @@ export class ConditionsService {
       // Filter and convert to correct format
       const result = await computeRoadConditions(rawRoadConditions);
 
+      let roadImages: object[] | null = null;
+
+        try {
+            const subQuery = this.dataSource
+                .createQueryBuilder()
+                .select([
+                    'condition_pictures.fk_way_id',
+                    'distance',
+                    'jsonb_agg(jsonb_build_object(\'url\', url, \'type\', type, \'distance\', distance)) AS data_by_distance'
+                ])
+                .from(Condition_Pictures, 'condition_pictures')
+                .innerJoin(Ways, 'way', 'condition_pictures.fk_way_id = way.id')
+                .where('way.OSM_Id IN (:...osmIds)', { osmIds: osm_ids})
+                .groupBy('condition_pictures.fk_way_id, distance')
+                .addGroupBy('condition_pictures.fk_way_id');
+
+            const query = this.dataSource
+                .createQueryBuilder()
+                .select([
+                    'subquery.fk_way_id',
+                    'jsonb_agg(jsonb_build_object(\'distance\', subquery.distance, \'data\', subquery.data_by_distance)) AS data_by_distance'
+                ])
+                .from('(' + subQuery.getQuery() + ')', 'subquery')
+                .setParameter('osmIds', osm_ids)
+                .groupBy('subquery.fk_way_id');
+
+            const results = await query.getRawMany();
+
+            results.length ? roadImages = await formatRoadImages(results) : roadImages = null;
+        } catch (e) {
+            console.log(e);
+        }
+
       return {
         success: true,
         road_name: clicked_way.way_name,
@@ -286,6 +319,7 @@ export class ConditionsService {
         initial_distance: 0,
         road_geometry: result.geometry,
         road: result.conditions,
+        pictures: roadImages
       };
     } catch (e) {
       return { success: false, message: e.message };
