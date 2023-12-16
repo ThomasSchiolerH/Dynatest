@@ -218,7 +218,7 @@ const ConditionMap = (props: any) => {
             setRangeAll(range)
             setDataAll(data)
         })
-    }, [] )
+    }, [setDataAll] )
 
     useEffect(() => {
         get('/conditions/road-pictures-path', (sectionGeom: GeoJSON.MultiLineString) => {

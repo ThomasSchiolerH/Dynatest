@@ -17,6 +17,7 @@ const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [geoReferences, setGeoReferences] = useState<GeoReference[]>([]);
     const { map } = useData();
+    const { highlightRoad } = useData();
 
     let zoomLevel = 15; // Set zoom for when search for road is moving map
 
@@ -76,6 +77,7 @@ const SearchBar = () => {
         event.preventDefault();
         const formattedQuery = toTitleCase(searchQuery);
         executeSearch(formattedQuery);
+        highlightRoad(formattedQuery);
     };
 
     const executeSearch = (query: string) => {
@@ -98,6 +100,7 @@ const SearchBar = () => {
     const handleSuggestionClick = (suggestion: string) => {
         setSearchQuery(suggestion);
         executeSearch(suggestion);
+        highlightRoad(suggestion);
     };
 
     const fetchRoadCoordinates = (roadName: string, callback: (coords: { lat: number, lng: number }) => void) => {
