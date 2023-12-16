@@ -293,10 +293,7 @@ export class ConditionsService {
   }
 
   async uploadRSP(file: any) {
-    if (!file.originalname.toLowerCase().endsWith('.rsp'))
-      return { success: false, message: 'not a .rsp file' };
-
-    const fetchedData: any[] = await parseRSP(file.buffer.toString());
+    const fetchedData: any[] = await parseRSP(file);
     const data: any[] = [];
     for (let i = 0; i < fetchedData[1].length; i++) {
       //takes the fetched data and set it up right
@@ -463,12 +460,16 @@ export class ConditionsService {
                     // file.async("string").then(data => CALL RSP IRI PROCESSING FUNCTION HERE).catch(e => console.log(e));
 
                     const promise = file.async("string")
-                        .then(data => {
-                            parse_rsp_Pictures(data)
-                                .then(coords => {
-                                    coordinates = coords
+                        .then(data => this.uploadRSP(data))
+                        .then(
+                            file.async("string")
+                                .then(data => {
+                                    parse_rsp_Pictures(data)
+                                        .then(coords => {
+                                            coordinates = coords
+                                        })
                                 })
-                        })
+                        )
                         .catch(e => console.log(e));
 
                     promises.push(promise)
