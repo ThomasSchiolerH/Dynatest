@@ -18,7 +18,6 @@ const SearchBar = () => {
     const [geoReferences, setGeoReferences] = useState<GeoReference[]>([]);
     const { map } = useData();
     const { highlightRoad } = useRoadHighlight(); // Use useRoadHighlight here
-    //const { highlightRoad } = useData();
 
     let zoomLevel = 15; // Set zoom for when search for road is moving map
 
@@ -98,10 +97,12 @@ const SearchBar = () => {
         }
     };
 
+
     const handleSuggestionClick = (suggestion: string) => {
         setSearchQuery(suggestion);
         executeSearch(suggestion);
         highlightRoad(suggestion);
+
         console.log(suggestion)
     };
 

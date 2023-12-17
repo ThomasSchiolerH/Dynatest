@@ -1,6 +1,6 @@
 import {MapContainer, ScaleControl, TileLayer} from "react-leaflet";
 import Zoom from "../map/zoom";
-import React, {useState, PureComponent, useEffect} from 'react';
+import React, {useState, PureComponent, useEffect, useRef} from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer, ReferenceLine } from 'recharts'
 import ToggleSwitch from '../Components/ToggleSwitch'; // Update the path to the ToggleSwitch component
 import PhotoScrollComponent from "../Components/PhotoScrollComponent";
@@ -9,6 +9,13 @@ import SingleConditionToggledImg from '../images/singleConditionToggledImg.png';
 import MultipleConditionsToggledImg from '../images/multipleConditionsToggledImg.png';
 import { useData } from "../context/RoadDataContext";
 import {ALL} from "dns";
+import {DomUtil} from "leaflet";
+import empty = DomUtil.empty;
+import "../css/DataWindow.css";
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
 
 
 interface ConditionToggleButtonsProps {
@@ -26,7 +33,7 @@ interface RoadData {
     road_name: string;
     road_distance: number;
     initial_distance: number;
-    road_geometry: Geometry;
+    road_geometry: Geometry
     road: Array<{
         lat: number;
         lon: number;
@@ -36,7 +43,21 @@ interface RoadData {
         KPI: number | null;
         Mu: number | null;
         DI: number | null;
+        //source: string | null;
     }>;
+    pictures: Array<{
+        distance: number;
+        Image3D: string | null;
+        ImageInt: string | null;
+        ImageRng: string | null;
+        Overlay3D: string | null;
+        OverlayInt: string | null;
+        OverlayRng: string | null;
+    }>;
+}
+
+interface PhotoStripProps {
+    pictures: RoadData['pictures'];
 }
 
 
@@ -50,6 +71,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [widthPercentage, setWidthPercentage] = useState<number>(40);
     const [isResizing, setIsResizing] = useState(false);
+    const { roadHighlightLayerGroup } = useData();
 
     const increaseWidth = () => {
         setWidthPercentage((prevWidth) => Math.min(prevWidth + 5, 100));
@@ -87,18 +109,47 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         };
     }, [isResizing]);
 
+    const PhotoStrip: React.FC<PhotoStripProps> = ({ pictures }) => {
+        const stripRef = useRef<HTMLDivElement>(null);
+
+        useEffect(() => {
+            if (stripRef.current) {
+                // Scroll to the end of the strip initially
+                stripRef.current.scrollLeft = stripRef.current.scrollWidth;
+            }
+        }, [pictures]);
+
+        return (
+            <div className="photo-strip-container">
+                <div className="photo-strip" ref={stripRef}>
+                    {pictures.map((picture, index) => (
+                        <div key={index} className="photo-item">
+                            <img
+                                src={`http://${picture.OverlayInt}`}
+                                alt={`Picture ${index + 1}`}
+                                className="photo-image"
+                            />
+                            <div className="distance-label">{`Distance: ${picture.distance}`}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
+
     //method to update graph data
     useEffect(() => {
         if (data) {
             const newData = convertIntoGraphData(data);
             setGraphData(newData || []); // Use an empty array as the default value if newData is undefined
-            //console.log(newData);
         }
     }, [data]);
 
     const toggleCondition = (condition: string) => {
         setSelectedConditions(prevConditions => {
             let updatedConditions: string[];
+
             if (prevConditions.includes(condition)) {
                 updatedConditions = prevConditions.filter(cond => cond !== condition);
             } else {
@@ -112,8 +163,14 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
             // Notify the parent component
             onConditionToggle(stateToSend, stateToSend !== "NONE");
 
+
+            if (updatedConditions.length === 0){
+                roadHighlightLayerGroup?.clearLayers()
+            }
+
             return updatedConditions;
         });
+
     };
 
 
@@ -226,57 +283,6 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     });
     };
 
-    const [imageUrls, setImageUrls] = useState<string[]>([]);
-
-    useEffect(() => {
-        // Fetch the initial image URLs on component mount
-        // Here you need to define how you determine the initial set of images
-        const initialSetOfImages = getInitialSetOfImages();
-        setImageUrls(initialSetOfImages);
-    }, []);
-
-    const getInitialSetOfImages = (): string[] => {
-        // You would fetch or define the initial URLs here
-        return [
-            // Note, you have to import the images for them to be displayed?
-            DataWindowImg, //Place holder
-            SingleConditionToggledImg,//Place holder
-            DataWindowImg,//Place holder
-            SingleConditionToggledImg,//Place holder
-            DataWindowImg,//Place holder
-            MultipleConditionsToggledImg,//Place holder
-            DataWindowImg,//Place holder
-            // ... other image URLs
-        ];
-    };
-
-    const fetchAdjacentImages = async (direction: 'left' | 'right', index: number): Promise<string[]> => {
-        let newImageSet = [...imageUrls]; // Clone the current image array
-
-        if (direction === 'right') {
-            // Safely remove the last image
-            const lastImage = newImageSet.pop();
-            if (lastImage !== undefined) {
-                newImageSet.unshift(lastImage); // Add it to the beginning
-            }
-        } else { // direction is 'left'
-            // Safely remove the first image
-            const firstImage = newImageSet.shift();
-            if (firstImage !== undefined) {
-                newImageSet.push(firstImage); // Add it to the end
-            }
-        }
-
-        return newImageSet;
-    };
-
-
-    // const onRoadSegmentSelected = (selectedSegmentId) => {
-    //     // Fetch or determine the new image URLs for the selected road segment
-    //     // This could be an API call or some other logic
-    //     const newImageUrls = getImagesForSelectedSegment(selectedSegmentId);
-    //     setImageUrls(newImageUrls);
-    // };
 
 
 
@@ -337,11 +343,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                          }}
                     />
                     <div className="data-window-content">
-                        <PhotoScrollComponent
-                            initialIndex={0}
-                            imageUrls={imageUrls}
-                            fetchImages={fetchAdjacentImages} // Pass the fetch function
-                        />
+                        <PhotoStrip pictures={data?.pictures || []} />
                         {renderLineCharts()}
                     </div>
                 </div>

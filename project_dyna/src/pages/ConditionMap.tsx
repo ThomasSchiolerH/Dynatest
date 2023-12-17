@@ -51,7 +51,7 @@ interface RoadData {
     road_name: string;
     road_distance: number;
     initial_distance: number;
-    road_geometry: Geometry;
+    road_geometry: Geometry
     road: Array<{
         lat: number;
         lon: number;
@@ -61,6 +61,15 @@ interface RoadData {
         KPI: number | null;
         Mu: number | null;
         DI: number | null;
+    }>;
+    pictures: Array<{
+        distance: number;
+        Image3D: string | null;
+        ImageInt: string | null;
+        ImageRng: string | null;
+        Overlay3D: string | null;
+        OverlayInt: string | null;
+        OverlayRng: string | null;
     }>;
 }
 
