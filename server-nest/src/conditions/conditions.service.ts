@@ -265,6 +265,7 @@ export class ConditionsService {
           'length',
           'distance01',
           'distance02',
+          'data_source'
         ])
         .innerJoin(
           Coverage,

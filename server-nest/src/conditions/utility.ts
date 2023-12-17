@@ -66,6 +66,7 @@ export function computeWayConditions(rawWayConditions: any[]): any {
       lon: geom[0][0][0],
       type: e.type,
       value: e.value,
+      source: e.data_source
     });
     point_conditions.push({
       distance: Math.round(e.distance02 * 100),
@@ -73,6 +74,7 @@ export function computeWayConditions(rawWayConditions: any[]): any {
       lon: geom[0][1][0],
       type: e.type,
       value: e.value,
+      source: e.data_source
     });
   });
 
@@ -93,7 +95,7 @@ export function computeWayConditions(rawWayConditions: any[]): any {
     } else {
       current_distance = e.distance;
       current_geom = { lat: e.lat, lon: e.lon };
-      const x: any = { distance: e.distance, lat: e.lat, lon: e.lon };
+      const x: any = { distance: e.distance, lat: e.lat, lon: e.lon, source: e.source };
       x[e.type] = e.value;
       conditions.push(x);
     }
