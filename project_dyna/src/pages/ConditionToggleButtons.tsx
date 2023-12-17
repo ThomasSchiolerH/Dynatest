@@ -253,7 +253,6 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                             <ReferenceLine
                                 x={correspondingDataPoint}
                                 stroke="red"
-                                label={`Current Position`}
                             />
                         )}
                         <Brush dataKey="name" height={30} />
