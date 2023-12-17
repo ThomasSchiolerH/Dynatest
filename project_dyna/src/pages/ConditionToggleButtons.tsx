@@ -162,11 +162,13 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     }
 
     const findClosestRoadItem = (clickLocation: LatLng, roadData: RoadData): typeof roadData.road[number] | null => {
-        let closestRoadItem: typeof roadData.road[number] | null = null;
+        let closestRoadItem = null;
         let minDistance = Number.MAX_VALUE;
 
         roadData.road.forEach(roadItem => {
-            const distance = L.latLng(roadItem.lat, roadItem.lon).distanceTo(clickLocation);
+            const itemLatLng = L.latLng(roadItem.lat, roadItem.lon);
+            const distance = itemLatLng.distanceTo(clickLocation);
+
             if (distance < minDistance) {
                 minDistance = distance;
                 closestRoadItem = roadItem;
