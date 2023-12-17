@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, Dispatch, SetStateAction, ReactNode, useRef } from 'react';
-import L, { Map, GeoJSON, LayerGroup } from 'leaflet';
+import L, {Map, GeoJSON, LayerGroup, LatLng} from 'leaflet';
 
 interface Geometry {
     type: string;
@@ -74,12 +74,15 @@ export function useData() {
 }
 
 export function useRoadHighlight() {
+    const [markerPosition, setMarkerPosition] = useState<LatLng | null>(null);
     const context = useContext(DataContext);
     if (!context) {
         throw new Error('useRoadHighlight must be used within a DataProvider');
     }
 
     const highlightRoad = (roadName: string) => {
+
+
         if (context.dataAll && context.dataAll.features && context.map && context.roadHighlightLayerGroup) {
             const roadFeatures = context.dataAll.features.filter(
                 (f) => f.properties !== null && f.properties.way_name === roadName

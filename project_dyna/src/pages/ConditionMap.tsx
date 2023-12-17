@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import  ReactSlider  from "react-slider"
-import {MapContainer, TileLayer, ScaleControl, GeoJSON, useMap} from 'react-leaflet'
+import {MapContainer, TileLayer, ScaleControl, GeoJSON, useMap, Marker} from 'react-leaflet'
 import {Layer, LayerGroup, LeafletMouseEvent, PathOptions} from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
 import { useData } from "../context/RoadDataContext";
@@ -333,8 +333,10 @@ const ConditionMap = (props: any) => {
             layer.on('click', (e) => {
                 if (feature.properties) {
                     setRoadHighlightLayerGroup(roadHighlightLayerGroup);
+
                     const latlng: LatLng = e.latlng;
                     setMarkerPosition(latlng);
+
                     highlightRoad(feature.properties.way_name, e.target._map);
 
                     if (dataAll && dataAll.features) {
