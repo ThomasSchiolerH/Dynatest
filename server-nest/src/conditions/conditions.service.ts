@@ -543,6 +543,8 @@ export class ConditionsService {
                     .orderBy('distance')
                     .getRawOne()
 
+                const promises = [];
+
                 if (wayQuery) {
                     try {
                         if (wayQuery.way_id !== previousWayId) {
@@ -553,7 +555,7 @@ export class ConditionsService {
 
                         if (imageIntArray.length > 0) {
                             let fileObject: any = imageIntArray.shift();
-                            fileObject.async('uint8array')
+                            const promise = fileObject.async('uint8array')
                                 .then(image => { this.uploadImage({
                                     fieldname: '',
                                     originalname: fileObject.name,
@@ -575,11 +577,12 @@ export class ConditionsService {
                                     console.log(e);
                                     throw new HttpException("Internal server error", 500);
                                 })})
+                            promises.push(promise);
                         }
 
                         if (imageRngArray.length > 0) {
                             let fileObject: any = imageRngArray.shift();
-                            fileObject.async('uint8array')
+                            const promise = fileObject.async('uint8array')
                                 .then(image => { this.uploadImage({
                                     fieldname: '',
                                     originalname: fileObject.name,
@@ -601,11 +604,12 @@ export class ConditionsService {
                                     console.log(e);
                                     throw new HttpException("Internal server error", 500);
                                 })})
+                            promises.push(promise);
                         }
 
                         if (image3DArray.length > 0) {
                             let fileObject: any = image3DArray.shift();
-                            fileObject.async('uint8array')
+                            const promise = fileObject.async('uint8array')
                                 .then(image => { this.uploadImage({
                                     fieldname: '',
                                     originalname: fileObject.name,
@@ -627,11 +631,12 @@ export class ConditionsService {
                                     console.log(e);
                                     throw new HttpException("Internal server error", 500);
                                 })})
+                            promises.push(promise);
                         }
 
                         if (overlayIntArray.length > 0) {
                             let fileObject: any = overlayIntArray.shift();
-                            fileObject.async('uint8array')
+                            const promise = fileObject.async('uint8array')
                                 .then(image => { this.uploadImage({
                                     fieldname: '',
                                     originalname: fileObject.name,
@@ -653,11 +658,12 @@ export class ConditionsService {
                                     console.log(e);
                                     throw new HttpException("Internal server error", 500);
                                 })})
+                            promises.push(promise);
                         }
 
                         if (overlayRngArray.length > 0) {
                             let fileObject: any = overlayRngArray.shift();
-                            fileObject.async('uint8array')
+                            const promise = fileObject.async('uint8array')
                                 .then(image => { this.uploadImage({
                                     fieldname: '',
                                     originalname: fileObject.name,
@@ -679,11 +685,12 @@ export class ConditionsService {
                                     console.log(e);
                                     throw new HttpException("Internal server error", 500);
                                 })})
+                            promises.push(promise);
                         }
 
                         if (overlay3DArray.length > 0) {
                             let fileObject: any = overlay3DArray.shift();
-                            fileObject.async('uint8array')
+                            const promise = fileObject.async('uint8array')
                                 .then(image => { this.uploadImage({
                                     fieldname: '',
                                     originalname: fileObject.name,
@@ -705,9 +712,10 @@ export class ConditionsService {
                                     console.log(e);
                                     throw new HttpException("Internal server error", 500);
                                 })})
+                            promises.push(promise);
                         }
 
-                        distanceCounter+=2;
+                        Promise.all(promises).then(res => distanceCounter+=2);
                     } catch (e) {
                         console.log(e);
                         throw new HttpException("Internal server error", 500);
