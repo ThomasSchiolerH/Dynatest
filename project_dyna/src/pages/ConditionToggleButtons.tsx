@@ -199,7 +199,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
             const coordinates = { lat: firstPoint.lat, lon: firstPoint.lon };
             if (map) {
                 const currentZoomLevel = map.getZoom();
-                map.flyTo([coordinates.lat, coordinates.lon], currentZoomLevel);
+                map.flyTo([coordinates.lat, coordinates.lon-0.005], currentZoomLevel);
             }
         }
     };
