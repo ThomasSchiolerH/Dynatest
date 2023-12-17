@@ -13,7 +13,6 @@ import L, {LatLng} from "leaflet";
 import {DomUtil} from "leaflet";
 import empty = DomUtil.empty;
 import "../css/DataWindow.css";
-import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
