@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react"
 import  ReactSlider  from "react-slider"
-import {MapContainer, TileLayer, ScaleControl, GeoJSON, useMap} from 'react-leaflet'
+import {MapContainer, TileLayer, ScaleControl, GeoJSON, useMap, Marker} from 'react-leaflet'
 import {Layer, LeafletMouseEvent, PathOptions} from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
 import { useData } from "../context/RoadDataContext";
-import L from 'leaflet';
+import L, { LatLng } from 'leaflet';
 
 import Zoom from '../map/zoom'
 import { MAP_OPTIONS } from '../map/mapConstants'
@@ -164,6 +164,7 @@ const ConditionMap = (props: any) => {
     let selectedRoadData = {} as JSON;
     const { setData } = useData();
     const { setMap } = useData();
+    const [markerPosition, setMarkerPosition] = useState<LatLng | null>(null);
 
     const { center, zoom, minZoom, maxZoom, scaleWidth } = MAP_OPTIONS;
 
@@ -327,6 +328,10 @@ const ConditionMap = (props: any) => {
                         const roadFeatures = dataAll.features.filter((f) =>
                             f.properties !== null && f.properties.way_name === roadName);
 
+                        // Set the marker position
+                        const latlng: LatLng = e.latlng;
+                        setMarkerPosition(latlng);
+
 
                         roadFeatures.forEach((roadFeature) => {
                             const roadHighlight = new L.GeoJSON(roadFeature.geometry, {
@@ -428,6 +433,10 @@ const ConditionMap = (props: any) => {
                     }
                     { dataAll !== undefined &&
                         <GeoJSON ref={geoJsonRef} data={dataAll} onEachFeature={onEachFeature} /> }
+
+                    {markerPosition && (
+                        <Marker position={[markerPosition.lat, markerPosition.lng]} />
+                    )}
 
                     <Zoom />
                     <ScaleControl imperial={false} position="bottomleft" maxWidth={scaleWidth} />
