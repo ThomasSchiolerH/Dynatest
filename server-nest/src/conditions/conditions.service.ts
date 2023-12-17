@@ -16,7 +16,7 @@ import {
     computeWayConditions,
     addCoverageToDatabase,
     addCoverageValueToDatabase,
-    addWayToDatabase, saveImageDataToDatabase,
+    addWayToDatabase, saveImageDataToDatabase, formatRoadImages,
 } from './utility';
 
 import { BufferedFile } from 'src/minio-client/file.model';
@@ -265,6 +265,7 @@ export class ConditionsService {
           'length',
           'distance01',
           'distance02',
+          'data_source'
         ])
         .innerJoin(
           Coverage,
@@ -279,6 +280,39 @@ export class ConditionsService {
       // Filter and convert to correct format
       const result = await computeRoadConditions(rawRoadConditions);
 
+      let roadImages: object[] | null = null;
+
+        try {
+            const subQuery = this.dataSource
+                .createQueryBuilder()
+                .select([
+                    'condition_pictures.fk_way_id',
+                    'distance',
+                    'jsonb_agg(jsonb_build_object(\'url\', url, \'type\', type, \'distance\', distance)) AS data_by_distance'
+                ])
+                .from(Condition_Pictures, 'condition_pictures')
+                .innerJoin(Ways, 'way', 'condition_pictures.fk_way_id = way.id')
+                .where('way.OSM_Id IN (:...osmIds)', { osmIds: osm_ids})
+                .groupBy('condition_pictures.fk_way_id, distance')
+                .addGroupBy('condition_pictures.fk_way_id');
+
+            const query = this.dataSource
+                .createQueryBuilder()
+                .select([
+                    'subquery.fk_way_id',
+                    'jsonb_agg(jsonb_build_object(\'distance\', subquery.distance, \'data\', subquery.data_by_distance)) AS data_by_distance'
+                ])
+                .from('(' + subQuery.getQuery() + ')', 'subquery')
+                .setParameter('osmIds', osm_ids)
+                .groupBy('subquery.fk_way_id');
+
+            const results = await query.getRawMany();
+
+            results.length ? roadImages = await formatRoadImages(results) : roadImages = null;
+        } catch (e) {
+            console.log(e);
+        }
+
       return {
         success: true,
         road_name: clicked_way.way_name,
@@ -286,6 +320,7 @@ export class ConditionsService {
         initial_distance: 0,
         road_geometry: result.geometry,
         road: result.conditions,
+        pictures: roadImages
       };
     } catch (e) {
       return { success: false, message: e.message };
@@ -293,10 +328,7 @@ export class ConditionsService {
   }
 
   async uploadRSP(file: any) {
-    if (!file.originalname.toLowerCase().endsWith('.rsp'))
-      return { success: false, message: 'not a .rsp file' };
-
-    const fetchedData: any[] = await parseRSP(file.buffer.toString());
+    const fetchedData: any[] = await parseRSP(file);
     const data: any[] = [];
     for (let i = 0; i < fetchedData[1].length; i++) {
       //takes the fetched data and set it up right
@@ -463,12 +495,16 @@ export class ConditionsService {
                     // file.async("string").then(data => CALL RSP IRI PROCESSING FUNCTION HERE).catch(e => console.log(e));
 
                     const promise = file.async("string")
-                        .then(data => {
-                            parse_rsp_Pictures(data)
-                                .then(coords => {
-                                    coordinates = coords
+                        .then(data => this.uploadRSP(data))
+                        .then(
+                            file.async("string")
+                                .then(data => {
+                                    parse_rsp_Pictures(data)
+                                        .then(coords => {
+                                            coordinates = coords
+                                        })
                                 })
-                        })
+                        )
                         .catch(e => console.log(e));
 
                     promises.push(promise)
@@ -508,6 +544,8 @@ export class ConditionsService {
                     .orderBy('distance')
                     .getRawOne()
 
+                const promises = [];
+
                 if (wayQuery) {
                     try {
                         if (wayQuery.way_id !== previousWayId) {
@@ -518,7 +556,7 @@ export class ConditionsService {
 
                         if (imageIntArray.length > 0) {
                             let fileObject: any = imageIntArray.shift();
-                            fileObject.async('uint8array')
+                            const promise = fileObject.async('uint8array')
                                 .then(image => { this.uploadImage({
                                     fieldname: '',
                                     originalname: fileObject.name,
@@ -540,11 +578,12 @@ export class ConditionsService {
                                     console.log(e);
                                     throw new HttpException("Internal server error", 500);
                                 })})
+                            promises.push(promise);
                         }
 
                         if (imageRngArray.length > 0) {
                             let fileObject: any = imageRngArray.shift();
-                            fileObject.async('uint8array')
+                            const promise = fileObject.async('uint8array')
                                 .then(image => { this.uploadImage({
                                     fieldname: '',
                                     originalname: fileObject.name,
@@ -566,11 +605,12 @@ export class ConditionsService {
                                     console.log(e);
                                     throw new HttpException("Internal server error", 500);
                                 })})
+                            promises.push(promise);
                         }
 
                         if (image3DArray.length > 0) {
                             let fileObject: any = image3DArray.shift();
-                            fileObject.async('uint8array')
+                            const promise = fileObject.async('uint8array')
                                 .then(image => { this.uploadImage({
                                     fieldname: '',
                                     originalname: fileObject.name,
@@ -592,11 +632,12 @@ export class ConditionsService {
                                     console.log(e);
                                     throw new HttpException("Internal server error", 500);
                                 })})
+                            promises.push(promise);
                         }
 
                         if (overlayIntArray.length > 0) {
                             let fileObject: any = overlayIntArray.shift();
-                            fileObject.async('uint8array')
+                            const promise = fileObject.async('uint8array')
                                 .then(image => { this.uploadImage({
                                     fieldname: '',
                                     originalname: fileObject.name,
@@ -618,11 +659,12 @@ export class ConditionsService {
                                     console.log(e);
                                     throw new HttpException("Internal server error", 500);
                                 })})
+                            promises.push(promise);
                         }
 
                         if (overlayRngArray.length > 0) {
                             let fileObject: any = overlayRngArray.shift();
-                            fileObject.async('uint8array')
+                            const promise = fileObject.async('uint8array')
                                 .then(image => { this.uploadImage({
                                     fieldname: '',
                                     originalname: fileObject.name,
@@ -644,11 +686,12 @@ export class ConditionsService {
                                     console.log(e);
                                     throw new HttpException("Internal server error", 500);
                                 })})
+                            promises.push(promise);
                         }
 
                         if (overlay3DArray.length > 0) {
                             let fileObject: any = overlay3DArray.shift();
-                            fileObject.async('uint8array')
+                            const promise = fileObject.async('uint8array')
                                 .then(image => { this.uploadImage({
                                     fieldname: '',
                                     originalname: fileObject.name,
@@ -670,9 +713,10 @@ export class ConditionsService {
                                     console.log(e);
                                     throw new HttpException("Internal server error", 500);
                                 })})
+                            promises.push(promise);
                         }
 
-                        distanceCounter+=2;
+                        Promise.all(promises).then(res => distanceCounter+=2);
                     } catch (e) {
                         console.log(e);
                         throw new HttpException("Internal server error", 500);

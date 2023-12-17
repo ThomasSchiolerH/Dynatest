@@ -95,26 +95,9 @@ const ImportData = (props: any) => {
                 Import Data
             </div>
 
-            {/* Radio buttons section */}
-            <div className="radioGroup">
-                <div>
-                    <label>
-                        <input type="radio" name="radio" defaultChecked className="radioInput" />
-                        <span>ZIP</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="radio" className="radioInput" />
-                        <span>GPX</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="radio" className="radioInput" />
-                        <span>RSP</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="radio" className="radioInput" />
-                        <span>Image</span>
-                    </label>
-                </div>
+            {/* Subtitle */}
+            <div className="importDataSubHeader">
+                Choose a ZIP file to upload
             </div>
 
             {/* The import UI */}
