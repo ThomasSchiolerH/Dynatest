@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useRef, Dispatch, SetStateAction, ReactNode } from 'react';
-import L, { GeoJSON } from 'leaflet';
+import React, { createContext, useContext, useState, Dispatch, SetStateAction, ReactNode, useRef } from 'react';
+import L, { Map, GeoJSON, LayerGroup } from 'leaflet';
 
 interface Geometry {
     type: string;
@@ -24,20 +24,20 @@ interface RoadData {
     }>;
 }
 
-interface DataAll {
-    features: GeoJSON.Feature<GeoJSON.Geometry>[];
-    // Add other properties of FeatureCollection if needed
+interface FeatureCollection {
+    features: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>[];
 }
 
 type ContextType = {
     data: RoadData | null;
     setData: Dispatch<SetStateAction<RoadData | null>>;
-    map: L.Map | null;
-    setMap: Dispatch<SetStateAction<L.Map | null>>;
-    dataAll: DataAll | null;
-    setDataAll: Dispatch<SetStateAction<DataAll | null>>;
-    highlightRoad: (roadName: string) => void;
-    clearHighlightedRoads: () => void;
+    map: Map | null;
+    setMap: Dispatch<SetStateAction<Map | null>>;
+    roadHighlightLayerGroup: LayerGroup<any> | null;
+    dataAll: FeatureCollection | undefined;
+    setRoadHighlightLayerGroup: Dispatch<SetStateAction<L.LayerGroup | null>>;
+    setAllData: Dispatch<SetStateAction<FeatureCollection | undefined>>;
+
 };
 
 const DataContext = createContext<ContextType>({
@@ -45,10 +45,10 @@ const DataContext = createContext<ContextType>({
     setData: () => {},
     map: null,
     setMap: () => {},
-    dataAll: null,
-    setDataAll: () => {},
-    highlightRoad: () => {},
-    clearHighlightedRoads: () => {},
+    roadHighlightLayerGroup: new L.LayerGroup(),
+    dataAll: undefined,
+    setAllData: () => {},
+    setRoadHighlightLayerGroup: () => {},
 });
 
 type DataProviderProps = {
@@ -57,38 +57,13 @@ type DataProviderProps = {
 
 export function DataProvider({ children }: DataProviderProps) {
     const [data, setData] = useState<RoadData | null>(null);
-    const [map, setMap] = useState<L.Map | null>(null);
-    const [dataAll, setDataAll] = useState<DataAll | null>(null);
-    const roadHighlightLayerGroup = useRef(new L.LayerGroup()).current;
+    const [map, setMap] = useState<Map | null>(null);
+    const [roadHighlightLayerGroup, setRoadHighlightLayerGroup] = useState<LayerGroup | null>(null);
+    const [dataAll, setDataAll] = useState<FeatureCollection | undefined>({ features: [] });
 
-    const highlightRoad = (roadName: string) => {
-        if (dataAll && dataAll.features && map) {
-            const roadFeatures = dataAll.features.filter(
-                (f) => f.properties !== null && f.properties.road_name === roadName
-            );
-
-            roadHighlightLayerGroup.clearLayers();
-            roadFeatures.forEach((roadFeature) => {
-                const roadHighlight = L.geoJSON(roadFeature.geometry, {
-                    style: {
-                        weight: 8,
-                        color: 'blue',
-                        opacity: 0.3,
-                    },
-                });
-                roadHighlightLayerGroup.addLayer(roadHighlight);
-            });
-
-            roadHighlightLayerGroup.addTo(map);
-        }
-    };
-
-    const clearHighlightedRoads = () => {
-        roadHighlightLayerGroup.clearLayers();
-    };
 
     return (
-        <DataContext.Provider value={{ data, setData, map, setMap, dataAll, setDataAll, highlightRoad, clearHighlightedRoads }}>
+        <DataContext.Provider value={{ data, setData, map, setMap, roadHighlightLayerGroup, setRoadHighlightLayerGroup, dataAll, setAllData: setDataAll }}>
             {children}
         </DataContext.Provider>
     );
@@ -97,3 +72,47 @@ export function DataProvider({ children }: DataProviderProps) {
 export function useData() {
     return useContext(DataContext);
 }
+
+export function useRoadHighlight() {
+    const context = useContext(DataContext);
+    if (!context) {
+        throw new Error('useRoadHighlight must be used within a DataProvider');
+    }
+
+    const highlightRoad = (roadName: string) => {
+        if (context.dataAll && context.dataAll.features && context.map && context.roadHighlightLayerGroup) {
+            const roadFeatures = context.dataAll.features.filter(
+                (f) => f.properties !== null && f.properties.way_name === roadName
+            );
+
+            context.roadHighlightLayerGroup.clearLayers();
+            roadFeatures.forEach((roadFeature) => {
+                const roadHighlight = L.geoJSON(roadFeature.geometry, {
+                    style: {
+                        weight: 8,
+                        color: 'blue',
+                        opacity: 0.3,
+                    },
+                });
+                if (context.roadHighlightLayerGroup){
+                    context.roadHighlightLayerGroup.addLayer(roadHighlight);
+                }
+
+            });
+
+            context.roadHighlightLayerGroup.addTo(context.map);
+        }
+    };
+
+    const clearHighlightedRoads = () => {
+        if (context.roadHighlightLayerGroup) {
+            context.roadHighlightLayerGroup.clearLayers();
+        }
+    };
+
+    return {
+        highlightRoad,
+        clearHighlightedRoads,
+    };
+}
+

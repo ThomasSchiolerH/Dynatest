@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import '../css/SearchBar.css';
 import {get} from "../queries/fetch";
-import {useData} from "../context/RoadDataContext";
+import {useData, useRoadHighlight } from "../context/RoadDataContext";
 
 type Coordinates = {
     lat: number;
@@ -17,7 +17,8 @@ const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [geoReferences, setGeoReferences] = useState<GeoReference[]>([]);
     const { map } = useData();
-    const { highlightRoad } = useData();
+    const { highlightRoad } = useRoadHighlight(); // Use useRoadHighlight here
+    //const { highlightRoad } = useData();
 
     let zoomLevel = 15; // Set zoom for when search for road is moving map
 
@@ -82,10 +83,10 @@ const SearchBar = () => {
 
     const executeSearch = (query: string) => {
         try {
-            console.log("Searching for:", query);
+            //console.log("Searching for:", query);
             fetchRoadCoordinates(query, (coordinates) => {
                 if (coordinates) {
-                    console.log("Coordinates received:", coordinates);
+                    //console.log("Coordinates received:", coordinates);
                     panToMapCoordinates(coordinates);
                     setGeoReferences([]);
                 } else {
@@ -101,6 +102,7 @@ const SearchBar = () => {
         setSearchQuery(suggestion);
         executeSearch(suggestion);
         highlightRoad(suggestion);
+        console.log(suggestion)
     };
 
     const fetchRoadCoordinates = (roadName: string, callback: (coords: { lat: number, lng: number }) => void) => {
