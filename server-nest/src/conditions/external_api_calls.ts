@@ -14,20 +14,17 @@ import {
 export async function fetch_OSM_Id_geometry(
   OSM_Ids: number[],
 ): Promise<GPSPoint[][]> {
-
   const str: string =
-  'data=[out:json];way(id:' + OSM_Ids.join(',') + ');out geom;';
+    'data=[out:json];way(id:' + OSM_Ids.join(',') + ');out geom;';
   const result = await fetch('https://overpass-api.de/api/interpreter?' + str, {
     method: 'GET',
   }).then((data: { json: () => any }) => data.json());
   return result.elements.map((r: any) => r.geometry);
 }
 
-export async  function  fetch_OSM_Id_Data(
-    OSM_Ids: number[],
-): Promise<any[]> {
+export async function fetch_OSM_Id_Data(OSM_Ids: number[]): Promise<any[]> {
   const str: string =
-      'data=[out:json];way(id:' + OSM_Ids.join(',') + ');out geom;';
+    'data=[out:json];way(id:' + OSM_Ids.join(',') + ');out geom;';
   const result = await fetch('https://overpass-api.de/api/interpreter?' + str, {
     method: 'GET',
   }).then((data: { json: () => any }) => data.json());
@@ -53,12 +50,12 @@ export async function fetch_OSM_Ids(
 }
 
 async function fetchOverpass(data: string): Promise<any> {
-  console.log(data);
+  //console.log(data);
   const result = await fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
     body: 'data=' + data,
   }).then((data: { json: () => any }) => data.json());
-  console.log(result);
+  //console.log(result);
   return result.elements.map((r: any) => r);
 }
 

@@ -66,6 +66,7 @@ export function computeWayConditions(rawWayConditions: any[]): any {
       lon: geom[0][0][0],
       type: e.type,
       value: e.value,
+      source: e.data_source,
     });
     point_conditions.push({
       distance: Math.round(e.distance02 * 100),
@@ -73,6 +74,7 @@ export function computeWayConditions(rawWayConditions: any[]): any {
       lon: geom[0][1][0],
       type: e.type,
       value: e.value,
+      source: e.data_source,
     });
   });
 
@@ -93,7 +95,12 @@ export function computeWayConditions(rawWayConditions: any[]): any {
     } else {
       current_distance = e.distance;
       current_geom = { lat: e.lat, lon: e.lon };
-      const x: any = { distance: e.distance, lat: e.lat, lon: e.lon };
+      const x: any = {
+        distance: e.distance,
+        lat: e.lat,
+        lon: e.lon,
+        source: e.source,
+      };
       x[e.type] = e.value;
       conditions.push(x);
     }
@@ -129,14 +136,21 @@ export async function computeRoadConditions(
     computeWayConditions(rawWayConditions),
   );
 
+  // Order the ways by the longitude of the first point on the way geometry
+  resultWays.sort((a, b) =>
+    a.geometry.coordinates[0][0][0] > b.geometry.coordinates[0][0][0]
+      ? 1
+      : b.geometry.coordinates[0][0][0] > a.geometry.coordinates[0][0][0]
+      ? -1
+      : 0,
+  );
+
   // Compute the road geometry assuming the ways are in correct order
   const coordinates = resultWays.reduce(
     (acc, obj) => acc.concat(obj.geometry.coordinates),
     [],
   );
   const geometry: any = { type: 'MultiLineString', coordinates: coordinates };
-
-  //TODO: Somehow order the ways
 
   // Combine the ways that make up the road
   let conditions: any[] = [];
@@ -154,6 +168,51 @@ export async function computeRoadConditions(
     geometry: geometry,
     distance: distance,
   };
+}
+
+export async function formatRoadImages(roadImagesByWayId) {
+  // TODO Order the ways
+  // const orderedRoadImages = orderByWayId(rawRoadImages);
+
+  // Combine the ways that make up the road
+  // TODO previousWayDistance starts from the relative distance of the beginning of the road
+  let previousWayDistance: number = 0;
+  const resultImageObject: object[] = [];
+  roadImagesByWayId.forEach((roadImagesByDistance: any) => {
+    for (const key in roadImagesByDistance.data_by_distance) {
+      const distance =
+        previousWayDistance +
+        Number(roadImagesByDistance.data_by_distance[key].distance);
+      const objectForDistance: object = { distance };
+
+      const types = [
+        'Image3D',
+        'ImageInt',
+        'ImageRng',
+        'Overlay3D',
+        'OverlayInt',
+        'OverlayRng',
+      ];
+
+      types.forEach((type) => {
+        const matchingImage = roadImagesByDistance.data_by_distance[
+          key
+        ].data.find((image) => image.type === type);
+
+        matchingImage
+          ? (objectForDistance[type] = matchingImage.url)
+          : (objectForDistance[type] = null);
+      });
+
+      resultImageObject.push(objectForDistance);
+    }
+    previousWayDistance = +Number(
+      roadImagesByDistance.data_by_distance[
+        roadImagesByDistance.data_by_distance.length - 1
+      ].distance,
+    );
+  });
+  return resultImageObject;
 }
 
 export async function addWayToDatabase(
@@ -268,28 +327,28 @@ export async function addCoverageValueToDatabase(
 }
 
 export async function saveImageDataToDatabase(
-    dataSource: DataSource,
-    coordinate: object,
-    imageName: string,
-    url: string,
-    wayId: string,
-    type: string,
-    distance: number
+  dataSource: DataSource,
+  coordinate: object,
+  imageName: string,
+  url: string,
+  wayId: string,
+  type: string,
+  distance: number,
 ) {
-    dataSource
-        .createQueryBuilder()
-        .insert()
-        .into(Condition_Pictures)
-        .values({
-          lat_mapped: coordinate[1],
-          lon_mapped: coordinate[0],
-          name: imageName,
-          url: url,
-          way: wayId,
-          type: type,
-          distance: distance
-        })
-        .execute()
+  dataSource
+    .createQueryBuilder()
+    .insert()
+    .into(Condition_Pictures)
+    .values({
+      lat_mapped: coordinate[1],
+      lon_mapped: coordinate[0],
+      name: imageName,
+      url: url,
+      way: wayId,
+      type: type,
+      distance: distance,
+    })
+    .execute();
 }
 
 /*
