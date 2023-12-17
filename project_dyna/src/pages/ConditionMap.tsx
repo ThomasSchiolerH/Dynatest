@@ -4,7 +4,7 @@ import {MapContainer, TileLayer, ScaleControl, GeoJSON, useMap} from 'react-leaf
 import {Layer, LayerGroup, LeafletMouseEvent, PathOptions} from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
 import { useData } from "../context/RoadDataContext";
-import L from 'leaflet';
+import L, { LatLng } from 'leaflet';
 
 import Zoom from '../map/zoom'
 import { MAP_OPTIONS } from '../map/mapConstants'
@@ -166,6 +166,7 @@ const ConditionMap = (props: any) => {
     const { setMap } = useData();
     const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
 
+    const [markerPosition, setMarkerPosition] = useState<LatLng | null>(null);
 
     const { center, zoom, minZoom, maxZoom, scaleWidth } = MAP_OPTIONS;
 
@@ -332,7 +333,8 @@ const ConditionMap = (props: any) => {
             layer.on('click', (e) => {
                 if (feature.properties) {
                     setRoadHighlightLayerGroup(roadHighlightLayerGroup);
-
+                    const latlng: LatLng = e.latlng;
+                    setMarkerPosition(latlng);
                     highlightRoad(feature.properties.way_name, e.target._map);
 
                     if (dataAll && dataAll.features) {
@@ -356,7 +358,7 @@ const ConditionMap = (props: any) => {
         if (dataAll?.features) {
             const roadFeatures = dataAll.features.filter((f) =>
                 f.properties !== null && f.properties.way_name === roadName);
-
+            
             roadFeatures.forEach((roadFeature) => {
                 const roadHighlight = new L.GeoJSON(roadFeature.geometry, {
                     style: {
@@ -400,17 +402,6 @@ const ConditionMap = (props: any) => {
         }
     };
 
-    /*const CurrentMapInstance = () => {
-        const map = useMap();
-        useEffect(() => {
-            if (map) {
-                setMapInstance(map);
-            }
-        }, [map]);
-
-        return null;
-    };*/
-
     const MapInstanceComponent = () => {
         const map = useMap();
         useEffect(() => {
@@ -447,8 +438,6 @@ const ConditionMap = (props: any) => {
                 >
 
                     <MapInstanceComponent/>
-                    {//<CurrentMapInstance/>}*// }
-                    }
                     <TileLayer
                         maxNativeZoom={maxZoom}
                         maxZoom={maxZoom}
@@ -460,6 +449,10 @@ const ConditionMap = (props: any) => {
                     }
                     { dataAll !== undefined &&
                         <GeoJSON ref={geoJsonRef} data={dataAll} onEachFeature={onEachFeature} /> }
+
+                    {markerPosition && (
+                        <Marker position={[markerPosition.lat, markerPosition.lng]} />
+                    )}
 
                     <Zoom />
                     <ScaleControl imperial={false} position="bottomleft" maxWidth={scaleWidth} />
