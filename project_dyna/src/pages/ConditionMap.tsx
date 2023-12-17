@@ -332,6 +332,12 @@ const ConditionMap = (props: any) => {
                         const latlng: LatLng = e.latlng;
                         setMarkerPosition(latlng);
 
+                        roadHighlightLayerGroup.eachLayer((highlightedLayer) => {
+                            highlightedLayer.on('click', (highlightClickEvent) => {
+                                setMarkerPosition(highlightClickEvent.latlng);
+                            });
+                        });
+
 
                         roadFeatures.forEach((roadFeature) => {
                             const roadHighlight = new L.GeoJSON(roadFeature.geometry, {
@@ -340,6 +346,9 @@ const ConditionMap = (props: any) => {
                                     color: 'blue',
                                     opacity: 0.3,
                                 },
+                            });
+                            roadHighlight.on('click', (highlightClickEvent) => {
+                                setMarkerPosition(highlightClickEvent.latlng);
                             });
                             roadHighlightLayerGroup.addLayer(roadHighlight);
                         });
@@ -407,7 +416,8 @@ const ConditionMap = (props: any) => {
             <div className="condition-toggle-buttons-container">
                 <ConditionToggleButtons
                     conditionTypes={conditionTypes}
-                    onConditionToggle={handleConditionToggle}/>
+                    onConditionToggle={handleConditionToggle}
+                    markerPosition={markerPosition}/>
             </div>
             <div className="image-container" hidden={isImagePageHidden}>
             </div>

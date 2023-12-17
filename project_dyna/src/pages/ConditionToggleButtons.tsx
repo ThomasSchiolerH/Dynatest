@@ -9,11 +9,13 @@ import SingleConditionToggledImg from '../images/singleConditionToggledImg.png';
 import MultipleConditionsToggledImg from '../images/multipleConditionsToggledImg.png';
 import { useData } from "../context/RoadDataContext";
 import {ALL} from "dns";
+import L, {LatLng} from "leaflet";
 
 
 interface ConditionToggleButtonsProps {
     conditionTypes: string[]; // Define the type of conditionTypes prop
     onConditionToggle: (condition: string | null, isSelected: boolean) => void;
+    markerPosition: LatLng | null;
 }
 
 interface Geometry {
@@ -40,7 +42,7 @@ interface RoadData {
 }
 
 
-const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditionTypes, onConditionToggle}) => {
+const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditionTypes, onConditionToggle, markerPosition}) => {
     //data from pressed road segment
     let {data} = useData();
     const [graphData, setGraphData] = useState<Record<string, any>[]>([]);
@@ -50,6 +52,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [widthPercentage, setWidthPercentage] = useState<number>(40);
     const [isResizing, setIsResizing] = useState(false);
+    const [correspondingDataPoint, setCorrespondingDataPoint] = useState<number | null>(null);
 
     const increaseWidth = () => {
         setWidthPercentage((prevWidth) => Math.min(prevWidth + 5, 100));
@@ -158,6 +161,29 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         }
     }
 
+    const findClosestRoadItem = (clickLocation: LatLng, roadData: RoadData): typeof roadData.road[number] | null => {
+        let closestRoadItem: typeof roadData.road[number] | null = null;
+        let minDistance = Number.MAX_VALUE;
+
+        roadData.road.forEach(roadItem => {
+            const distance = L.latLng(roadItem.lat, roadItem.lon).distanceTo(clickLocation);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestRoadItem = roadItem;
+            }
+        });
+
+        return closestRoadItem;
+    };
+
+    useEffect(() => {
+        if (markerPosition && data) {
+            const closestRoadItem = findClosestRoadItem(markerPosition, data);
+            if (closestRoadItem !== null) {
+                setCorrespondingDataPoint(closestRoadItem.distance);
+            }
+        }
+    }, [markerPosition, data]);
 
 
     const toggleDataWindow = () => {
@@ -218,6 +244,13 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
                             fill={conditionColors[dataType]}
                             connectNulls={true}
                         />
+                        {correspondingDataPoint != null && (
+                            <ReferenceLine
+                                x={correspondingDataPoint}
+                                stroke="red"
+                                label={`Current Position`}
+                            />
+                        )}
                         <Brush dataKey="name" height={30} />
                     </LineChart>
                 </ResponsiveContainer>
