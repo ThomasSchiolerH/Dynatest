@@ -346,6 +346,12 @@ const ConditionMap = (props: any) => {
                     const latlng: LatLng = e.latlng;
                     setMarkerPosition(latlng);
 
+                    roadHighlightLayerGroup.eachLayer((highlightedLayer) => {
+                        highlightedLayer.on('click', (highlightClickEvent) => {
+                            setMarkerPosition(highlightClickEvent.latlng);
+                        });
+                    });
+
                     highlightRoad(feature.properties.way_name, e.target._map);
 
                     if (dataAll && dataAll.features) {
@@ -377,6 +383,9 @@ const ConditionMap = (props: any) => {
                         color: 'blue',
                         opacity: 0.3,
                     },
+                });
+                roadHighlight.on('click', (highlightClickEvent) => {
+                    setMarkerPosition(highlightClickEvent.latlng);
                 });
                 roadHighlightLayerGroup.addLayer(roadHighlight);
             });
@@ -432,7 +441,8 @@ const ConditionMap = (props: any) => {
             <div className="condition-toggle-buttons-container">
                 <ConditionToggleButtons
                     conditionTypes={conditionTypes}
-                    onConditionToggle={handleConditionToggle}/>
+                    onConditionToggle={handleConditionToggle}
+                    markerPosition={markerPosition}/>
             </div>
             <div className="image-container" hidden={isImagePageHidden}>
             </div>
