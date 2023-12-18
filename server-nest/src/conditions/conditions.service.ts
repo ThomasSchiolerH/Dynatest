@@ -4,7 +4,6 @@ import { DataSource, MultiLineString } from 'typeorm';
 import { Coverage_Values } from '../entity/Coverage_Values';
 import { Coverage } from '../entity/Coverage';
 import { Ways } from '../entity/Ways';
-import { Trips } from '../entity/Trips';
 import { Condition_Pictures } from '../entity/Condition_Pictures';
 import { MinioClientService } from 'src/minio-client/minio-client.service';
 import { DBUpload } from '../entity/Internal_Types';
@@ -140,30 +139,6 @@ export class ConditionsService {
     };
   }
 
-  /*async getClicked(coverage_value_id: string) {
-    const conditions = this.dataSource
-      .getRepository(Coverage_Values)
-      .createQueryBuilder('coverage_value')
-      .select([
-        'way_name',
-        'coverage."id" as coverage_id',
-        'length AS length',
-        'ST_AsGeoJSON(coverage.section_geom, 5, 0) AS section_geom',
-        'way."IsHighway" AS is_highway',
-        'way."OSM_Id" AS OSM_Id',
-      ])
-      .innerJoin(
-        Coverage,
-        'coverage',
-        'coverage_value.fk_coverage_id = coverage.id',
-      )
-      .innerJoin(Ways, 'way', 'coverage.fk_way_id = way.id')
-      .where('coverage_value.ignore IS NULL')
-      .andWhere('coverage_value.id = :coverage_value_id', {
-        coverage_value_id,
-      });
-    return await conditions.getRawOne();
-  }*/
 
   async getWayConditions(osm_id: string) {
     try {
@@ -422,19 +397,6 @@ export class ConditionsService {
       });
     }
 
-    /*
-    data.forEach((e: DBUpload): void => {
-      addCoverageValueToDatabase(
-        this.dataSource,
-        e.coverage_value.type,
-        e.coverage_value.value,
-        coverageID[e],
-      ).catch((e): void => {
-        console.log(e);
-        throw new HttpException('internal server error', 500);
-      });
-    });
-*/
     return { success: true, message: 'file uploaded', data: data };
   }
 
