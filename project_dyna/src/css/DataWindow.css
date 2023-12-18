@@ -9,6 +9,7 @@
     width: 120px;  /* Define a width for the buttons container */
 }
 
+
 .data-window {
     position: fixed;
     top: var(--navbar-height);
@@ -19,6 +20,34 @@
     transition: 0.5s;
     z-index: 10;  /* Ensure it's below the toggle buttons */
     border-left: 1px solid var(--background-3);
+}
+
+.photo-strip-container {
+     overflow-x: auto;
+     white-space: nowrap;
+     height: 100%;
+ }
+
+.photo-strip {
+    display: inline-block;
+}
+
+.photo-item {
+    display: inline-block;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.photo-image {
+    max-width: 191px;
+    height: 200px; /* Set the maximum height as needed */
+    transform: scaleX(-1);
+    transform: rotate(90deg);
+
+}
+
+.distance-label {
+    font-size: 12px;
 }
 
 .data-window-content {

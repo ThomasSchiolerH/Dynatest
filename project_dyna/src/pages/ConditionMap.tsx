@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react"
 import  ReactSlider  from "react-slider"
-import {MapContainer, TileLayer, ScaleControl, GeoJSON, useMap} from 'react-leaflet'
-import {Layer, LeafletMouseEvent, PathOptions} from "leaflet"
+import {MapContainer, TileLayer, ScaleControl, GeoJSON, useMap, Marker} from 'react-leaflet'
+import {Layer, LayerGroup, LeafletMouseEvent, PathOptions} from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
 import { useData } from "../context/RoadDataContext";
-import L from 'leaflet';
+import L, { LatLng } from 'leaflet';
 
 import Zoom from '../map/zoom'
 import { MAP_OPTIONS } from '../map/mapConstants'
@@ -51,7 +51,7 @@ interface RoadData {
     road_name: string;
     road_distance: number;
     initial_distance: number;
-    road_geometry: Geometry;
+    road_geometry: Geometry
     road: Array<{
         lat: number;
         lon: number;
@@ -61,6 +61,15 @@ interface RoadData {
         KPI: number | null;
         Mu: number | null;
         DI: number | null;
+    }>;
+    pictures: Array<{
+        distance: number;
+        Image3D: string | null;
+        ImageInt: string | null;
+        ImageRng: string | null;
+        Overlay3D: string | null;
+        OverlayInt: string | null;
+        OverlayRng: string | null;
     }>;
 }
 
@@ -164,11 +173,17 @@ const ConditionMap = (props: any) => {
     let selectedRoadData = {} as JSON;
     const { setData } = useData();
     const { setMap } = useData();
+    const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
+
+    const [markerPosition, setMarkerPosition] = useState<LatLng | null>(null);
 
     const { center, zoom, minZoom, maxZoom, scaleWidth } = MAP_OPTIONS;
 
     const geoJsonRef = useRef<any>();
+    const { setRoadHighlightLayerGroup, setAllData } = useData();
 
+
+    const roadHighlightLayerGroup = new L.LayerGroup();
     const [dataAll, setDataAll] = useState<FeatureCollection>();
     const [rangeAll, setRangeAll] = useState<DateRange>({});
     const [rangeSelected, setRangeSelected] = useState<DateRange>({});
@@ -176,6 +191,8 @@ const ConditionMap = (props: any) => {
     const [pictureRoadPath, setPictureRoadPath] = useState<GeoJSON.MultiLineString>()
     const [isImagePageHidden, setIsImagePageHidden] = useState<boolean>(true);
     const [img, setImg] = useState<Blob>();
+
+
 
     const inputChange = ({ target }: any) => {
         setMode(target.value);
@@ -218,7 +235,7 @@ const ConditionMap = (props: any) => {
             setRangeAll(range)
             setDataAll(data)
         })
-    }, [] )
+    }, [setDataAll] )
 
     useEffect(() => {
         get('/conditions/road-pictures-path', (sectionGeom: GeoJSON.MultiLineString) => {
@@ -226,7 +243,15 @@ const ConditionMap = (props: any) => {
         })
     }, []);
 
+    useEffect(() => {
+        setRoadHighlightLayerGroup(roadHighlightLayerGroup);
+        setAllData(dataAll);
+    }, [setRoadHighlightLayerGroup, setDataAll, dataAll]);
+
+
     useEffect ( () => {
+
+
 
         const setConditions = (data: FeatureCollection) => {
             if (geoJsonRef !== undefined && geoJsonRef.current !== undefined) {
@@ -313,36 +338,26 @@ const ConditionMap = (props: any) => {
         }
     }, [dataAll, mode, rangeAll, rangeSelected])
 
-    const roadHighlightLayerGroup = new L.LayerGroup();
+
     const onEachFeature = (feature: Feature, layer: Layer) => {
         if (feature !== undefined && feature.properties !== null && feature.properties.id !== undefined && feature.properties.value !== undefined) {
             layer.on('click', (e) => {
                 if (feature.properties) {
+                    setRoadHighlightLayerGroup(roadHighlightLayerGroup);
 
-                    roadHighlightLayerGroup.clearLayers();
+                    const latlng: LatLng = e.latlng;
 
-                    const roadName = feature.properties.way_name;
+                    setMarkerPosition(latlng);
+
+                    roadHighlightLayerGroup.eachLayer((highlightedLayer) => {
+                        highlightedLayer.on('click', (highlightClickEvent) => {
+                            setMarkerPosition(highlightClickEvent.latlng);
+                        });
+                    });
+
+                    highlightRoad(feature.properties.way_name, e.target._map);
 
                     if (dataAll && dataAll.features) {
-                        const roadFeatures = dataAll.features.filter((f) =>
-                            f.properties !== null && f.properties.way_name === roadName);
-
-
-                        roadFeatures.forEach((roadFeature) => {
-                            const roadHighlight = new L.GeoJSON(roadFeature.geometry, {
-                                style: {
-                                    weight: 8,
-                                    color: 'blue',
-                                    opacity: 0.3,
-                                },
-                            });
-                            roadHighlightLayerGroup.addLayer(roadHighlight);
-                        });
-
-                        roadHighlightLayerGroup.addTo(e.target._map);
-
-                        {//get(`/conditions/road_data?coverage_value_id=${feature.properties.id}`, (data: RoadData) => {
-                        }
                         get(`/conditions/road/${feature.properties.osm_id}`, (data: RoadData) => {
                             if (data.success) {
                                 setData(data);
@@ -354,6 +369,33 @@ const ConditionMap = (props: any) => {
             });
         }
     };
+
+
+
+    const highlightRoad = (roadName: string, map: L.Map | LayerGroup<any>) => {
+        roadHighlightLayerGroup.clearLayers();
+
+        if (dataAll?.features) {
+            const roadFeatures = dataAll.features.filter((f) =>
+                f.properties !== null && f.properties.way_name === roadName);
+
+            roadFeatures.forEach((roadFeature) => {
+                const roadHighlight = new L.GeoJSON(roadFeature.geometry, {
+                    style: {
+                        weight: 8,
+                        color: 'blue',
+                        opacity: 0.3,
+                    },
+                });
+                roadHighlight.on('click', (highlightClickEvent) => {
+                    setMarkerPosition(highlightClickEvent.latlng);
+                });
+                roadHighlightLayerGroup.addLayer(roadHighlight);
+            });
+
+            roadHighlightLayerGroup.addTo(map);
+        }
+    }
 
 
     const handlePictureRoadClick = (e: LeafletMouseEvent) => {
@@ -402,10 +444,12 @@ const ConditionMap = (props: any) => {
             <div className="condition-toggle-buttons-container">
                 <ConditionToggleButtons
                     conditionTypes={conditionTypes}
-                    onConditionToggle={handleConditionToggle}/>
+                    onConditionToggle={handleConditionToggle}
+                    markerPosition={markerPosition}/>
             </div>
             <div className="image-container" hidden={isImagePageHidden}>
             </div>
+
             <div>
                 <MapContainer
                     preferCanvas={true}
@@ -416,6 +460,7 @@ const ConditionMap = (props: any) => {
                     scrollWheelZoom={true}
                     zoomControl={false}
                 >
+
                     <MapInstanceComponent/>
                     <TileLayer
                         maxNativeZoom={maxZoom}
@@ -428,6 +473,10 @@ const ConditionMap = (props: any) => {
                     }
                     { dataAll !== undefined &&
                         <GeoJSON ref={geoJsonRef} data={dataAll} onEachFeature={onEachFeature} /> }
+
+                    {markerPosition && (
+                        <Marker position={[markerPosition.lat, markerPosition.lng]} />
+                    )}
 
                     <Zoom />
                     <ScaleControl imperial={false} position="bottomleft" maxWidth={scaleWidth} />
