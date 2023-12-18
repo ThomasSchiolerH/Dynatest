@@ -59,7 +59,7 @@ function predecessor(
   array: any[],
   target: number,
   i: number = 0,
-  j: number = array.length,
+  j: number = array.length - 1,
 ): any {
   if (j < i) return null;
   const m: number = Math.floor((i + j) / 2);
@@ -75,7 +75,7 @@ function successor(
   array: any[],
   target: number,
   i: number = 0,
-  j: number = array.length,
+  j: number = array.length - 1,
 ): any {
   if (j < i) return null;
   const m: number = Math.floor((i + j) / 2);
