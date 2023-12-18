@@ -1,4 +1,13 @@
-import React, { createContext, useContext, useState, Dispatch, SetStateAction, ReactNode, useRef } from 'react';
+import React, {
+    createContext,
+    useContext,
+    useState,
+    Dispatch,
+    SetStateAction,
+    ReactNode,
+    useRef,
+    useCallback
+} from 'react';
 import L, {Map, GeoJSON, LayerGroup, LatLng, Marker} from 'leaflet';
 import {get} from "../queries/fetch";
 
@@ -59,6 +68,7 @@ const DataContext = createContext<ContextType>({
     dataAll: undefined,
     setAllData: () => {},
     setRoadHighlightLayerGroup: () => {},
+
 });
 
 type DataProviderProps = {
@@ -72,8 +82,10 @@ export function DataProvider({ children }: DataProviderProps) {
     const [dataAll, setDataAll] = useState<FeatureCollection | undefined>({ features: [] });
 
 
+
+
     return (
-        <DataContext.Provider value={{ data, setData, map, setMap, roadHighlightLayerGroup, setRoadHighlightLayerGroup, dataAll, setAllData: setDataAll }}>
+        <DataContext.Provider value={{ data, setData, map, setMap, roadHighlightLayerGroup, setRoadHighlightLayerGroup, dataAll, setAllData: setDataAll}}>
             {children}
         </DataContext.Provider>
     );
@@ -87,6 +99,7 @@ export function useRoadHighlight() {
     const context = useContext(DataContext);
     const { setData } = useData();
 
+
     if (!context) {
         throw new Error('useRoadHighlight must be used within a DataProvider');
     }
@@ -94,6 +107,8 @@ export function useRoadHighlight() {
     const highlightRoad = (roadName: string) => {
         if (context.dataAll && context.dataAll.features && context.map && context.roadHighlightLayerGroup) {
             context.roadHighlightLayerGroup.clearLayers();
+
+
 
 
             const roadFeatures = context.dataAll.features.filter(

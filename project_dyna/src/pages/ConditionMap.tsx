@@ -251,6 +251,8 @@ const ConditionMap = (props: any) => {
 
     useEffect ( () => {
 
+
+
         const setConditions = (data: FeatureCollection) => {
             if (geoJsonRef !== undefined && geoJsonRef.current !== undefined) {
                 geoJsonRef.current.clearLayers()
@@ -344,6 +346,7 @@ const ConditionMap = (props: any) => {
                     setRoadHighlightLayerGroup(roadHighlightLayerGroup);
 
                     const latlng: LatLng = e.latlng;
+
                     setMarkerPosition(latlng);
 
                     roadHighlightLayerGroup.eachLayer((highlightedLayer) => {
@@ -375,7 +378,7 @@ const ConditionMap = (props: any) => {
         if (dataAll?.features) {
             const roadFeatures = dataAll.features.filter((f) =>
                 f.properties !== null && f.properties.way_name === roadName);
-            
+
             roadFeatures.forEach((roadFeature) => {
                 const roadHighlight = new L.GeoJSON(roadFeature.geometry, {
                     style: {

@@ -225,7 +225,6 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
             const itemLatLng = L.latLng(roadItem.lat, roadItem.lon);
             const distance = itemLatLng.distanceTo(clickLocation);
 
-            console.log(`Checking road item at ${roadItem.lat}, ${roadItem.lon} - Distance: ${distance}`);
 
             if (distance < minDistance) {
                 minDistance = distance;
@@ -233,7 +232,6 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
             }
         });
 
-        console.log(`Closest road item:`, closestRoadItem);
         return closestRoadItem;
     };
 
