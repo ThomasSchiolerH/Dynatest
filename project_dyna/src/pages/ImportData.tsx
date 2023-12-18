@@ -48,6 +48,7 @@ const ImportData = (props: any) => {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFeedbackMessage(null);
         const file = event.target.files?.[0]; // Get the first file from input element, if it exists
         console.log('File selected:', file);
         setSelectedFile(file ?? null); // Hold selected file, or null if none is selected
