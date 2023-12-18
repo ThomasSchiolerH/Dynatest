@@ -71,12 +71,6 @@ export class ConditionsController {
     return this.conditionsService.uploadRSP(file);
   }
 
-  /*  //attempt at getting the querey into this file
-      @Get('conditionis/picture/:lat/:lon')
-      getPicturesFromLatLon(@Param() params: any) {
-          return this.conditionsService.getPicturesFromLatLon(lan, lon);
-      }
-    */
   @Post('import/zip')
   @UseInterceptors(FileInterceptor('file'))
   async uploadZipFile(
