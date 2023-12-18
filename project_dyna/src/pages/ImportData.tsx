@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import "../css/ImportData.css";
 import {post} from '../queries/fetch';
+import { RotatingLines } from 'react-loader-spinner';
 
 const UploadIcon = () => (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -44,6 +45,7 @@ const ImportData = (props: any) => {
     const [selectedFile, setSelectedFile] = useState<FileOrNull>(null);
     const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
     const [isErrorMessage, setIsErrorMessage] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]; // Get the first file from input element, if it exists
@@ -61,6 +63,7 @@ const ImportData = (props: any) => {
 
     const handleSubmit = () => {
         if (selectedFile) {
+            setIsLoading(true);
             console.log('Submitting file:', selectedFile.name);
             const formData = new FormData();
             formData.append('file', selectedFile);
@@ -83,7 +86,7 @@ const ImportData = (props: any) => {
                     setFeedbackMessage('Failed to upload file!');
                 }
                 setIsErrorMessage(true);
-            })
+            }).finally(() => setIsLoading(false));
             // after file is submitted, clear the file
             clearSelectedFile();
         }
@@ -116,6 +119,10 @@ const ImportData = (props: any) => {
                     </button>
                 </label>
                 <input id="file" type="file" style={{ display: 'none' }} onChange={handleFileChange} accept=".rsp,.zip,image/png,image/jpeg,.gpx" />
+                <RotatingLines
+                    strokeColor="grey"
+                    visible={isLoading}
+                />
                 {feedbackMessage && (
                     <div className={isErrorMessage ? 'feedback-message error-message' : 'feedback-message success-message'}>
                         {feedbackMessage}
