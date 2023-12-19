@@ -1,13 +1,12 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, MultiLineString } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { Coverage_Values } from '../entity/Coverage_Values';
 import { Coverage } from '../entity/Coverage';
 import { Ways } from '../entity/Ways';
 import { Condition_Pictures } from '../entity/Condition_Pictures';
 import { MinioClientService } from 'src/minio-client/minio-client.service';
 import { DBUpload } from '../entity/Internal_Types';
-
 import { parseRSP, parse_rsp_Pictures } from './dynatest.parser';
 
 import {
@@ -139,7 +138,11 @@ export class ConditionsService {
     };
   }
 
-
+  /**
+   * @author Andreas Hansen (s214969)
+   * @output An object containing the conditions in the way ordered by its distance
+   * @param osm_id An OSM Way id
+   */
   async getWayConditions(osm_id: string) {
     try {
       // First query information about the way, such as its name
@@ -197,6 +200,11 @@ export class ConditionsService {
     }
   }
 
+  /**
+   * @author Andreas Hansen (s214969)
+   * @output An object containing the conditions in the road ordered by its distance
+   * @param osm_id An OSM Way id
+   */
   async getRoadConditions(osm_id: string) {
     try {
       // Query information about the way, such as its name
@@ -305,6 +313,11 @@ export class ConditionsService {
     }
   }
 
+  /**
+   * @author Andreas Hansen (s214969) and Jeppe Sørensen (s214961)
+   * @output A status message showing whether the import was sucessful
+   * @param file a file with the .rsp extension
+   */
   async uploadRSP(file: any) {
     let fetchedData: any[];
 
@@ -713,6 +726,11 @@ export class ConditionsService {
     };
   }
 
+  /**
+   * @author Andreas Hansen (s214969)
+   * @output A list of road names in the database with the given prefix
+   * @param road_name a prefix of a road name
+   */
   async getRoadNames(road_name: string) {
     road_name = road_name.toLowerCase().trim();
     try {

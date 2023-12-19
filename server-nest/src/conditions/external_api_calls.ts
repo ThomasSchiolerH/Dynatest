@@ -22,6 +22,11 @@ export async function fetch_OSM_Id_geometry(
   return result.elements.map((r: any) => r.geometry);
 }
 
+/**
+ * @author Andreas Hansen (s214969)
+ * @output A list of information about the OSM ways given as a list
+ * @param OSM_Ids a list of OSM way ids
+ */
 export async function fetch_OSM_Id_Data(OSM_Ids: number[]): Promise<any[]> {
   const str: string =
     'data=[out:json];way(id:' + OSM_Ids.join(',') + ');out geom;';
@@ -31,6 +36,14 @@ export async function fetch_OSM_Id_Data(OSM_Ids: number[]): Promise<any[]> {
   return result.elements;
 }
 
+/**
+ * @author Andreas Hansen (s214969)
+ * @output A list of OSM way ids
+ * @param lat The latitude of a point
+ * @param lon The longitude of a point
+ * @param name The name of the road
+ * @param radius The radius to search for ways within
+ */
 export async function fetch_OSM_Ids(
   lat: number,
   lon: number,
@@ -49,13 +62,16 @@ export async function fetch_OSM_Ids(
   return result.map((e) => e.id);
 }
 
-async function fetchOverpass(data: string): Promise<any> {
-  //console.log(data);
+/**
+ * @author Andreas Hansen (s214969)
+ * @output The result of a call to the overpass-api with the given query
+ * @param query the overpass query in json-format
+ */
+async function fetchOverpass(query: string): Promise<any> {
   const result = await fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
-    body: 'data=' + data,
+    body: 'data=' + query,
   }).then((data: { json: () => any }) => data.json());
-  //console.log(result);
   return result.elements.map((r: any) => r);
 }
 

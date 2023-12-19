@@ -1,4 +1,3 @@
-// used to access overpass-api
 import { HttpException } from '@nestjs/common';
 import { Condition_Pictures } from 'src/entity/Condition_Pictures';
 import { Coverage } from 'src/entity/Coverage';
@@ -350,4 +349,3 @@ export async function saveImageDataToDatabase(
     })
     .execute();
 }
-

@@ -4,7 +4,14 @@ import {
   Measurement,
 } from '../entity/Internal_Types';
 
-
+/**
+ * @author Andreas Hansen (s214969)
+ * @output Compute the predecessor of some target in the given array by using binary search
+ * @param array The array to search in
+ * @param target The value to find predecessor for
+ * @param i The current lower bound
+ * @param j The current upper bound
+ */
 function predecessor(
   array: any[],
   target: number,
@@ -21,6 +28,14 @@ function predecessor(
   else return array[m];
 }
 
+/**
+ * @author Andreas Hansen (s214969)
+ * @output Compute the successor of some target in the given array by using binary search
+ * @param array The array to search in
+ * @param target The value to find successor for
+ * @param i The current lower bound
+ * @param j The current upper bound
+ */
 function successor(
   array: any[],
   target: number,
@@ -37,6 +52,13 @@ function successor(
   else return array[m];
 }
 
+/**
+ * @author Andreas Hansen (s214969)
+ * @output Compute gps point closest to the given distance
+ *         based on a given distance and a list of gps points
+ * @param distance The target distance to interpolate a gps point for
+ * @param points A list of known points along with their distance
+ */
 function interpolate_point(
   distance: number,
   points: GPSPointDistance[],
@@ -51,6 +73,13 @@ function interpolate_point(
   else return p1;
 }
 
+/**
+ * @author Andreas Hansen (s214969)
+ * @output Interpolate the starting and ending point of a
+ *          measurement that only has a start and end distance
+ * @param measurement Some measured data along with a starting and ending distance
+ * @param points A list of known points along with their distance
+ */
 export function interpolate(
   measurement: Measurement,
   points: GPSPointDistance[],

@@ -49,28 +49,31 @@ export class ConditionsController {
     );
   }
 
-  @Get('road-names')
+  @Get('road-names') // Find the road names which prefix is given as argument
   async getRoadNames(@Query() query: { name: string }): Promise<any> {
     const { name } = query;
     return this.conditionsService.getRoadNames(name);
   }
 
-  @Get('road/:id') // from the condition id clicked
+  @Get('road/:id') // The id is the osm way id clicked by the user
   getRoadConditions(@Param() params: any) {
     return this.conditionsService.getRoadConditions(params.id);
   }
 
-  @Get('way/:id')
+  @Get('way/:id') // The id is the osm way id clicked by the user
   getWayContions(@Param() params: any) {
     return this.conditionsService.getWayConditions(params.id);
   }
 
+  // An endpoint used to import data from a .rsp file
+  // mainly used for testing
   @Post('import/rsp')
   @UseInterceptors(FileInterceptor('fileName'))
   upload(@UploadedFile() file: any): any {
     return this.conditionsService.uploadRSP(file);
   }
 
+  // The endpoint used to import data contained in a .zip file
   @Post('import/zip')
   @UseInterceptors(FileInterceptor('file'))
   async uploadZipFile(
