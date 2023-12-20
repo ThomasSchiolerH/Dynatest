@@ -15,6 +15,12 @@ export function get<T>(path: string, callback: (data: T) => void): void
         .then(data => callback(data));
 }
 
+/**
+ * @author Peter Jahola (s233734)
+ * @param path Endpoint path
+ * @param obj Data to send in the request body
+ * @param config Optional axios configs
+ */
 export function post<T>(path: string, obj: object, config?: AxiosRequestConfig): Promise<AxiosResponse<T, any>>
 {
     return axios.post(getPath(path), obj, config ? config : undefined)

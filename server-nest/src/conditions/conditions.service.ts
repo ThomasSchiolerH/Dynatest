@@ -45,6 +45,17 @@ export class ConditionsService {
     private minioClientService: MinioClientService,
   ) {}
 
+  /**
+   * @author Peter Jahola (s233734)
+   * @param minLat Optional filtering by minimum Latitude
+   * @param maxLat Optional filtering by maximum Latitude
+   * @param minLng Optional filtering by minimum Longitude
+   * @param maxLng Optional filtering by maximum Latitude
+   * @param type Optional filtering by condition type
+   * @param computed_before Optional filtering by earliest condition computation time
+   * @param computed_after Optional filtering by the latest condition computation time
+   * @output All available conditions optionally filtered by parameters
+   */
   async getConditions(
     minLat: string,
     maxLat: string,
@@ -201,7 +212,7 @@ export class ConditionsService {
   }
 
   /**
-   * @author Andreas Hansen (s214969)
+   * @author Andreas Hansen (s214969) & Peter Jahola (s233734) & Jeppe Holm Sørensen(s214961)
    * @output An object containing the conditions in the road ordered by its distance
    * @param osm_id An OSM Way id
    */
@@ -413,6 +424,10 @@ export class ConditionsService {
     return { success: true, message: 'file uploaded', data: data };
   }
 
+  /**
+   * @author Peter Jahola (s233734)
+   * @param file A zip file
+   */
   async uploadZipFile(file: Express.Multer.File) {
     const imageIntArray: ExtractedObject[] = [];
     const imageRngArray: ExtractedObject[] = [];
@@ -714,6 +729,11 @@ export class ConditionsService {
       });
   }
 
+  /**
+   * @author Peter Jahola (s233734)
+   * @param image A buffered file to upload as road image
+   * @output A promise with an access url to the uploaded image and a success message
+   */
   async uploadImage(image: BufferedFile) {
     const uploaded_image = await this.minioClientService.upload(image);
 

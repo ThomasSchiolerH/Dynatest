@@ -16,6 +16,11 @@ export class MinioClientService {
         return this.minio.client;
     }
 
+    /**
+     * @author Peter Jahola (s233734)
+     * @param file Image to upload
+     * @param bucketName Desired bucket where the image will be uploaded
+     */
     public async upload(
         file: BufferedFile,
         bucketName: string = this.bucketName,
@@ -63,6 +68,11 @@ export class MinioClientService {
         };
     }
 
+    /**
+     * @author Peter Jahola (s233734)
+     * @param objetName Image to delete
+     * @param bucketName Bucket where the image is located
+     */
     async delete(objetName: string, bucketName: string = this.bucketName) {
         this.client.removeObject(bucketName, objetName, (err) => {
             if (err) {

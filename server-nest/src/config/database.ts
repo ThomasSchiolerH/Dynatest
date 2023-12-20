@@ -15,6 +15,10 @@ const {
     DB_LIRAMAP_HOST, DB_LIRAMAP_PORT, DB_LIRAMAP_NAME, DB_LIRAMAP_USER, DB_LIRAMAP_PASSWORD
 } = process.env
 
+/**
+ * @author Peter Jahola (s233734)
+ * @description Set up DB config from env variables and load ORM entities
+ */
 @Injectable()
 export class DB_LIRAMAP_CONFIG implements TypeOrmOptionsFactory {
 

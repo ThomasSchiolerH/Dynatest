@@ -3,6 +3,10 @@ import { MinioClientService } from './minio-client.service';
 import { MinioModule } from 'nestjs-minio-client';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+/**
+ * @author Peter Jahola (s233734)
+ * @description Set up Minio config from env variables
+ */
 @Module({
     imports: [
         MinioModule.registerAsync({

@@ -169,6 +169,12 @@ export async function computeRoadConditions(
   };
 }
 
+/**
+ * @author Peter Jahola (s233734)
+ * @param roadImagesByWayId JSON object structured in an outer object by way ids then by distances inside
+ * @output A promise of a list with objects which contains different type of images for the same distance calculated
+ * from the beginning of the road
+ */
 export async function formatRoadImages(roadImagesByWayId) {
   // TODO Order the ways
   // TODO previousWayDistance starts from the relative distance of the beginning of the road
@@ -211,6 +217,18 @@ export async function formatRoadImages(roadImagesByWayId) {
   return resultImageObject;
 }
 
+/**
+ * @author Peter Jahola (s233734)
+ * @param dataSource ORM instance of the DB
+ * @param OSM_Id OSM id of the road
+ * @param way_name Name of the road
+ * @param node_start Starting node of the way
+ * @param node_end Ending node of the way
+ * @param length The length of the way in meters
+ * @param section_geometry Postgis geomerty of the way
+ * @param isHighway Indicator whether the way is a highway
+ * @output The generated UUID of the created way in DB
+ */
 export async function addWayToDatabase(
   dataSource: DataSource,
   OSM_Id: number,
@@ -254,6 +272,18 @@ export async function addWayToDatabase(
   }
 }
 
+/**
+ * @author Peter Jahola (s233734)
+ * @param dataSource ORM instance of the DB
+ * @param distance01 OSM id of the road
+ * @param distance02 Name of the road
+ * @param computeTime Compute time of the coverage
+ * @param latMapped Latitude of the coverage location
+ * @param lonMapped Longitude of the coverage location
+ * @param section_geometry Postgis geomerty of the way
+ * @param wayId Foreign key for the way where the coverage located
+ * @output The generated UUID of the created coverage in DB
+ */
 export async function addCoverageToDatabase(
   dataSource: DataSource,
   distance01: number,
@@ -298,6 +328,13 @@ export async function addCoverageToDatabase(
   }
 }
 
+/**
+ * @author Peter Jahola (s233734)
+ * @param dataSource ORM instance of the DB
+ * @param type Coverage value type
+ * @param value The value of the coverage
+ * @param coverageId Foreign key for the coverage to which the value belongs
+ */
 export async function addCoverageValueToDatabase(
   dataSource: DataSource,
   type: string,
@@ -322,6 +359,16 @@ export async function addCoverageValueToDatabase(
   }
 }
 
+/**
+ * @author Peter Jahola (s233734)
+ * @param dataSource ORM instance of the DB
+ * @param coordinate Exact location of the image
+ * @param imageName Original name of the image
+ * @param url URL where the image is reachable
+ * @param wayId Foreign key for the way where the image was captured
+ * @param type The type of the road image
+ * @param distance The distance from the beginning of the way where the image was captured
+ */
 export async function saveImageDataToDatabase(
   dataSource: DataSource,
   coordinate: object,

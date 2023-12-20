@@ -73,7 +73,12 @@ export class ConditionsController {
     return this.conditionsService.uploadRSP(file);
   }
 
-  // The endpoint used to import data contained in a .zip file
+  /**
+   * @author Peter Jahola (s233734)
+   * @param file A ZIP file
+   * @description Endpoint for ZIP upload with validation for file size and type
+   * @throws HttpStatus.BAD_REQUEST In case of wrong file format
+   */
   @Post('import/zip')
   @UseInterceptors(FileInterceptor('file'))
   async uploadZipFile(
