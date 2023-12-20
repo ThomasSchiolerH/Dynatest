@@ -1,3 +1,7 @@
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .homeContainer {
     background-color: var(--background-2);
     color: #FFFFFF;
@@ -7,7 +11,10 @@
     flex-direction: column;
     align-items: center;
 }
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .instructionsHeader {
     font-size: 3em;
     margin-bottom: 60px;
@@ -15,7 +22,10 @@
     text-align: center;
     text-shadow: 3px 3px black;
 }
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .contentRow {
     display: flex;
     justify-content: space-evenly;
@@ -23,13 +33,19 @@
     margin-bottom: 60px;
     align-items: center;
 }
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .leftText, .rightText {
     flex: 0.5;
     padding: 0 10px;
     text-align: center;
 }
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .image {
     width: 504px;
     background-color: #888; /* placeholder color */

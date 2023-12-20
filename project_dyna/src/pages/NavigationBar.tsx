@@ -5,6 +5,10 @@ import { NavLink, useLocation } from 'react-router-dom';
 import '../css/navigationbar.css';
 import SearchBar from "../Components/SearchBar";
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @interface
+ */
 interface NavBtnProps {
     to: string;
     name: string;
@@ -21,6 +25,10 @@ const NavBtn: FC<NavBtnProps> = ( { to, name } ) => {
     )
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @output Returns the navigation bar
+ */
 const NavigationBar = () => {
     const location = useLocation();
 

@@ -1,21 +1,17 @@
 import { useEffect, useRef, useState } from "react"
-import  ReactSlider  from "react-slider"
 import {MapContainer, TileLayer, ScaleControl, GeoJSON, useMap, Marker} from 'react-leaflet'
 import {Layer, LayerGroup, LeafletMouseEvent, PathOptions} from "leaflet"
 import { Feature, FeatureCollection } from 'geojson'
 import { useData } from "../context/RoadDataContext";
 import L, { LatLng } from 'leaflet';
-
 import Zoom from '../map/zoom'
 import { MAP_OPTIONS } from '../map/mapConstants'
 import { get } from '../queries/fetch'
-
 import ConditionToggleButtons from './ConditionToggleButtons';
 
 import "../css/slider.css";
 import "../css/map.css";
 import "../css/DataWindow.css";
-import SearchBar from "../Components/SearchBar";
 
 const ALL = "ALL"
 const KPI = "KPI"
@@ -41,11 +37,24 @@ interface YearMonth  {
     month: number
 }
 
+interface DateRange {
+    start?: YearMonth
+    end?: YearMonth
+}
+
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @interface
+ */
 interface Geometry {
     type: string;
     coordinates: Array<Array<[number, number]>>;
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @interface
+ */
 interface RoadData {
     success: boolean;
     road_name: string;
@@ -71,12 +80,6 @@ interface RoadData {
         OverlayInt: string | null;
         OverlayRng: string | null;
     }>;
-}
-
-
-interface DateRange {
-    start?: YearMonth
-    end?: YearMonth
 }
 
 const lessOrEqualThan = ( yearMonth1: YearMonth, yearMonth2: YearMonth): boolean => {
@@ -120,16 +123,11 @@ const yearMonthtoText = (yearMonth: YearMonth | undefined): string => {
 const getTypeColor = ( type: string ) : string => {
     switch ( type ) {
         case KPI: return "red"
-
         case DI : return "green"
-
         case IRI:
         case IRInew: return "yellow"
-
         case Mu: return "cyan"
-
         case Enrg: return "magenta"
-
         default: return "grey"
     }
 }
@@ -170,19 +168,12 @@ const getConditionColor = ( properties: GeoJSON.GeoJsonProperties) : string => {
 
 const ConditionMap = (props: any) => {
     const { children } = props;
-    let selectedRoadData = {} as JSON;
     const { setData } = useData();
     const { setMap } = useData();
-    const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
-
     const [markerPosition, setMarkerPosition] = useState<LatLng | null>(null);
-
     const { center, zoom, minZoom, maxZoom, scaleWidth } = MAP_OPTIONS;
-
     const geoJsonRef = useRef<any>();
     const { setRoadHighlightLayerGroup, setAllData } = useData();
-
-
     const roadHighlightLayerGroup = new L.LayerGroup();
     const [dataAll, setDataAll] = useState<FeatureCollection>();
     const [rangeAll, setRangeAll] = useState<DateRange>({});
@@ -191,7 +182,6 @@ const ConditionMap = (props: any) => {
     const [pictureRoadPath, setPictureRoadPath] = useState<GeoJSON.MultiLineString>()
     const [isImagePageHidden, setIsImagePageHidden] = useState<boolean>(true);
     const [img, setImg] = useState<Blob>();
-
 
 
     const inputChange = ({ target }: any) => {
@@ -243,6 +233,10 @@ const ConditionMap = (props: any) => {
         })
     }, []);
 
+    /**
+     * @author Jakob Kildegaard Hansen (s214952)
+     * @output sets the values of dataAll and roadHighlightLayerGroup in the context file
+     */
     useEffect(() => {
         setRoadHighlightLayerGroup(roadHighlightLayerGroup);
         setAllData(dataAll);
@@ -250,9 +244,6 @@ const ConditionMap = (props: any) => {
 
 
     useEffect ( () => {
-
-
-
         const setConditions = (data: FeatureCollection) => {
             if (geoJsonRef !== undefined && geoJsonRef.current !== undefined) {
                 geoJsonRef.current.clearLayers()
@@ -266,8 +257,6 @@ const ConditionMap = (props: any) => {
                 weight: 4,
                 opacity: 1,
                 color: 'grey',
-                // fillcolor: 'red',
-                // fillOpacity: 0.7
             }
 
             if ( feature !== undefined && feature.properties !== null && feature.properties.type !== undefined ) {
@@ -298,7 +287,7 @@ const ConditionMap = (props: any) => {
             if (geoJsonRef !== undefined && geoJsonRef.current !== undefined) {
                 geoJsonRef.current.clearLayers(); // This will clear any existing layers
             }
-            return; // Exit the useEffect
+            return;
         }
 
         if (mode === "ALL") {
@@ -338,7 +327,12 @@ const ConditionMap = (props: any) => {
         }
     }, [dataAll, mode, rangeAll, rangeSelected])
 
-
+    /**
+     * @author Jakob Kildegaard Hansen (s214952)
+     * @param feature feature which is clicked
+     * @param layer current layer
+     * @output Method to handle clicks on features. Adds marker and highlights the road
+     */
     const onEachFeature = (feature: Feature, layer: Layer) => {
         if (feature !== undefined && feature.properties !== null && feature.properties.id !== undefined && feature.properties.value !== undefined) {
             layer.on('click', (e) => {
@@ -371,7 +365,12 @@ const ConditionMap = (props: any) => {
     };
 
 
-
+    /**
+     * @author Jakob Kildegaard Hansen (s214952)
+     * @param roadName road name to search for
+     * @param map Layer group to color on
+     * @output Highlights the road
+     */
     const highlightRoad = (roadName: string, map: L.Map | LayerGroup<any>) => {
         roadHighlightLayerGroup.clearLayers();
 
@@ -437,7 +436,10 @@ const ConditionMap = (props: any) => {
     };
 
 
-
+    /**
+     * @author Jakob Kildegaard Hansen (s214952) & Thomas Schiøler Hansen (s214968)
+     * @output Returns the condition map tab
+     */
     return (
         <div style={{ height: "100%" }}>
 
@@ -449,7 +451,6 @@ const ConditionMap = (props: any) => {
             </div>
             <div className="image-container" hidden={isImagePageHidden}>
             </div>
-
             <div>
                 <MapContainer
                     preferCanvas={true}
@@ -460,7 +461,6 @@ const ConditionMap = (props: any) => {
                     scrollWheelZoom={true}
                     zoomControl={false}
                 >
-
                     <MapInstanceComponent/>
                     <TileLayer
                         maxNativeZoom={maxZoom}
@@ -468,16 +468,12 @@ const ConditionMap = (props: any) => {
                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-                    {//{ pictureRoadPath !== undefined &&
-                    //<GeoJSON ref={geoJsonRef} data={pictureRoadPath} onEachFeature={onPictureRoadClick} />}
-                    }
                     { dataAll !== undefined &&
                         <GeoJSON ref={geoJsonRef} data={dataAll} onEachFeature={onEachFeature} /> }
 
                     {markerPosition && (
                         <Marker position={[markerPosition.lat, markerPosition.lng]} />
                     )}
-
                     <Zoom />
                     <ScaleControl imperial={false} position="bottomleft" maxWidth={scaleWidth} />
                     {children}

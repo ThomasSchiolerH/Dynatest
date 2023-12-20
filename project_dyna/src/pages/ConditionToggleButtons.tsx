@@ -1,22 +1,11 @@
-import {MapContainer, ScaleControl, TileLayer} from "react-leaflet";
-import Zoom from "../map/zoom";
-import React, {useState, PureComponent, useEffect, useRef} from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area, ResponsiveContainer, ReferenceLine } from 'recharts'
-import ToggleSwitch from '../Components/ToggleSwitch'; // Update the path to the ToggleSwitch component
-import PhotoScrollComponent from "../Components/PhotoScrollComponent";
-import DataWindowImg from '../images/DataWindowImg.png';
-import SingleConditionToggledImg from '../images/singleConditionToggledImg.png';
-import MultipleConditionsToggledImg from '../images/multipleConditionsToggledImg.png';
+import React, {useState, useEffect, useRef} from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Brush, ResponsiveContainer, ReferenceLine } from 'recharts'
+import ToggleSwitch from '../Components/ToggleSwitch';
 import { useData } from "../context/RoadDataContext";
-import {ALL} from "dns";
 import L, {LatLng} from "leaflet";
-import {DomUtil} from "leaflet";
-import empty = DomUtil.empty;
 import "../css/DataWindow.css";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-
-
 
 interface ConditionToggleButtonsProps {
     conditionTypes: string[]; // Define the type of conditionTypes prop
@@ -24,11 +13,18 @@ interface ConditionToggleButtonsProps {
     markerPosition: LatLng | null;
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @interface
+ */
 interface Geometry {
     type: string;
     coordinates: Array<Array<[number, number]>>;
 }
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @interface
+ */
 interface RoadData {
     success: boolean;
     road_name: string;
@@ -56,15 +52,19 @@ interface RoadData {
         OverlayRng: string | null;
     }>;
 }
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @interface
+ */
 interface PhotoStripProps {
     pictures: RoadData['pictures'];
 }
 
 
 const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditionTypes, onConditionToggle, markerPosition}) => {
-    //data from pressed road segment
-    let {data} = useData();
+
+    let {data} = useData(); //data from pressed road segment
+
     const [graphData, setGraphData] = useState<Record<string, any>[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
     const [isDataWindowVisible, setIsDataWindowVisible] = useState<boolean>(false);
@@ -111,6 +111,11 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         };
     }, [isResizing]);
 
+    /**
+     * @author Jakob Kildegaard Hansen (s214952)
+     * @param pictures array of pictures corresponding to the interface
+     * @output the photo strip shown on Dyantest roads
+     */
     const PhotoStrip: React.FC<PhotoStripProps> = ({ pictures }) => {
         const stripRef = useRef<HTMLDivElement>(null);
 
@@ -139,7 +144,10 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         );
     };
 
-
+    /**
+     * @author Jakob Kildegaard Hansen (s214952)
+     * @output update graph data
+     */
     //method to update graph data
     useEffect(() => {
         if (data) {
@@ -185,7 +193,11 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         return null;
     };
 
-
+    /**
+     * @author Jakob Kildegaard Hansen (s214952)
+     * @param data raw data from road which was clicked
+     * @output converts raw data into arrays used for the graphs
+     */
     function convertIntoGraphData(data: RoadData | undefined) {
         if (data) {
             const graphData: Array<Record<string, any>> = [];
@@ -271,6 +283,10 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         E_norm: "#FF33E2"
     };
 
+    /**
+     * @author Jakob Kildegaard Hansen (s214952)
+     * @output creates graph objects
+     */
     const renderLineCharts = () => {
         return selectedConditions.map((dataType) => {
             if (dataType === "ALL") { // If dataType is "ALL", return nothing
@@ -317,9 +333,10 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     });
     };
 
-
-
-
+    /**
+     * @author Jakob Kildegaard Hansen (s214952) & Thomas Schiøler Hansen (s214968)
+     * @output Returns the data window
+     */
     return (
         <div className="condition-toggle-buttons-container">
             <div className="condition-toggle-buttons">

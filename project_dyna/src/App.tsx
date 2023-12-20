@@ -7,8 +7,11 @@ import Home from "./pages/Home";
 import ConditionMap from "./pages/ConditionMap";
 import NavigationBar from "./pages/NavigationBar";
 import ImportData from "./pages/ImportData";
-import SearchBar from "./Components/SearchBar";
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @output Routing to the different tabs
+ */
 export default function App() {
     return (
         <div>

@@ -3,6 +3,10 @@ import {Palette} from 'react-leaflet-hotline';
 import {ActiveMeasProperties, RendererOptions, XAxisType} from '../models/properties';
 import {RendererName} from '../models/renderers';
 
+/**
+ * @Old-project-file these methods are reused from the original project
+ */
+
 // Options for conditions map
 export const MAP_OPTIONS = {
     center: new LatLng(55.672, 12.458),
@@ -18,11 +22,6 @@ export const RENDERER_WEIGHT = 4
 export const RENDERER_COLOR = 'red'
 export const RENDERER_OPACITY = 1.0
 
-// TODO, ekki@dtu.dk: this was a quick fix; this was a constant used in
-// different places in the software. But someone changed the components,
-// in order for this not to happen, I made this a function, which makes
-// a new copy. Eventually we should track down where the change of the
-// constant is made and fix this.
 export function RENDERER_PALETTE(): Palette  {
     return [
         { r: 0,   g: 160, b: 0,  t: 0    },
@@ -58,7 +57,6 @@ export function RENDERER_MEAS_PROPERTIES(): Required<ActiveMeasProperties>  {
 }
 
 // Heatmap
-// ekki@dtu.dk (precaussion: see comment on PALLETTE
 export function HEATMAP_PALETTE(): Palette {
     return [
         {r: 0, g: 0, b: 255, t: 0},

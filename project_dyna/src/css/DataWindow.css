@@ -22,30 +22,49 @@
     border-left: 1px solid var(--background-3);
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .photo-strip-container {
      overflow-x: auto;
      white-space: nowrap;
      height: 100%;
  }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .photo-strip {
     display: inline-block;
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .photo-item {
     display: inline-block;
     margin-right: 10px;
     text-align: center;
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .photo-image {
-    max-width: 191px;
-    height: 200px; /* Set the maximum height as needed */
+    max-width: 191px; /* space between road pictures */
+    height: 200px; /* Set the maximum height */
     transform: scaleX(-1);
     transform: rotate(90deg);
-
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .distance-label {
     font-size: 12px;
 }
@@ -57,13 +76,25 @@
     color: white;
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .chart-container {
     background-color: var(--background-2); /* Set your desired background color here */
     padding: 10px; /* Optional: Add padding for spacing */
 }
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .chart-container p {
     color: white; /* Define your desired text color here */
 }
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .chart-container h4 {
     color: white; /* Define your desired text color here */
 }

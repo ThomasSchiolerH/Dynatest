@@ -1,4 +1,8 @@
 
+/**
+ * @Old-project-file these methods are reused from the original project
+ */
+
 ////// VISUALIZATION DATABASE OBJECTS //////
 export interface Segment {
 	id: number;
@@ -9,12 +13,3 @@ export interface Segment {
 	count: number;
 	direction: number;
 }
-
-// export interface AggregatedValue {
-// 	id:number;
-// 	segment:number;
-// 	count:number;
-// 	type:string;
-// 	aggregation:string;
-// 	value:number;
-// }
