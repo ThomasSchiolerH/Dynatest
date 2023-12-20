@@ -267,7 +267,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
 
     /**
-     * @author Thomas Schioler Hansen (s214968)
+     * @author Thomas Schioler Hansen (s214968) & Alexander Vaaben (s214958)
      * */
     const toggleDataWindow = () => {
         setIsDataWindowVisible((prev) => !prev);
@@ -296,7 +296,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     };
 
     /**
-     * @author Jakob Kildegaard Hansen (s214952)
+     * @author Jakob Kildegaard Hansen (s214952) & Alexander Vaaben s(214958)
      * @output creates graph objects
      */
     const renderLineCharts = () => {
@@ -346,7 +346,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     };
 
     /**
-     * @author Jakob Kildegaard Hansen (s214952) & Thomas Schiøler Hansen (s214968)
+     * @author Jakob Kildegaard Hansen (s214952) & Thomas Schiøler Hansen (s214968) & Alexander Vaaben (s214958)
      * @output Returns the data window
      */
     return (

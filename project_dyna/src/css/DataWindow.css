@@ -73,6 +73,10 @@
     font-size: 12px;
 }
 
+/**
+ * @author Alexander Vaaben (s214952)
+ * @CSS
+ */
 .data-window-content {
     margin-top: 20px;
     padding: 20px;
@@ -156,26 +160,50 @@
     transition: .4s;
 }
 
+/**
+ * @author Alexander Vaaben (s214952)
+ * @CSS
+ */
 input:checked + .slider {
     background-color: #04bd38;
 }
 
+/**
+ * @author Alexander Vaaben (s214952)
+ * @CSS
+ */
 input:focus + .slider {
     box-shadow: 0 0 1px #04bd38;
 }
 
+/**
+ * @author Alexander Vaaben (s214952)
+ * @CSS
+ */
 .switch.green .slider {
     background-color: #04bd38; /* Green color when highest priority */
 }
 
+/**
+ * @author Alexander Vaaben (s214952)
+ * @CSS
+ */
 .switch.grey .slider {
     background-color: grey; /* Grey color for other toggled switches */
 }
 
+/**
+ * @author Alexander Vaaben (s214952)
+ * @CSS
+ */
 input:checked + .slider:before {
     transform: translateX(3em);
 }
 
+/**
+ * @author Alexander Vaaben (s214952)
+ * @CSS
+ */
 .switch .on {
     left: -0.8rem;
     transform: translateX(-3rem) translateY(-50%);
