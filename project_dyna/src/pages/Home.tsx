@@ -6,6 +6,9 @@ import multipleConditionsToggledImg from "../images/multipleConditionsToggledImg
 import importDataImg from "../images/importDataImg.png"
 import homeImg from "../images/HomeImg.png"
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * */
 const Home = (props: any) => {
     const titleText = "Instructions";
     const navigationBarText = "Use the navigation bar at the top of the site to navigate between the different content pages. You are currently on the home screen where you can find instructions on how to use the site."

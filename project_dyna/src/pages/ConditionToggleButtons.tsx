@@ -148,6 +148,9 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         }
     }, [data]);
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const toggleCondition = (condition: string) => {
         setSelectedConditions(prevConditions => {
             let updatedConditions: string[];
@@ -176,6 +179,9 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     };
 
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const getHighestPriorityConditionFromList = (conditionsList: string[]) => {
         for (let condition of conditionTypes) {
             if (conditionsList.includes(condition)) {
@@ -217,6 +223,9 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         }
     }
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const findClosestRoadItem = (clickLocation: LatLng, roadData: RoadData): typeof roadData.road[number] | null => {
         let closestRoadItem = null;
         let minDistance = Number.MAX_VALUE;
@@ -245,6 +254,9 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     }, [markerPosition, data]);
 
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const toggleDataWindow = () => {
         setIsDataWindowVisible((prev) => !prev);
 

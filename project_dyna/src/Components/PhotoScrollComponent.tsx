@@ -7,6 +7,9 @@ interface PhotoScrollComponentProps {
     fetchImages: (direction: 'left' | 'right', index: number) => Promise<string[]>; // Updated type
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * */
 const PhotoScrollComponent: React.FC<PhotoScrollComponentProps> = ({ initialIndex, imageUrls }) => {
     const [currentIndex, setCurrentIndex] = useState<number>(initialIndex);
     const [displayedImages, setDisplayedImages] = useState<string[]>([]);

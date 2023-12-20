@@ -13,6 +13,9 @@ type GeoReference = {
     coordinates: Coordinates
 };
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * */
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [geoReferences, setGeoReferences] = useState<GeoReference[]>([]);
@@ -64,15 +67,24 @@ const SearchBar = () => {
         });
     }, [searchQuery]);
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const userInput : string = event.target.value;
         setSearchQuery(userInput);
     };
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const toTitleCase = (name: string) => {
         return name.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     };
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formattedQuery = toTitleCase(searchQuery);
@@ -80,6 +92,9 @@ const SearchBar = () => {
         highlightRoad(formattedQuery);
     };
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const executeSearch = (query: string) => {
         try {
             //console.log("Searching for:", query);
@@ -98,6 +113,9 @@ const SearchBar = () => {
     };
 
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const handleSuggestionClick = (suggestion: string) => {
         setSearchQuery(suggestion);
         executeSearch(suggestion);
@@ -106,18 +124,29 @@ const SearchBar = () => {
         console.log(suggestion)
     };
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
+
     const fetchRoadCoordinates = (roadName: string, callback: (coords: { lat: number, lng: number }) => void) => {
         const i: number = geoReferences.findIndex((e : GeoReference) : boolean => e.road_name === roadName);
         callback(geoReferences[i].coordinates);
     };
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const panToMapCoordinates = (coords: { lat: number, lng: number }) => {
         if (map) {
             map.flyTo(coords, zoomLevel);
         }
     };
 
-    const handleReset = () => {
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * */
+
+ const handleReset = () => {
         setSearchQuery('');
     };
 

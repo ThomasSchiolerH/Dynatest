@@ -7,7 +7,9 @@ interface ToggleSwitchProps {
     label: string;
     isHighestPriority: boolean; // New prop to indicate highest priority
 }
-
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * */
 const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ isDataWindowVisible, toggleDataWindow, label, isHighestPriority }) => {
     return (
         <label className={`switch ${isDataWindowVisible ? (isHighestPriority ? 'green' : 'grey') : ''}`}>

@@ -47,6 +47,9 @@ const ImportData = (props: any) => {
     const [isErrorMessage, setIsErrorMessage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFeedbackMessage(null);
         const file = event.target.files?.[0]; // Get the first file from input element, if it exists
@@ -54,6 +57,9 @@ const ImportData = (props: any) => {
         setSelectedFile(file ?? null); // Hold selected file, or null if none is selected
     };
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const clearSelectedFile = () => {
         setSelectedFile(null); // reset to null
         const fileInput = document.getElementById('file') as HTMLInputElement; // Get file input element by ID
@@ -62,6 +68,9 @@ const ImportData = (props: any) => {
         setIsErrorMessage(false); // Reset error state
     };
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const handleSubmit = () => {
         if (selectedFile) {
             setIsLoading(true);

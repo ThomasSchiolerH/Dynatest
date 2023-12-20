@@ -413,6 +413,9 @@ const ConditionMap = (props: any) => {
         );}
     }
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const handleConditionToggle = (condition: string | null, isSelected: boolean) => {
         if (condition === null) {
             // Handle the null case appropriately.
@@ -425,6 +428,9 @@ const ConditionMap = (props: any) => {
         }
     };
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * */
     const MapInstanceComponent = () => {
         const map = useMap();
         useEffect(() => {

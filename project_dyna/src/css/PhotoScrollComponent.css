@@ -12,7 +12,7 @@
 }
 
 .road-image {
-    width: 75px; /* Example size, adjust as needed */
+    width: 75px;
     height: auto;
     transition: transform 0.2s ease-in-out;
 }
@@ -27,6 +27,6 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 24px; /* Example size, adjust as needed */
+    font-size: 24px;
     color: white;
 }
