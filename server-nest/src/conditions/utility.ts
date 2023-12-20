@@ -171,9 +171,6 @@ export async function computeRoadConditions(
 
 export async function formatRoadImages(roadImagesByWayId) {
   // TODO Order the ways
-  // const orderedRoadImages = orderByWayId(rawRoadImages);
-
-  // Combine the ways that make up the road
   // TODO previousWayDistance starts from the relative distance of the beginning of the road
   let previousWayDistance: number = 0;
   const resultImageObject: object[] = [];

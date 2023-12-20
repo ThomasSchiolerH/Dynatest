@@ -447,9 +447,6 @@ export class ConditionsService {
             }
           }
           if (name.toLowerCase().endsWith('.rsp')) {
-            // TODO: Call RSP IRI processing method below
-            // file.async("string").then(data => CALL RSP IRI PROCESSING FUNCTION HERE).catch(e => console.log(e));
-            console.log('hi');
 
             const promise = file
               .async('string')
