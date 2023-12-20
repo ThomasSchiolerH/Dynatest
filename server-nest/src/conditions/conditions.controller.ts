@@ -80,7 +80,7 @@ export class ConditionsController {
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({ fileType: 'zip' })
-        .addMaxSizeValidator({ maxSize: 500000000 })
+        .addMaxSizeValidator({ maxSize: 300000000 })
         .build({
           exceptionFactory: (e) => {
             if (e) {
