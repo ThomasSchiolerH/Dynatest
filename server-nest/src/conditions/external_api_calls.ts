@@ -23,7 +23,7 @@ export async function fetch_OSM_Id_geometry(
 }
 
 /**
- * @author Andreas Hansen (s214969)
+ * @author Andreas Hansen (s214969) & jeppe Holm Sørensen(s214961)
  * @output A list of information about the OSM ways given as a list
  * @param OSM_Ids a list of OSM way ids
  */

@@ -15,8 +15,15 @@ import { MultiLineString, MultiPoint } from 'typeorm';
 import { computeSpatialDistance } from './utility';
 import { elementAt } from 'rxjs';
 
-export async function parseRSP(str: string): Promise<any[]> {
+/**
+ * @author Jeppe Holm Sørensen(s214961) & Andreas Hansen (s214969)
+ * @output a list containing three lists: one with way data, one with coverage, and one with coverage valyes
+ * @param str: a string containg the RSP file.
+ */
+export async function parseRSP(str: string): Promise<any[]> {// by jeppe s214961 & andreas hansen s214969
+  console.log("test1");
   const lines: string[] = str.trim().split('\n');
+  console.log("test2");
   const items: string[][] = lines.map((line: string): any[] => line.split(','));
 
   const all_data: any[] = items
@@ -117,7 +124,7 @@ export async function parseRSP(str: string): Promise<any[]> {
     length,
     JSON.stringify(geom),
     highway,
-  ]; //has the info needed for ways, in order, missing geom
+  ]; //has the info needed for ways, in order
   //the following section creates an array of arrays with coverage data. This is unike to each geom.
   //the following section also creates an array with coverage values.
   const coverage: any[] = [];
@@ -136,7 +143,7 @@ export async function parseRSP(str: string): Promise<any[]> {
             coords[0][0][1],
             coords[0][0][0],
           ) * 100,
-        ) / 10000; //length from the last coordinates of the last value to the first of this one. rounded to 2 decimals
+        ) / 100000; //length from the last coordinates of the last value to the first of this one. rounded to 2 decimals
       if (lengthHelper < 0.04) {
         CLength = CLength + lengthHelper;
       }
@@ -150,7 +157,7 @@ export async function parseRSP(str: string): Promise<any[]> {
           coords[0][1][1],
           coords[0][1][0],
         ) * 100,
-      ) / 10000;
+      ) / 100000;
     if (CLengthHelper < 0.04) {
       CLength = CLength + CLengthHelper;
     }
@@ -228,13 +235,14 @@ function GPSPointsToMultilineString(points: GPSPoint[]): MultiLineString {
   };
 }
 
+//haversine function, taken from here: https://www.movable-type.co.uk/scripts/latlong.html#ellipsoid
 function havresine(
   lat1: number,
   lon1: number,
   lat2: number,
   lon2: number,
 ): any {
-  //haversine function, taken from here: https://www.movable-type.co.uk/scripts/latlong.html#ellipsoid
+
   const R = 6371e3; // metres
   const φ1 = (lat1 * Math.PI) / 180; // φ, λ in radians
   const φ2 = (lat2 * Math.PI) / 180;
@@ -303,8 +311,13 @@ function parse_rsp_line(item: any[]): any {
       return null;
   }
 }
-
+/**
+ * @author Jeppe Holm Sørensen(s214961)
+ * @output a list of coordinates, each coordinate corrosping to a picture location
+ * @param str: a string containg the RSP file.
+ */
 export async function parse_rsp_Pictures(str: string): Promise<any[]> {
+  //made by Jeppe Sørensen, s214961
   function pictureLocationList() {
     const lines = str.trim().split('\n');
 
@@ -421,8 +434,9 @@ export async function parse_rsp_Pictures(str: string): Promise<any[]> {
 
     return R * c;
   }
-
-  function GeoMultilineString(coords: any[]): {
+  /*
+  //written by Jeppe sørensen s214961
+  function GeoMultilineString(coords: any[]): {//function to turn a list of coordinates into a geojson multiline string. Unused in the end
     features: {
       geometry: { coordinates: any[]; type: string };
       type: string;
@@ -446,6 +460,6 @@ export async function parse_rsp_Pictures(str: string): Promise<any[]> {
 
     return geojson;
   }
-
+*/
   return pictureLocationList();
 }
