@@ -1,5 +1,7 @@
-
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .nav-wrapper {
     position: sticky;
     top: 0;
@@ -11,7 +13,10 @@
     font-family: 'Roboto', sans-serif;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .nav-container {
     width: 90%;
     height: 100%;
@@ -21,7 +26,10 @@
     align-items: center;
     margin: auto;
 }
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .nav-tab {
     font-size: 1em;
     color: white;
@@ -31,12 +39,17 @@
     border-radius: 6px;
     font-weight: 550;
 }
-
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .nav-tab:hover {
     color: var(--highlight-text);
 }
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .nav-tab-active {
     color: var(--highlight-text);
     background: var(--highlight-background);

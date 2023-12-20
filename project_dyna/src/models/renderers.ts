@@ -6,6 +6,10 @@ import { Path, Bounds } from "./path";
 import { PathProperties, RendererOptions } from "./properties";
 import { HEATMAP_OPTIONS, RENDERER_PALETTE } from "../map/mapConstants";
 
+/**
+ * @Old-project-file these methods are reused from the original project
+ */
+
 export enum RendererName {
     circles = 'circles', 
     rectangles = 'rectangles',

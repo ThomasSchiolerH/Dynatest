@@ -1,6 +1,9 @@
 import { Palette } from "react-leaflet-hotline";
 import { RendererName } from "./renderers";
 
+/**
+ * @Old-project-file these methods are reused from the original project
+ */
 
 // Rendering properties of an entire Path
 export interface PathProperties {

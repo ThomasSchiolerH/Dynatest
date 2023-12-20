@@ -4,18 +4,24 @@ import React, {
     useState,
     Dispatch,
     SetStateAction,
-    ReactNode,
-    useRef,
-    useCallback
+    ReactNode
 } from 'react';
-import L, {Map, GeoJSON, LayerGroup, LatLng, Marker} from 'leaflet';
+import L, {Map, LayerGroup} from 'leaflet';
 import {get} from "../queries/fetch";
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @interface
+ */
 interface Geometry {
     type: string;
     coordinates: Array<Array<[number, number]>>;
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @interface
+ */
 interface RoadData {
     success: boolean;
     road_name: string;
@@ -43,10 +49,18 @@ interface RoadData {
     }>;
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @interface
+ */
 interface FeatureCollection {
     features: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>[];
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @Type
+ */
 type ContextType = {
     data: RoadData | null;
     setData: Dispatch<SetStateAction<RoadData | null>>;
@@ -56,9 +70,14 @@ type ContextType = {
     dataAll: FeatureCollection | undefined;
     setRoadHighlightLayerGroup: Dispatch<SetStateAction<L.LayerGroup | null>>;
     setAllData: Dispatch<SetStateAction<FeatureCollection | undefined>>;
-
 };
 
+type DataProviderProps = { children: ReactNode; };
+
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @Context-variables
+ */
 const DataContext = createContext<ContextType>({
     data: null,
     setData: () => {},
@@ -71,18 +90,16 @@ const DataContext = createContext<ContextType>({
 
 });
 
-type DataProviderProps = {
-    children: ReactNode;
-};
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @Context-wrapper
+ */
 export function DataProvider({ children }: DataProviderProps) {
     const [data, setData] = useState<RoadData | null>(null);
     const [map, setMap] = useState<Map | null>(null);
     const [roadHighlightLayerGroup, setRoadHighlightLayerGroup] = useState<LayerGroup | null>(null);
     const [dataAll, setDataAll] = useState<FeatureCollection | undefined>({ features: [] });
-
-
-
 
     return (
         <DataContext.Provider value={{ data, setData, map, setMap, roadHighlightLayerGroup, setRoadHighlightLayerGroup, dataAll, setAllData: setDataAll}}>
@@ -91,14 +108,21 @@ export function DataProvider({ children }: DataProviderProps) {
     );
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @Context-function
+ */
 export function useData() {
     return useContext(DataContext);
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @output Highlights the road segments of the searched road
+ */
 export function useRoadHighlight() {
     const context = useContext(DataContext);
     const { setData } = useData();
-
 
     if (!context) {
         throw new Error('useRoadHighlight must be used within a DataProvider');
@@ -107,9 +131,6 @@ export function useRoadHighlight() {
     const highlightRoad = (roadName: string) => {
         if (context.dataAll && context.dataAll.features && context.map && context.roadHighlightLayerGroup) {
             context.roadHighlightLayerGroup.clearLayers();
-
-
-
 
             const roadFeatures = context.dataAll.features.filter(
                 (f) => f.properties !== null && f.properties.way_name === roadName
@@ -130,8 +151,6 @@ export function useRoadHighlight() {
                 }
             }
 
-
-
             roadFeatures.forEach((roadFeature) => {
                 const roadHighlight = L.geoJSON(roadFeature.geometry, {
                     style: {
@@ -143,7 +162,6 @@ export function useRoadHighlight() {
                 if (context.roadHighlightLayerGroup){
                     context.roadHighlightLayerGroup.addLayer(roadHighlight);
                 }
-
             });
 
             context.roadHighlightLayerGroup.addTo(context.map);

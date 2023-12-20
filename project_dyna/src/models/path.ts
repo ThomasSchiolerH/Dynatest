@@ -1,7 +1,9 @@
 // Represents a point containing (lat, lng) coordinates, 
 import { LatLng } from "./models";
-import { MeasProperties, PathProperties } from "./properties";
-import { PathEventHandler } from "./renderers";
+
+/**
+ * @Old-project-file these methods are reused from the original project
+ */
 
 // rendering properties, and optionally, a value and some metadata (like timestamp)
 export interface PointData extends LatLng {
@@ -21,39 +23,11 @@ export interface Bounds {
     maxY?: number; 
 }
 
-// measurement name -> trip task id -> bounded path (used in Rides)
-export type MeasMetaPath = { [key: string]: {[key: number]: BoundedPath } }
-
-// Props passed to the Path and EventPath components
-export interface PathProps {
-	path: Path;
-	bounds?: Bounds;
-	properties: PathProperties;
-	metadata?: Metadata;
-	onClick?: PathEventHandler
-}
-
-// used for queries
-export interface BoundedPath {
-	path: Path;
-	bounds?: Bounds;
-}
-
-// This interface is used as a type for server's response
-// for instance, JSON files follow this format
-export interface JSONProps extends BoundedPath {
-	properties: MeasProperties;
-	metadata?: Metadata;
-}
-
-
 export interface Node {
     lat: number;
 	lng: number;
 	way_dist: number;
 }
-
-export type Ways = { [key: string]: Node[] }
 
 export interface ValueLatLng extends LatLng {
 	value: number;

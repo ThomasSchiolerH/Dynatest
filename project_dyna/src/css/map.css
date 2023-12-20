@@ -1,31 +1,31 @@
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .map-wrapper {
     width: 100%;
     height: 100%;
     position: relative;
 }
 
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .leaflet-container {
     height: 90vh;
     z-index: 0;
 }
-/* Zoom number displayed */
-/*.map-zoom {*/
-/*    position: absolute;*/
-/*    right: 55px;*/
-/*    z-index: calc( var(--navbar-z-index) - 2 );*/
-/*    color: var(--background-3);*/
-/*    font-family: 'Noto Sans JP', sans-serif;*/
-/*    font-size: 2em;*/
-/*    margin-top: 5px;*/
-/*}*/
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .leaflet-top.leaflet-right {
     position: absolute;
     top: auto; /* Remove from top */
     bottom: 40px;
     right: 10px;
 }
-
 
 .leaflet-control-zoom{
     border-radius: 40px !important;
@@ -51,7 +51,10 @@
 .leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
     color: black !important;
 }
-
+/**
+ * @author Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .leaflet-tile {
     filter: grayscale(90%) !important;
 }
