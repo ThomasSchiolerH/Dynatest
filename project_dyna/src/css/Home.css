@@ -1,5 +1,5 @@
 /**
- * @author Jakob Kildegaard Hansen (s214952)
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
  * @CSS
  */
 .homeContainer {
@@ -12,7 +12,7 @@
     align-items: center;
 }
 /**
- * @author Jakob Kildegaard Hansen (s214952)
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
  * @CSS
  */
 .instructionsHeader {
@@ -23,7 +23,7 @@
     text-shadow: 3px 3px black;
 }
 /**
- * @author Jakob Kildegaard Hansen (s214952)
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
  * @CSS
  */
 .contentRow {
@@ -34,7 +34,7 @@
     align-items: center;
 }
 /**
- * @author Jakob Kildegaard Hansen (s214952)
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
  * @CSS
  */
 .leftText, .rightText {
@@ -43,7 +43,7 @@
     text-align: center;
 }
 /**
- * @author Jakob Kildegaard Hansen (s214952)
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
  * @CSS
  */
 .image {
