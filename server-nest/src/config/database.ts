@@ -4,11 +4,8 @@ import {Injectable} from "@nestjs/common";
 import {TypeOrmModuleOptions, TypeOrmOptionsFactory} from "@nestjs/typeorm";
 import {Coverage_Values} from "../entity/Coverage_Values";
 import {Coverage} from "../entity/Coverage";
-import {Trips} from "../entity/Trips";
 import {Ways} from "../entity/Ways";
-import {Condition_Coverages} from "../entity/Condition_Coverages";
 import {Condition_Pictures} from  "../entity/Condition_Pictures";
-import {Map_References} from "../entity/Map_References";
 dotenv.config();
 
 const {
@@ -30,7 +27,7 @@ export class DB_LIRAMAP_CONFIG implements TypeOrmOptionsFactory {
             database : DB_LIRAMAP_NAME,
             username : DB_LIRAMAP_USER,
             password : DB_LIRAMAP_PASSWORD,
-            entities: [Condition_Coverages, Condition_Pictures, Coverage, Coverage_Values, Map_References ,Trips, Ways]
+            entities: [Condition_Pictures, Coverage, Coverage_Values, Ways]
         };
     }
 }
