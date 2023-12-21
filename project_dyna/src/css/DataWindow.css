@@ -1,6 +1,7 @@
 
 /**
  * @author Thomas Schioler Hansen (s214968)
+ * @CSS
  * */
 .condition-toggle-buttons-container {
     position: fixed;
@@ -13,7 +14,10 @@
     width: 120px;  /* Define a width for the buttons container */
 }
 
-
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 .data-window {
     position: fixed;
     top: var(--navbar-height);
@@ -74,7 +78,7 @@
 }
 
 /**
- * @author Alexander Vaaben (s214952)
+ * @author Alexander Vaaben (s214952) & Thomas Schiøler Hansen (s214968)
  * @CSS
  */
 .data-window-content {
@@ -85,28 +89,32 @@
 }
 
 /**
- * @author Jakob Kildegaard Hansen (s214952)
+ * @author Jakob Kildegaard Hansen (s214952) & Thomas Schiøler Hansen (s214968)
  * @CSS
  */
 .chart-container {
-    background-color: var(--background-2); /* Set your desired background color here */
-    padding: 10px; /* Optional: Add padding for spacing */
+    background-color: var(--background-2);
+    padding: 10px;
 }
 /**
- * @author Jakob Kildegaard Hansen (s214952)
+ * @author Jakob Kildegaard Hansen (s214952) & Thomas Schiøler Hansen (s214968)
  * @CSS
  */
 .chart-container p {
     color: white; /* Define your desired text color here */
 }
 /**
- * @author Jakob Kildegaard Hansen (s214952)
+ * @author Jakob Kildegaard Hansen (s214952) & Thomas Schiøler Hansen (s214968)
  * @CSS
  */
 .chart-container h4 {
     color: white; /* Define your desired text color here */
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 .DataWindowSwitch {
     margin-bottom: 40px;
     margin-top: 30px;
@@ -116,6 +124,10 @@
     margin-bottom: 40px;
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 /* The switch - the box around the slider */
 .switch {
     font-size: 17px;
@@ -127,6 +139,10 @@
     margin-left: 16px;
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 /* Hide default HTML checkbox */
 .switch input {
     opacity: 0;
@@ -134,6 +150,10 @@
     height: 0;
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 /* The slider */
 .slider {
     position: absolute;
@@ -147,6 +167,10 @@
     border-radius: 30px;
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 .slider:before {
     position: absolute;
     content: "";
@@ -161,7 +185,7 @@
 }
 
 /**
- * @author Alexander Vaaben (s214952)
+ * @author Alexander Vaaben (s214952) & Thomas Schiøler Hansen (s214968)
  * @CSS
  */
 input:checked + .slider {
@@ -169,7 +193,7 @@ input:checked + .slider {
 }
 
 /**
- * @author Alexander Vaaben (s214952)
+ * @author Alexander Vaaben (s214952) & Thomas Schiøler Hansen (s214968)
  * @CSS
  */
 input:focus + .slider {
@@ -177,7 +201,7 @@ input:focus + .slider {
 }
 
 /**
- * @author Alexander Vaaben (s214952)
+ * @author Alexander Vaaben (s214952) & Thomas Schiøler Hansen (s214968)
  * @CSS
  */
 .switch.green .slider {
@@ -185,7 +209,7 @@ input:focus + .slider {
 }
 
 /**
- * @author Alexander Vaaben (s214952)
+ * @author Alexander Vaaben (s214952) & Thomas Schiøler Hansen (s214968)
  * @CSS
  */
 .switch.grey .slider {
@@ -193,7 +217,7 @@ input:focus + .slider {
 }
 
 /**
- * @author Alexander Vaaben (s214952)
+ * @author Alexander Vaaben (s214952) & Thomas Schiøler Hansen (s214968)
  * @CSS
  */
 input:checked + .slider:before {
@@ -201,7 +225,7 @@ input:checked + .slider:before {
 }
 
 /**
- * @author Alexander Vaaben (s214952)
+ * @author Alexander Vaaben (s214952) & Thomas Schiøler Hansen (s214968)
  * @CSS
  */
 .switch .on {
@@ -214,6 +238,10 @@ input:checked + .slider:before {
     transition: .4s;
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 .switch .off {
     color: #999;
     right: .8rem;
@@ -225,16 +253,28 @@ input:checked + .slider:before {
     transition: .4s;
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 input:checked ~ .slider .on {
     transform: translate(-50%, -50%) translateX(3rem); /* Move to the right */
     opacity: 1; /* Make it visible */
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 input:checked ~ .slider .off {
     transform: translate(-50%, -50%) translateX(-3rem); /* Move to the left */
     opacity: 0; /* Hide it */
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 .custom-zoom-in-button {
     border-radius: 40px !important;
     border: 1px grey;
@@ -247,10 +287,18 @@ input:checked ~ .slider .off {
     margin-bottom: 0.2em;
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 .custom-zoom-in-button:hover {
     color: black !important;
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 .custom-zoom-out-button {
     border-radius: 40px !important;
     border: 1px grey;
@@ -263,6 +311,10 @@ input:checked ~ .slider .off {
     margin-bottom: 0.2em;
 }
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @CSS
+ * */
 .custom-zoom-out-button:hover {
     color: black !important;
 }

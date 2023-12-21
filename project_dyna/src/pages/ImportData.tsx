@@ -49,6 +49,8 @@ const ImportData = (props: any) => {
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @param {React.ChangeEvent<HTMLInputElement>} event - The change event from the file input.
+     * @output {void} - No return value. Updates the selected file state.
      * */
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFeedbackMessage(null);
@@ -59,6 +61,7 @@ const ImportData = (props: any) => {
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @output {void} - No return value. Resets selected file and related states.
      * */
     const clearSelectedFile = () => {
         setSelectedFile(null); // reset to null
@@ -70,6 +73,7 @@ const ImportData = (props: any) => {
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @output {void} - No return value. Handles the file submission process.
      * */
     const handleSubmit = () => {
         if (selectedFile) {
@@ -101,6 +105,11 @@ const ImportData = (props: any) => {
             clearSelectedFile();
         }
     };
+
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * @output Returns the import data tab
+     * */
 
     return (
         <div className="importDataContainer"> {/* Use the container class here */}

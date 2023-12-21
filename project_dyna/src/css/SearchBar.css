@@ -1,12 +1,17 @@
 /**
- * @author Thomas Schioler Hansen (s214968)
- * */
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .form button {
     border: none;
     background: none;
     color: #8b8ba7;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .form {
     --timing: 0.3s;
     --width-of-input: 270px;
@@ -29,6 +34,10 @@
     z-index: 1000;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .input {
     font-size: 0.9rem;
     background-color: transparent;
@@ -39,6 +48,10 @@
     border: none;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .form:before {
     content: "";
     position: absolute;
@@ -53,22 +66,42 @@
     transition: transform var(--timing) ease;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .form:focus-within {
     border-radius: var(--after-border-radius);
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 input:focus {
     outline: none;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .form:focus-within:before {
     transform: scale(1);
 }
+
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .form input, .form button {
     height: 100%;
 }
 
-
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .reset {
     border: none;
     background: none;
@@ -76,25 +109,45 @@ input:focus {
     visibility: hidden;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .search-button {
     cursor: pointer;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 input:not(:placeholder-shown) ~ .reset {
     opacity: 1;
     visibility: visible;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .search-icon-container svg {
     width: 26px;
     margin-top: 3px;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .close-icon-container svg {
     width: 24px;
     margin-top: 3px;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .suggestions {
     list-style-type: none;
     margin: 0;
@@ -115,6 +168,10 @@ input:not(:placeholder-shown) ~ .reset {
     scrollbar-color: #888 #f1f1f1;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .suggestions li {
     padding: 10px;
     cursor: pointer;
@@ -122,19 +179,35 @@ input:not(:placeholder-shown) ~ .reset {
     transition: background-color 0.3s ease;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .suggestions li:last-child {
     border-bottom: none; /* Remove bottom border for the last item */
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .suggestions li:hover {
     background-color: #f0f0f0;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .search-icon-container {
     position: relative;
     display: inline-block;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .search-tooltip {
     visibility: hidden;
     width: 65px;
@@ -153,6 +226,10 @@ input:not(:placeholder-shown) ~ .reset {
     font-weight: bold;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .search-icon-container:hover .search-tooltip {
     visibility: visible;
     opacity: 1;

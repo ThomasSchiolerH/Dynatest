@@ -414,7 +414,10 @@ const ConditionMap = (props: any) => {
 
     /**
      * @author Thomas Schioler Hansen (s214968)
-     * */
+     * @param {string | null} condition - The condition to be toggled. Can be a string or null.
+     * @param {boolean} isSelected - Indicates whether the condition is selected.
+     * @output {void} - No return value. Sets the mode based on the condition and selection status.
+     **/
     const handleConditionToggle = (condition: string | null, isSelected: boolean) => {
         if (condition === null) {
             // Handle the null case appropriately.
@@ -429,6 +432,7 @@ const ConditionMap = (props: any) => {
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @output Returns null as it doesn't render anything itself, but sets up map-related logic.
      * */
     const MapInstanceComponent = () => {
         const map = useMap();

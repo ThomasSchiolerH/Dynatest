@@ -1,6 +1,7 @@
 /**
- * @author Thomas Schioler Hansen (s214968)
- * */
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .importDataContainer {
     background-color: var(--background-2);
     color: #FFFFFF;
@@ -13,6 +14,10 @@
     width: 100vw; /* 100% of the viewport width */
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .importDataHeader {
     font-size: 3em;
     margin-bottom: 60px;
@@ -21,6 +26,10 @@
     text-shadow: 3px 3px black;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 /*Import data UI for upload*/
 .importUIcontainer {
     background-color: white;
@@ -38,6 +47,10 @@
     margin-top: 50px;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .importUIheaderLabel {
     flex: 1;
     width: 100%;
@@ -48,7 +61,10 @@
     flex-direction: column;
 }
 
-
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .importUIheader {
     flex: 1;
     width: 100%;
@@ -60,15 +76,27 @@
     flex-direction: column;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .importUIheader svg {
     height: 100px;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .importUIheader p {
     text-align: center;
     color: black;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .importUIfooter {
     background-color: rgba(0, 110, 255, 0.075);
     width: 100%;
@@ -83,6 +111,10 @@
     border: none;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .importUIfooter svg {
     height: 130%;
     fill: royalblue;
@@ -93,15 +125,27 @@
     box-shadow: 0 2px 30px rgba(0, 0, 0, 0.205);
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .importUIfooter p {
     flex: 1;
     text-align: center;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 #file {
     display: none;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 /* Radio Buttons */
 .radioGroup:focus {
     outline: 0;
@@ -109,6 +153,10 @@
     box-shadow: 0 0 0 4px #b5c9fc;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .radioGroup div {
     display: flex;
     flex-wrap: wrap;
@@ -117,6 +165,10 @@
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .radioGroup label input[type="radio"] {
     clip: rect(0 0 0 0);
     clip-path: inset(100%);
@@ -127,6 +179,10 @@
     width: 1px;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .radioGroup label input[type="radio"]:checked + span {
     box-shadow: 0 0 0 0.0625em #0043ed;
     background-color: #dee7ff;
@@ -134,6 +190,10 @@
     color: #0043ed;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .radioGroup label span {
     display: block;
     cursor: pointer;
@@ -148,15 +208,26 @@
     transition: background-color .5s ease;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .radioGroup label:first-child span {
     border-radius: .375em 0 0 .375em;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .radioGroup label:last-child span {
     border-radius: 0 .375em .375em 0;
 }
 
-/* Add this to your existing CSS file */
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .submitButton {
     padding: 0.375em 0.75em;
     font-family: 'Roboto', sans-serif;
@@ -172,6 +243,10 @@
     text-align: center;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .submitButton:hover {
     background-color: #dee7ff;
     box-shadow: 0 0 0 0.0625em #0043ed;

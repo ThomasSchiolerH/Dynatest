@@ -158,6 +158,8 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @param {string} condition - The condition to be toggled.
+     * @output {void} - No return value. Updates the selected conditions state and notifies the parent component.
      * */
     const toggleCondition = (condition: string) => {
         setSelectedConditions(prevConditions => {
@@ -189,6 +191,8 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @param {string[]} conditionsList - The list of conditions to evaluate.
+     * @output {string | null} - Returns the highest priority condition or null if none are found.
      * */
     const getHighestPriorityConditionFromList = (conditionsList: string[]) => {
         for (let condition of conditionTypes) {
@@ -237,6 +241,9 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @param {LatLng} clickLocation - The location where the user clicked.
+     * @param {RoadData} roadData - The data containing road information.
+     * @output Returns the closest road item or null if none are found.
      * */
     const findClosestRoadItem = (clickLocation: LatLng, roadData: RoadData): typeof roadData.road[number] | null => {
         let closestRoadItem = null;
@@ -256,6 +263,11 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
         return closestRoadItem;
     };
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * @output {void} - No return value. The effect updates the corresponding data point state.
+     * @dependencies {Array} - Depends on changes in markerPosition and data.
+     * */
     useEffect(() => {
         if (markerPosition && data) {
             const closestRoadItem = findClosestRoadItem(markerPosition, data);
@@ -268,6 +280,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
 
     /**
      * @author Thomas Schioler Hansen (s214968) & Alexander Vaaben (s214958)
+     * @output {void} - No return value. Updates the state of the data window visibility and potentially the map view.
      * */
     const toggleDataWindow = () => {
         setIsDataWindowVisible((prev) => !prev);
@@ -296,7 +309,7 @@ const ConditionToggleButtons: React.FC<ConditionToggleButtonsProps> = ({ conditi
     };
 
     /**
-     * @author Jakob Kildegaard Hansen (s214952) & Alexander Vaaben s(214958)
+     * @author Jakob Kildegaard Hansen (s214952) & Alexander Vaaben s(214958) & Thomas Schiøler Hansen (s214968)
      * @output creates graph objects
      */
     const renderLineCharts = () => {

@@ -27,27 +27,47 @@
     right: 10px;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .leaflet-control-zoom{
     border-radius: 40px !important;
     border: 1px solid black !important;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .leaflet-control-zoom-in {
     border: none !important;
     border-radius: 40px 40px 0 0 !important; /* Round only the top corners */
     border-bottom: 1px solid rgb(100, 100, 100, 0.5) !important; /* Add a solid line for separation */
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .leaflet-control-zoom-out {
     border: none !important;
     border-radius: 0 0 40px 40px !important; /* Round only the bottom corners */
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .leaflet-control-zoom, .leaflet-control-zoom-in, .leaflet-control-zoom-out {
     background: white !important;
     color: rgb(100, 100, 100) !important;
 }
 
+/**
+ * @author Thomas Schiøler Hansen (s214968) Jakob Kildegaard Hansen (s214952)
+ * @CSS
+ */
 .leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
     color: black !important;
 }

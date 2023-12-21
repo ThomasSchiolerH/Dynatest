@@ -3,11 +3,19 @@ import '../css/SearchBar.css';
 import {get} from "../queries/fetch";
 import {useData, useRoadHighlight } from "../context/RoadDataContext";
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @interface
+ * */
 type Coordinates = {
     lat: number;
     lng: number
 };
 
+/**
+ * @author Thomas Schioler Hansen (s214968)
+ * @interface
+ * */
 type GeoReference = {
     road_name: string;
     coordinates: Coordinates
@@ -54,6 +62,13 @@ const SearchBar = () => {
             </div>
         );
     };
+
+    /**
+    * @author Thomas Schioler Hansen (s214968)
+    * @dependencies {Array} - Depends on changes in the searchQuery.
+    * @output {void} - No return value. The effect potentially updates the state with geo-references.
+    * @errorHandling Logs errors to the console if they occur during the fetch process.
+    */
     useEffect(() => {
         if(searchQuery.trim().length === 0) return;
 
@@ -69,6 +84,8 @@ const SearchBar = () => {
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @param {React.ChangeEvent<HTMLInputElement>} event - The input change event.
+     * @output {void} - No return value. Updates the searchQuery state.
      * */
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const userInput : string = event.target.value;
@@ -77,6 +94,8 @@ const SearchBar = () => {
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @param {string} name - The string to be converted to title case.
+     * @output {string} - The converted title case string.
      * */
     const toTitleCase = (name: string) => {
         return name.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
@@ -84,6 +103,8 @@ const SearchBar = () => {
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @param {React.FormEvent<HTMLFormElement>} event - The form submission event.
+     * @output {void} - No return value. Executes a search with the formatted query.
      * */
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -94,6 +115,8 @@ const SearchBar = () => {
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @param {string} query - The search query.
+     * @output {void} - No return value. Performs a search and updates the map view.
      * */
     const executeSearch = (query: string) => {
         try {
@@ -115,6 +138,8 @@ const SearchBar = () => {
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @param {string} suggestion - The clicked suggestion.
+     * @output {void} - No return value. Updates the search query and executes a search.
      * */
     const handleSuggestionClick = (suggestion: string) => {
         setSearchQuery(suggestion);
@@ -126,6 +151,9 @@ const SearchBar = () => {
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @param {string} roadName - The name of the road.
+     * @param {(coords: { lat: number, lng: number }) => void} callback - Callback function to execute with the coordinates.
+     * @output {void} - No return value. Executes the callback with the road coordinates.
      * */
 
     const fetchRoadCoordinates = (roadName: string, callback: (coords: { lat: number, lng: number }) => void) => {
@@ -135,6 +163,8 @@ const SearchBar = () => {
 
     /**
      * @author Thomas Schioler Hansen (s214968)
+     * @param {{ lat: number, lng: number }} coords - The coordinates to pan to.
+     * @output {void} - No return value. Adjusts the map view.
      * */
     const panToMapCoordinates = (coords: { lat: number, lng: number }) => {
         if (map) {
@@ -144,12 +174,17 @@ const SearchBar = () => {
 
 /**
  * @author Thomas Schioler Hansen (s214968)
+ * @output {void} - No return value. Resets the searchQuery state.
  * */
 
  const handleReset = () => {
         setSearchQuery('');
     };
 
+    /**
+     * @author Thomas Schioler Hansen (s214968)
+     * @output Returns the search bar component
+     * */
     return (
         <form className="form" onSubmit={handleSubmit} onReset={handleReset}>
             <button type="submit" className="search-button">
