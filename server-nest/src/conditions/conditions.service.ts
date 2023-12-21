@@ -46,7 +46,7 @@ export class ConditionsService {
   ) {}
 
   /**
-   * @author Peter Jahola (s233734)
+   * @author Peter Jahola (s233734) & Anders Bürger (s201105)
    * @param minLat Optional filtering by minimum Latitude
    * @param maxLat Optional filtering by maximum Latitude
    * @param minLng Optional filtering by minimum Longitude
@@ -150,7 +150,7 @@ export class ConditionsService {
   }
 
   /**
-   * @author Andreas Hansen (s214969)
+   * @author Andreas Hansen (s214969) & Anders Bürger (s201105)
    * @output An object containing the conditions in the way ordered by its distance
    * @param osm_id An OSM Way id
    */
@@ -212,7 +212,7 @@ export class ConditionsService {
   }
 
   /**
-   * @author Andreas Hansen (s214969) & Peter Jahola (s233734) & Jeppe Holm Sørensen(s214961)
+   * @author Andreas Hansen (s214969) & Peter Jahola (s233734) & Jeppe Holm Sørensen(s214961) & Anders Bürger(s201105)
    * @output An object containing the conditions in the road ordered by its distance
    * @param osm_id An OSM Way id
    */
