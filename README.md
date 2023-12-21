@@ -2,19 +2,23 @@
 
 ## Development
 #### Client
- - cd client
+To start the client, type the following:
+ - cd project_dyna
  - npm i
  - npm start
 
 #### Server
- - cd server
+To start the server, type the following:
+ - cd server-nest
  - npm i
  - npm start
  
 ## Production
- - see DEPLOY.md
+ - see DEPLOY.md or the handbook
 
 ## Env files
+The frontend and backend run with the following information in the .env file.
+
 #### Frontend:
     REACT_APP_BACKEND_URL_DEV = http://localhost:3002
     REACT_APP_BACKEND_URL_PROD = http://se2-x.compute.dtu.dk:3002
